@@ -43,7 +43,7 @@ function Navbar() {
         {/* 관리자 로그인 버튼 */}
         <Left>
           <NavButton as={Link} to="/admin/product-list">
-            관리자 로그인
+            관리자 페이지
           </NavButton>
         </Left>
         {/* 로그인/회원가입 버튼, 판매하기, 내상점 */}
