@@ -10,8 +10,8 @@ import { FaSearch, FaDollarSign, FaStore } from 'react-icons/fa';
 
 function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태 추가
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태
+  const navigate = useNavigate();
 
   // 모달 열기
   const openModal = () => setIsModalOpen(true);
@@ -21,6 +21,12 @@ function Navbar() {
   // 검색어 변경 함수
   const handleSearchChange = (event) => setSearchQuery(event.target.value);
 
+  //입력창 엔터 시 함수
+  const handleSearchKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
   // 검색 버튼 클릭 함수 (검색 동작 추가 가능)
   const handleSearch = () => {
     if (searchQuery) {
@@ -56,8 +62,10 @@ function Navbar() {
             type="text"
             value={searchQuery}
             onChange={handleSearchChange}
+            onKeyPress={handleSearchKeyPress}
             placeholder="검색어를 입력하세요"
           />
+
           <SearchButton onClick={handleSearch}>
             <FaSearch size={25} color="#333" />
           </SearchButton>

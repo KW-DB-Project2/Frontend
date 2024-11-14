@@ -100,7 +100,7 @@ function Home() {
 
   return (
     <Container>
-      <h2>상품 리스트</h2>
+      <Title>상품 리스트</Title>
       <ProductList>
         {products.map((product) => (
           <ProductCard key={product.id}>
@@ -118,13 +118,20 @@ function Home() {
 
 const Container = styled.div`
   padding: 20px;
+  margin-top: 0;
+`;
+
+const Title = styled.h1`
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
 `;
 
 const ProductList = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   margin-top: 20px;
+  grid-template-columns: repeat(5, 1fr);
 `;
 
 const ProductCard = styled.div`

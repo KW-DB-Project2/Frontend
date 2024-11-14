@@ -121,8 +121,8 @@ function Search() {
 }
 
 const SearchContainer = styled.div`
-  margin-top: 0; /* 상단 여백을 없애기 위한 추가 */
   padding: 20px;
+  margin-top: 0;
 `;
 
 const Title = styled.h1`
@@ -138,9 +138,9 @@ const LoadingMessage = styled.p`
 
 const ResultsList = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   margin-top: 20px;
+  grid-template-columns: repeat(5, 1fr);
 `;
 
 const ResultItem = styled.div`
