@@ -122,7 +122,7 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 24px;
+  font-size: 27px;
   color: #333;
   margin-bottom: 20px;
 `;

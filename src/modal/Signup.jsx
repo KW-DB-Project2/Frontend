@@ -3,56 +3,99 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 function Signup({ showModal, closeModal }) {
+  /* 회원정보 상태 */
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  // 오류 메시지 상태
+  const [errors, setErrors] = useState({});
 
   const handleSignup = (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert('비밀번호가 일치하지 않습니다.');
+
+    // 필수 입력값 체크
+    let errorMessages = {};
+    if (!username) errorMessages.username = '아이디를 입력해 주세요.';
+    if (!email) errorMessages.email = '이메일을 입력해 주세요.';
+    if (!phoneNumber) errorMessages.phoneNumber = '전화번호를 입력해 주세요.';
+    if (!password) errorMessages.password = '비밀번호를 입력해 주세요.';
+    if (password !== confirmPassword)
+      errorMessages.confirmPassword = '비밀번호가 일치하지 않습니다.';
+    if (!confirmPassword)
+      errorMessages.confirmPassword = '비밀번호 확인을 입력해 주세요.';
+
+    // 오류 메시지가 있으면 리턴하고 회원가입 처리 하지 않음
+    if (Object.keys(errorMessages).length > 0) {
+      setErrors(errorMessages);
       return;
     }
     // 회원가입 처리 로직
-    console.log('회원가입 시도', { username, email, password });
-    closeModal(); // 회원가입 후 모달 닫기
+    console.log('회원가입 시도', { username, email, password, phoneNumber });
+    handleCloseModal(); // 회원가입 후 모달 닫기
   };
 
   if (!showModal) return null; // 모달이 보여지지 않으면 null 리턴
+
+  // 모달 닫을 때 입력값 초기화
+  const handleCloseModal = () => {
+    setUsername('');
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setPhoneNumber('');
+    setErrors({});
+    closeModal(); // 모달 닫기
+  };
 
   return (
     <ModalOverlay>
       <ModalContent>
         <ModalHeader>
-          <h2>회원가입</h2>
-          <CloseButton onClick={closeModal}>X</CloseButton>
+          <Title>회원가입</Title>
+          <CloseButton onClick={handleCloseModal}>X</CloseButton>
         </ModalHeader>
         <Form onSubmit={handleSignup}>
           <Input
             type="text"
-            placeholder="아이디"
+            placeholder="id"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
+          {errors.username && <ErrorMessage>{errors.username}</ErrorMessage>}
           <Input
             type="email"
-            placeholder="이메일"
+            placeholder="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
+          <Input
+            type="text"
+            placeholder="Phone Number"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+          />
+          {errors.phoneNumber && (
+            <ErrorMessage>{errors.phoneNumber}</ErrorMessage>
+          )}
           <Input
             type="password"
-            placeholder="비밀번호"
+            placeholder="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
           <Input
             type="password"
-            placeholder="비밀번호 확인"
+            placeholder="Confirm password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
+          {errors.confirmPassword && (
+            <ErrorMessage>{errors.confirmPassword}</ErrorMessage>
+          )}
           <SubmitButton type="submit">회원가입</SubmitButton>
         </Form>
       </ModalContent>
@@ -69,7 +112,7 @@ const ModalOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 배경 어두운 색 */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -77,7 +120,7 @@ const ModalOverlay = styled.div`
 
 const ModalContent = styled.div`
   background-color: white;
-  padding: 30px;
+  padding: 50px 30px;
   border-radius: 8px;
   width: 400px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -85,21 +128,27 @@ const ModalContent = styled.div`
 
 const ModalHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  margin-bottom: 10px;
+  position: relative;
+`;
+const Title = styled.h1`
+  font-size: 27px;
+  color: #333;
   margin-bottom: 20px;
 `;
 
 const CloseButton = styled.button`
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 17px;
   cursor: pointer;
   color: #333;
-
-  &:hover {
-    color: red;
-  }
+  position: absolute;
+  right: 0;
+  top: -35px;
+  right: -18px;
 `;
 
 const Form = styled.form`
@@ -108,23 +157,30 @@ const Form = styled.form`
 `;
 
 const Input = styled.input`
-  padding: 10px;
+  padding: 10px 15px;
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 17px;
 `;
 
 const SubmitButton = styled.button`
+  margin-top: 20px;
   padding: 10px;
-  margin: 10px 0;
-  background-color: #4caf50;
+  background-color: #333;
   color: white;
-  border: none;
+  border: 1px solid #333;
   border-radius: 4px;
   cursor: pointer;
+  width: 100%;
 
   &:hover {
-    background-color: #45a049;
+    opacity: 0.9;
   }
+`;
+
+const ErrorMessage = styled.p`
+  color: red;
+  font-size: 14px;
+  margin: -10px 0 10px 0;
 `;

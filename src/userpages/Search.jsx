@@ -126,14 +126,14 @@ const SearchContainer = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 24px;
+  font-size: 27px;
   color: #333;
   margin-bottom: 20px;
 `;
 
 const LoadingMessage = styled.p`
-  font-size: 18px;
-  color: #666;
+  font-size: 17px;
+  color: #333;
 `;
 
 const ResultsList = styled.div`
@@ -161,7 +161,7 @@ const ProductInfo = styled.div`
 `;
 
 const NoResultsMessage = styled.p`
-  font-size: 18px;
+  font-size: 17px;
   color: #666;
 `;
 
