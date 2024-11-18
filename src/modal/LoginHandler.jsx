@@ -7,7 +7,7 @@ export const LoginHandler = () => {
   const navigate = useNavigate();
   const code = new URL(window.location.href).searchParams.get('code');
   const { login } = useContext(AuthContext); // AuthContext에서 login 함수 가져오기
-  const SURL = import.meta.env.VITE_APP_URI;
+  const SURL = import.meta.env.REACT_APP_URI;
 
   useEffect(() => {
     const kakaoLogin = async () => {

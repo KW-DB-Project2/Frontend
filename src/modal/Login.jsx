@@ -9,14 +9,15 @@ import SignupDetail from './SignupDetail';
 import KakaoLoginLogo from '../images/kakao_login.png'; //카카오로그인 이미지
 
 function Login({ showModal, closeModal }) {
-  const REST_API_KEY = import.meta.env.VITE_APP_REST_API_KEY_KAKAO;
-  const REDIRECT_URI = import.meta.env.VITE_APP_REDIRECT_URI_KAKAO;
+  const REST_API_KEY = import.meta.env.REACT_APP_REDIRECT_URI_KAKAO;
+  const REDIRECT_URI = import.meta.env.REACT_APP_REST_API_KEY_KAKAO;
   const KAKAO_AUTH_URI = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showSignupModal, setShowSignupModal] = useState(false); // 회원가입 모달 상태 추가
   const [showSignupDetailModal, setShowSignupDetailModal] = useState(false); // 회원가입 상세 모달 상태 추가
+
   // 오류 메시지 상태
   const [errors, setErrors] = useState({});
 
