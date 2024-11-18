@@ -9,6 +9,10 @@ import SignupDetail from './SignupDetail';
 import KakaoLoginLogo from '../images/kakao_login.png'; //카카오로그인 이미지
 
 function Login({ showModal, closeModal }) {
+  const REST_API_KEY = import.meta.env.VITE_APP_REST_API_KEY_KAKAO;
+  const REDIRECT_URI = import.meta.env.VITE_APP_REDIRECT_URI_KAKAO;
+  const KAKAO_AUTH_URI = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showSignupModal, setShowSignupModal] = useState(false); // 회원가입 모달 상태 추가
@@ -55,11 +59,13 @@ function Login({ showModal, closeModal }) {
 
   /* 회원가입 상세 모달창 띄우기 */
   const openSignupDetailModal = () => {
-    setShowSignupDetailModal(true);
+    //로그인 페이지로 이동
+    window.open(KAKAO_AUTH_URI, '_self');
+    //setShowSignupDetailModal(true);
   };
 
   const closeSignupDetailModal = () => {
-    setShowSignupDetailModal(false);
+    //setShowSignupDetailModal(false);
   };
   if (!showModal) return null; // 모달이 보여지지 않으면 null 리턴
 
