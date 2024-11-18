@@ -29,38 +29,44 @@ import Search from './userpages/Search';
 import Login from './modal/Login';
 import Signup from './modal/Signup';
 
+//
+import { AuthProvider } from './context/AuthContext';
+//import LoginHandler from './modal/LoginHandler';
+
 function App() {
   return (
-    <Router>
-      <Navbar />
-      <Container>
-        <Routes>
-          {/* 루트 경로에 상품 리스트 추가 */}
-          <Route path="/" element={<Home />} />{' '}
-          {/* 상품 리스트를 루트 경로에 표시 */}
-          {/* Admin Pages */}
-          <Route path="/admin/product-list" element={<ProductList />} />
-          <Route path="/admin/product-reports" element={<ProductReports />} />
-          <Route path="/admin/review-list" element={<ReviewList />} />
-          <Route path="/admin/sales-volume" element={<SalesVolume />} />
-          <Route path="/admin/user-list" element={<UserList />} />
-          <Route path="/admin/user-product" element={<UserProduct />} />
-          <Route path="/admin/user-review" element={<UserReview />} />
-          <Route path="/admin/user-rpt" element={<UserRpt />} />
-          {/* User Pages */}
-          <Route path="/add" element={<Add />} />
-          <Route path="/manage" element={<Manage />} />
-          <Route path="/mypage" element={<Mypage />} />
-          <Route path="/product" element={<Product />} />
-          <Route path="/write-qa" element={<WriteQA />} />
-          <Route path="/write-review" element={<WriteReview />} />
-          <Route path="/Search" element={<Search />} />
-          {/* Modal Pages */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-        </Routes>
-      </Container>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        <Container>
+          <Routes>
+            {/* 루트 경로에 상품 리스트 추가 */}
+            <Route path="/" element={<Home />} />{' '}
+            {/* 상품 리스트를 루트 경로에 표시 */}
+            {/* Admin Pages */}
+            <Route path="/admin/product-list" element={<ProductList />} />
+            <Route path="/admin/product-reports" element={<ProductReports />} />
+            <Route path="/admin/review-list" element={<ReviewList />} />
+            <Route path="/admin/sales-volume" element={<SalesVolume />} />
+            <Route path="/admin/user-list" element={<UserList />} />
+            <Route path="/admin/user-product" element={<UserProduct />} />
+            <Route path="/admin/user-review" element={<UserReview />} />
+            <Route path="/admin/user-rpt" element={<UserRpt />} />
+            {/* User Pages */}
+            <Route path="/add" element={<Add />} />
+            <Route path="/manage" element={<Manage />} />
+            <Route path="/mypage" element={<Mypage />} />
+            <Route path="/product/:id" element={<Product />} />
+            <Route path="/write-qa" element={<WriteQA />} />
+            <Route path="/write-review" element={<WriteReview />} />
+            <Route path="/Search" element={<Search />} />
+            {/* Modal Pages */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+          </Routes>
+        </Container>
+      </Router>
+    </AuthProvider>
   );
 }
 

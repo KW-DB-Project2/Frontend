@@ -1,6 +1,7 @@
+// / 페이지 /home 아님
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-
+import { Link } from 'react-router-dom';
 function Home() {
   const [products, setProducts] = useState([]);
 
@@ -104,11 +105,13 @@ function Home() {
       <ProductList>
         {products.map((product) => (
           <ProductCard key={product.id}>
-            <ProductImage src={product.imageUrl} alt={product.name} />
-            <ProductInfo>
-              <h3>{product.name}</h3>
-              <p>{product.price}</p>
-            </ProductInfo>
+            <StyledLink to={`/product/${product.id}`}>
+              <ProductImage src={product.imageUrl} alt={product.name} />
+              <ProductInfo>
+                <h3>{product.name}</h3>
+                <p>{product.price}</p>
+              </ProductInfo>
+            </StyledLink>
           </ProductCard>
         ))}
       </ProductList>
@@ -149,6 +152,15 @@ const ProductImage = styled.img`
 
 const ProductInfo = styled.div`
   margin-top: 10px;
+`;
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    color: #333;
+  }
 `;
 
 export default Home;
