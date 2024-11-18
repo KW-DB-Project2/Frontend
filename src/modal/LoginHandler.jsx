@@ -1,9 +1,9 @@
 import React, { useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../context/AuthContext';
 
-export const LoginHandler = () => {
+const LoginHandler = () => {
   const navigate = useNavigate();
   const code = new URL(window.location.href).searchParams.get('code');
   const { login } = useContext(AuthContext); // AuthContext에서 login 함수 가져오기
@@ -57,3 +57,5 @@ export const LoginHandler = () => {
 
   return <div></div>;
 };
+
+export default LoginHandler;
