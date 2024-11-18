@@ -31,7 +31,7 @@ import Signup from './modal/Signup';
 
 //
 import { AuthProvider } from './context/AuthContext';
-//import LoginHandler from './modal/LoginHandler';
+import LoginHandler from './modal/LoginHandler';
 
 function App() {
   return (
@@ -62,6 +62,10 @@ function App() {
             <Route path="/Search" element={<Search />} />
             {/* Modal Pages */}
             <Route path="/login" element={<Login />} />
+            <Route
+              path="/login/oauth2/code/kakao/"
+              element={<LoginHandler />}
+            />
             <Route path="/signup" element={<Signup />} />
           </Routes>
         </Container>

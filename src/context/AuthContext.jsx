@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('jwt')); // 토큰 상태를 localStorage에서 복원
 
   useEffect(() => {
-    const SURL = import.meta.env.REACT_APP_URI;
+    const SURL = import.meta.env.VITE_APP_URI;
 
     const checkUser = async () => {
       if (token) {
