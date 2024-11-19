@@ -33,10 +33,10 @@ function Signup({ showModal, closeModal }) {
       setErrors(errorMessages);
       return;
     }
-
+    const SURL = import.meta.env.VITE_APP_URI;
     // 회원가입 처리 로직
     try {
-      const response = await axios.post('https://your-api-url/register', {
+      const response = await axios.post(`${SURL}/register`, {
         localId,
         username,
         email,
