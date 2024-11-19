@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
-import axios from 'axios'; // Axios 추가
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 function Signup({ showModal, closeModal }) {
   /* 회원정보 상태 */
@@ -12,6 +14,10 @@ function Signup({ showModal, closeModal }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   // 오류 메시지 상태
   const [errors, setErrors] = useState({});
+
+  const navigate = useNavigate();
+  const SURL = import.meta.env.VITE_APP_URI;
+  const { login } = useContext(AuthContext); // AuthContext에서 login 함수 가져오기
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -33,7 +39,7 @@ function Signup({ showModal, closeModal }) {
       setErrors(errorMessages);
       return;
     }
-    const SURL = import.meta.env.VITE_APP_URI;
+
     // 회원가입 처리 로직
     try {
       const response = await axios.post(`${SURL}/register`, {
@@ -44,7 +50,13 @@ function Signup({ showModal, closeModal }) {
         phoneNumber,
       });
       console.log('회원가입 성공:', response.data);
-      handleCloseModal(); // 회원가입 후 모달 닫기
+      // 회원가입 성공 후 자동 로그인 처리
+      const jwtToken = response.data.token; // 서버가 반환하는 토큰 사용
+      const userData = response.data.user; // 사용자 정보가 반환된다고 가정
+      login(userData, jwtToken); // AuthContext의 로그인 함수 호출
+      // 회원가입 성공 후, 홈 페이지로 이동
+      alert('회원가입 성공!');
+      navigate('/');
     } catch (error) {
       console.error('회원가입 실패:', error);
       // 서버 오류 메시지 처리
