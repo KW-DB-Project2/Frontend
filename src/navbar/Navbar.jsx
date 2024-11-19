@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+
+/* 인증 관련 Context */
+import { AuthContext } from '../context/AuthContext';
 
 /* 모달창 임포트 */
 import LoginModal from '../modal/Login';
@@ -9,9 +12,18 @@ import LoginModal from '../modal/Login';
 import { FaSearch, FaDollarSign, FaStore } from 'react-icons/fa';
 
 function Navbar() {
+  const { user, logout } = useContext(AuthContext); // AuthContext에서 사용자 정보와 로그아웃 함수 가져오기
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태
   const navigate = useNavigate();
+
+  // 페이지 로드 시 로그인 상태 확인
+  useEffect(() => {
+    const loggedIn = localStorage.getItem('isLoggedIn');
+    if (loggedIn) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   // 모달 열기
   const openModal = () => setIsModalOpen(true);
@@ -48,7 +60,13 @@ function Navbar() {
         </Left>
         {/* 로그인/회원가입 버튼, 판매하기, 내상점 */}
         <Right>
-          <NavButton onClick={openModal}>로그인/회원가입</NavButton>
+          {user ? (
+            <>
+              <NavButton onClick={logout}>로그아웃</NavButton>
+            </>
+          ) : (
+            <NavButton onClick={openModal}>로그인/회원가입</NavButton>
+          )}
           {/* 로그인 모달 */}
           <LoginModal showModal={isModalOpen} closeModal={closeModal} />
         </Right>

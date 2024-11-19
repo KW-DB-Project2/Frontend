@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 // 컴포넌트 임포트
 import Signup from './Signup';
-import SignupDetail from './SignupDetail';
 
 import KakaoLoginLogo from '../images/kakao_login.png'; //카카오로그인 이미지
 
@@ -16,7 +15,6 @@ function Login({ showModal, closeModal }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showSignupModal, setShowSignupModal] = useState(false); // 회원가입 모달 상태 추가
-  const [showSignupDetailModal, setShowSignupDetailModal] = useState(false); // 회원가입 상세 모달 상태 추가
 
   // 오류 메시지 상태
   const [errors, setErrors] = useState({});
@@ -58,16 +56,11 @@ function Login({ showModal, closeModal }) {
     setShowSignupModal(false);
   };
 
-  /* 회원가입 상세 모달창 띄우기 */
-  const openSignupDetailModal = () => {
-    //로그인 페이지로 이동
+  /* 로그인 페이지로 이동 */
+  const openKakao = () => {
     window.open(KAKAO_AUTH_URI, '_self');
-    //setShowSignupDetailModal(true);
   };
 
-  const closeSignupDetailModal = () => {
-    //setShowSignupDetailModal(false);
-  };
   if (!showModal) return null; // 모달이 보여지지 않으면 null 리턴
 
   // 모달 닫을 때 입력값 초기화
@@ -113,19 +106,13 @@ function Login({ showModal, closeModal }) {
             <KakaoLoginImg
               src={KakaoLoginLogo}
               alt="Kakao 로그인"
-              onClick={openSignupDetailModal}
+              onClick={openKakao}
             />
           </KakaoLoginWrapper>
         </ModalContent>
       </ModalOverlay>
       {showSignupModal && (
         <Signup showModal={showSignupModal} closeModal={closeSignupModal} />
-      )}
-      {showSignupDetailModal && (
-        <SignupDetail
-          showModal={showSignupDetailModal}
-          closeModal={closeSignupDetailModal}
-        />
       )}
     </>
   );

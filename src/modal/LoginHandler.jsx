@@ -1,13 +1,28 @@
+//카카오 로그인
 import React, { useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+
+// 컴포넌트 임포트
 import { AuthContext } from '../context/AuthContext';
+import SignupDetail from './SignupDetail';
 
 const LoginHandler = () => {
   const navigate = useNavigate();
   const code = new URL(window.location.href).searchParams.get('code');
   const { login } = useContext(AuthContext); // AuthContext에서 login 함수 가져오기
   const SURL = import.meta.env.VITE_APP_URI;
+
+  const [showSignupDetailModal, setShowSignupDetailModal] = useState(false); // 회원가입 상세 모달 상태 추가
+
+  /* 회원가입 상세 모달창 띄우기 */
+  const openSignupDetailModal = () => {
+    setShowSignupDetailModal(true);
+  };
+
+  const closeSignupDetailModal = () => {
+    setShowSignupDetailModal(false);
+  };
 
   useEffect(() => {
     const kakaoLogin = async () => {
@@ -27,18 +42,17 @@ const LoginHandler = () => {
 
         const jwt = res.data.jwtToken;
         const account = res.data.account;
-        //const isNewUser = res.data.isNewUser; // 서버에서 새 사용자 여부 반환
+        const isNewUser = res.data.isNewUser; // 서버에서 새 사용자 여부 반환
 
         if (jwt) {
           login(account, jwt); // 로그인 시 토큰을 전역 상태에 저장
           localStorage.setItem('refreshToken', res.data.refreshToken);
           navigate('/');
-          // 새 사용자 여부에 따라 페이지 이동
-          // if (isNewUser) {
-          //   navigate('/signupdetail');
-          // } else {
-          //   navigate('/');
-          // }
+
+          if (isNewUser) {
+            //새 사용자일 경우, 회원가입 상세 모달창 띄우기
+            openSignupDetailModal();
+          }
         } else {
           console.error('JWT token not found in response data');
         }
@@ -55,7 +69,17 @@ const LoginHandler = () => {
     kakaoLogin();
   }, [navigate, code, login]);
 
-  return <div></div>;
+  return (
+    <div>
+      {' '}
+      {showSignupDetailModal && (
+        <SignupDetail
+          showModal={showSignupDetailModal}
+          closeModal={closeSignupDetailModal}
+        />
+      )}
+    </div>
+  );
 };
 
 export default LoginHandler;
