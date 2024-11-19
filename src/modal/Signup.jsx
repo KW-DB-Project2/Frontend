@@ -1,10 +1,11 @@
-// 회원가입 모달창
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios'; // Axios 추가
 
 function Signup({ showModal, closeModal }) {
   /* 회원정보 상태 */
-  const [username, setUsername] = useState('');
+  const [localId, setLocalId] = useState(''); // 아이디는 localId로
+  const [username, setUsername] = useState(''); // 닉네임은 username으로
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -12,12 +13,13 @@ function Signup({ showModal, closeModal }) {
   // 오류 메시지 상태
   const [errors, setErrors] = useState({});
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
 
     // 필수 입력값 체크
     let errorMessages = {};
-    if (!username) errorMessages.username = '아이디를 입력해 주세요.';
+    if (!localId) errorMessages.localId = '아이디를 입력해 주세요.'; // localId 체크
+    if (!username) errorMessages.username = '닉네임을 입력해 주세요.'; // username 체크
     if (!email) errorMessages.email = '이메일을 입력해 주세요.';
     if (!phoneNumber) errorMessages.phoneNumber = '전화번호를 입력해 주세요.';
     if (!password) errorMessages.password = '비밀번호를 입력해 주세요.';
@@ -31,15 +33,32 @@ function Signup({ showModal, closeModal }) {
       setErrors(errorMessages);
       return;
     }
+
     // 회원가입 처리 로직
-    console.log('회원가입 시도', { username, email, password, phoneNumber });
-    handleCloseModal(); // 회원가입 후 모달 닫기
+    try {
+      const response = await axios.post('https://your-api-url/register', {
+        localId,
+        username,
+        email,
+        password,
+        phoneNumber,
+      });
+      console.log('회원가입 성공:', response.data);
+      handleCloseModal(); // 회원가입 후 모달 닫기
+    } catch (error) {
+      console.error('회원가입 실패:', error);
+      // 서버 오류 메시지 처리
+      if (error.response) {
+        setErrors({ server: error.response.data.message });
+      }
+    }
   };
 
   if (!showModal) return null; // 모달이 보여지지 않으면 null 리턴
 
   // 모달 닫을 때 입력값 초기화
   const handleCloseModal = () => {
+    setLocalId('');
     setUsername('');
     setEmail('');
     setPassword('');
@@ -60,6 +79,13 @@ function Signup({ showModal, closeModal }) {
           <Input
             type="text"
             placeholder="id"
+            value={localId}
+            onChange={(e) => setLocalId(e.target.value)}
+          />
+          {errors.localId && <ErrorMessage>{errors.localId}</ErrorMessage>}
+          <Input
+            type="text"
+            placeholder="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
@@ -73,7 +99,7 @@ function Signup({ showModal, closeModal }) {
           {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
           <Input
             type="text"
-            placeholder="Phone Number"
+            placeholder="phoneNumber"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
@@ -89,13 +115,14 @@ function Signup({ showModal, closeModal }) {
           {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
           <Input
             type="password"
-            placeholder="Confirm password"
+            placeholder="confirmPassword"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
           {errors.confirmPassword && (
             <ErrorMessage>{errors.confirmPassword}</ErrorMessage>
           )}
+          {errors.server && <ErrorMessage>{errors.server}</ErrorMessage>}
           <SubmitButton type="submit">회원가입</SubmitButton>
         </Form>
       </ModalContent>
