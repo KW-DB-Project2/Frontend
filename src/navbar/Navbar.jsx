@@ -12,18 +12,19 @@ import LoginModal from '../modal/Login';
 import { FaSearch, FaDollarSign, FaStore } from 'react-icons/fa';
 
 function Navbar() {
-  const { user, logout } = useContext(AuthContext); // AuthContext에서 사용자 정보와 로그아웃 함수 가져오기
+  const { token, logout, setToken } = useContext(AuthContext); // user, token, logout 가져오기
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태
   const navigate = useNavigate();
+  const SURL = import.meta.env.VITE_APP_URI;
 
   // 페이지 로드 시 로그인 상태 확인
   useEffect(() => {
-    const loggedIn = localStorage.getItem('isLoggedIn');
-    if (loggedIn) {
-      setIsLoggedIn(true);
+    const loggedInToken = localStorage.getItem('jwt'); // 로컬 스토리지에서 토큰 가져오기
+    if (loggedInToken) {
+      setToken(loggedInToken); // AuthContext에서 setToken을 사용하여 token 상태 업데이트
     }
-  }, []);
+  }, [setToken]); // setToken은 의존성 배열에 포함시켜야 함
 
   // 모달 열기
   const openModal = () => setIsModalOpen(true);
@@ -49,6 +50,24 @@ function Navbar() {
     }
   };
 
+  // 로그아웃 처리 함수
+  const handleLogout = async () => {
+    try {
+      await axios.get(`${SURL}/logout`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // 로그아웃 성공 시 처리
+      logout(); // Context에서 로그아웃 처리
+      alert('로그아웃 완료');
+      navigate('/');
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생', error);
+    }
+  };
+
   return (
     <NavbarContainer>
       <TopBar>
@@ -60,9 +79,9 @@ function Navbar() {
         </Left>
         {/* 로그인/회원가입 버튼, 판매하기, 내상점 */}
         <Right>
-          {user ? (
+          {token ? (
             <>
-              <NavButton onClick={logout}>로그아웃</NavButton>
+              <NavButton onClick={handleLogout}>로그아웃</NavButton>
             </>
           ) : (
             <NavButton onClick={openModal}>로그인/회원가입</NavButton>
