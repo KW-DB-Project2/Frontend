@@ -1,16 +1,24 @@
 // 로그인 모달창
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 // 컴포넌트 임포트
 import Signup from './Signup';
+import { AuthContext } from '../context/AuthContext';
 
 import KakaoLoginLogo from '../images/kakao_login.png'; //카카오로그인 이미지
 
 function Login({ showModal, closeModal }) {
   const REST_API_KEY = import.meta.env.VITE_APP_REST_API_KEY_KAKAO;
   const REDIRECT_URI = import.meta.env.VITE_APP_REDIRECT_URI_KAKAO;
+  const SURL = import.meta.env.VITE_APP_URI;
   const KAKAO_AUTH_URI = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
+  const navigate = useNavigate();
+
+  const { login } = useContext(AuthContext); // AuthContext에서 login 함수 가져오기
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -32,19 +40,40 @@ function Login({ showModal, closeModal }) {
   }, [showModal]);
 
   /* 로그인 버튼 클릭 */
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     // 필수 입력값 체크
     let errorMessages = {};
     if (!username) errorMessages.username = '아이디를 입력해 주세요.';
     if (!password) errorMessages.password = '비밀번호를 입력해 주세요.';
-    // 오류 메시지가 있으면 리턴하고 회원가입 처리 하지 않음
+
     if (Object.keys(errorMessages).length > 0) {
       setErrors(errorMessages);
       return;
     }
-    console.log('로그인 시도', { username, password });
-    handleCloseModal();
+    try {
+      const response = await axios.post(`${SURL}/local/login`, {
+        localId: username,
+        password: password,
+      });
+
+      const jwt = res.data.jwtToken;
+      const account = res.data.account;
+
+      // 로그인 성공 시
+      if (jwt) {
+        alert('로그인 성공!');
+        login(account, jwt); // 로그인 시 토큰을 전역 상태에 저장
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+        handleCloseModal();
+        navigate('/');
+      } else {
+        console.error('JWT token not found in response data');
+      }
+    } catch (error) {
+      console.error('로그인 실패:', error);
+      setErrors({ login: '로그인 정보가 틀립니다.' });
+    }
   };
 
   /* 회원가입 모달창 띄우기 */
@@ -56,7 +85,7 @@ function Login({ showModal, closeModal }) {
     setShowSignupModal(false);
   };
 
-  /* 로그인 페이지로 이동 */
+  /* 카카오 로그인 페이지로 이동 */
   const openKakao = () => {
     window.open(KAKAO_AUTH_URI, '_self');
   };
