@@ -50,9 +50,12 @@ function Product() {
         <Image src={product.imageUrl} alt={product.name} />
 
         <Details>
-          <h2>{product.name}</h2>
-          <p>가격: {product.price}</p>
-          <p>{product.description}</p>
+          <ProductName>{product.name}</ProductName>
+          <Price>{product.price}</Price>
+
+          <BottomBar />
+          <Description>{product.description}</Description>
+
           <BuyButton>구매하기</BuyButton>
         </Details>
       </Content>
@@ -61,19 +64,20 @@ function Product() {
 }
 
 const Container = styled.div`
+  font-family: 'Noto Sans KR', sans-serif;
   padding: 20px;
   margin-top: 0;
 `;
 
 const Content = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 40px;
 `;
 
 const Image = styled.img`
-  width: 400px;
+  width: 500px;
   height: auto;
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   border-radius: 5px;
 `;
 
@@ -83,6 +87,29 @@ const Details = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
+  width: 850px;
+`;
+
+const ProductName = styled.h2`
+  color: #333;
+  font-size: 43px;
+`;
+
+const Price = styled.div`
+  color: #333;
+  font-size: 33px;
+`;
+
+const BottomBar = styled.div`
+  height: 2px;
+  width: 850px;
+  background-color: #ccc;
+  margin-top: 20px;
+`;
+
+const Description = styled.p`
+  flex-grow: 1;
+  margin-bottom: 20px;
 `;
 
 const BuyButton = styled.button`
@@ -92,9 +119,9 @@ const BuyButton = styled.button`
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  width: auto;
+  width: 150px;
   align-self: flex-end;
-
+  font-size: 20px;
   &:hover {
     opacity: 0.9;
   }

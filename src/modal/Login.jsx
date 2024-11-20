@@ -52,10 +52,16 @@ function Login({ showModal, closeModal }) {
       return;
     }
     try {
-      const response = await axios.post(`${SURL}/local/login`, {
-        localId: username,
-        password: password,
-      });
+      const response = await axios.post(
+        `${SURL}/local/login`,
+        {
+          localId: username,
+          password: password,
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
 
       const jwt = res.data.jwtToken;
       const account = res.data.account;
@@ -179,7 +185,7 @@ const ModalHeader = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 27px;
+  font-size: 33px;
   color: #333;
   margin-bottom: 20px;
 `;

@@ -101,13 +101,13 @@ function Navbar() {
           />
 
           <SearchButton onClick={handleSearch}>
-            <FaSearch size={25} color="#333" />
+            <FaSearch size={27} color="#333" />
           </SearchButton>
         </SearchContainer>
         {/*판매하기, 내상점 */}
         <ButtonContainer>
           <NavButton as={Link} to="/add">
-            <FaDollarSign size={15} /> 판매하기
+            <FaDollarSign size={20} /> 판매하기
           </NavButton>
           <NavButton as={Link} to="/mypage">
             <FaStore /> 내상점
@@ -143,24 +143,28 @@ const TopBar = styled.div`
 const Left = styled.div`
   display: flex;
   align-items: center;
+  margin-left: 20px;
 `;
 
 const Right = styled.div`
   display: flex;
   align-items: center;
+  margin-right: 50px;
 `;
 
 const NavButton = styled.button`
+  font-family: 'Do Hyeon', sans-serif;
+  background: none;
   color: #333;
   border: none;
   padding: 8px 15px;
   margin: 0 10px;
   cursor: pointer;
-  font-size: 17px;
+  font-size: 23px;
 
   &:hover {
     color: #333;
-    font-weight: 600;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -170,17 +174,20 @@ const BottomBar = styled.div`
   display: flex;
   justify-content: space-between; /* Market 이름과 검색창을 양쪽에 배치 */
   align-items: center;
-  gap: 30px; /* 요소 간 간격 */
+  gap: 10px; /* 요소 간 간격 */
 `;
 
 const MarketName = styled(Link)`
-  font-size: 27px;
+  font-family: 'Bayon', sans-serif;
+  font-size: 43px;
   color: #333;
   text-decoration: none;
   font-weight: 600;
-  margin-left: 80px;
+  margin-left: 130px;
+
   &:hover {
     color: #333;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -192,12 +199,12 @@ const SearchContainer = styled.div`
 
 const SearchInput = styled.input`
   padding: 8px 15px;
-  font-size: 17px;
-  border: 1px solid #ccc;
+  border: 3px solid #ccc;
   margin-right: 10px;
   border-radius: 5px;
-  width: 500px;
-  height: 25px;
+  width: 550px;
+  height: 30px;
+  font-size: 20px;
 `;
 
 const SearchButton = styled.button`
@@ -215,7 +222,7 @@ const SearchButton = styled.button`
 const ButtonContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-right: 80px;
+  margin-right: 130px;
 `;
 
 export default Navbar;
