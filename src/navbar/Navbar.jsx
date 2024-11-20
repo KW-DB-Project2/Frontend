@@ -46,11 +46,15 @@ function Navbar() {
   // 로그아웃 처리 함수
   const handleLogout = async () => {
     try {
-      await axios.get(`${SURL}/logout`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      await axios.post(
+        `${SURL}/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       // 로그아웃 성공 시 처리
       logout(); // Context에서 로그아웃 처리
