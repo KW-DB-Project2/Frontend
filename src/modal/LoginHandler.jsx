@@ -47,12 +47,12 @@ const LoginHandler = () => {
         if (jwt) {
           login(account, jwt); // 로그인 시 토큰을 전역 상태에 저장
           localStorage.setItem('refreshToken', res.data.refreshToken);
-          openSignupDetailModal();
-          console.log(isNewUser);
-          // if (isNewUser) {
-          //   //새 사용자일 경우, 회원가입 상세 모달창 띄우기
-          //   openSignupDetailModal();
-          // }
+          // 새 사용자일 경우, 회원가입 상세 모달창 띄우기
+          if (isNewUser) {
+            openSignupDetailModal(); // 모달 열기
+          } else {
+            navigate('/'); // 기존 사용자는 바로 이동
+          }
         } else {
           console.error('JWT token not found in response data');
         }
