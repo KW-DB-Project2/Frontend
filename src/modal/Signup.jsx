@@ -127,7 +127,6 @@ function Signup({ showModal, closeModal }) {
           {errors.confirmPassword && (
             <ErrorMessage>{errors.confirmPassword}</ErrorMessage>
           )}
-          {errors.server && <ErrorMessage>{errors.server}</ErrorMessage>}
           <SubmitButton type="submit">회원가입</SubmitButton>
         </Form>
       </ModalContent>

@@ -1,14 +1,20 @@
 // 회원가입 모달창
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
 
 function SignupDetail({ showModal, closeModal }) {
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
   /* 회원 상세정보 상태 */
   const [phoneNumber, setPhoneNumber] = useState('');
   // 오류 메시지 상태
   const [errors, setErrors] = useState({});
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
 
     // 필수 입력값 체크
@@ -20,10 +26,23 @@ function SignupDetail({ showModal, closeModal }) {
       setErrors(errorMessages);
       return;
     }
-
     // 회원가입 처리 로직
-    console.log('회원가입 상세 시도', { phoneNumber });
-    handleCloseModal(); // 회원가입 후 모달 닫기
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_URI}/kakao/user/extra-info`,
+        {
+          loginId: user.loginId, // 로그인 ID (user 객체에서 가져옴)
+          phoneNumber: phoneNumber, // 입력된 전화번호
+        }
+      );
+
+      console.log('회원가입 상세 처리 결과', response.data);
+      handleCloseModal(); // 회원가입 후 모달 닫기
+      navigate('/');
+    } catch (error) {
+      console.error('회원가입 처리 중 오류 발생:', error);
+      setErrors({ server: '서버에서 오류가 발생했습니다.' });
+    }
   };
 
   // 모달 닫을 때 입력값 초기화

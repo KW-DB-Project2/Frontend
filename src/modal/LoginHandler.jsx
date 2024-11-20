@@ -42,13 +42,12 @@ const LoginHandler = () => {
 
         const jwt = res.data.jwtToken;
         const account = res.data.account;
-        const isNewUser = res.data.isNewUser; // 서버에서 새 사용자 여부 반환
+        const isNewUser = res.data.newUser; // 서버에서 새 사용자 여부 반환
 
         if (jwt) {
           login(account, jwt); // 로그인 시 토큰을 전역 상태에 저장
           localStorage.setItem('refreshToken', res.data.refreshToken);
           navigate('/');
-          console.log('ddd');
           console.log(isNewUser);
           if (isNewUser) {
             //새 사용자일 경우, 회원가입 상세 모달창 띄우기
