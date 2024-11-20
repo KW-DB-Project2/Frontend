@@ -17,6 +17,7 @@ const LoginHandler = () => {
 
   /* 회원가입 상세 모달창 띄우기 */
   const openSignupDetailModal = () => {
+    console.log('모달 열기 상태 변경');
     setShowSignupDetailModal(true);
   };
 

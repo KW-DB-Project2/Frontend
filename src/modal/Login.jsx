@@ -77,6 +77,7 @@ function Login({ showModal, closeModal }) {
         console.error('JWT token not found in response data');
       }
     } catch (error) {
+      alert('로그인 실패');
       console.error('로그인 실패:', error);
       setErrors({ login: '로그인 정보가 틀립니다.' });
     }

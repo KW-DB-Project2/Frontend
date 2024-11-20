@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 function SignupDetail({ showModal, closeModal }) {
+  console.log('모달 상태:', showModal);
   const navigate = useNavigate();
   const { user } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
   /* 회원 상세정보 상태 */
