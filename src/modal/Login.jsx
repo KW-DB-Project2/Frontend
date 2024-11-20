@@ -63,8 +63,8 @@ function Login({ showModal, closeModal }) {
         }
       );
 
-      const jwt = res.data.jwtToken;
-      const account = res.data.account;
+      const jwt = response.data.jwtToken;
+      const account = response.data.account;
 
       // 로그인 성공 시
       if (jwt) {
