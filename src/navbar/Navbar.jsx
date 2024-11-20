@@ -12,19 +12,11 @@ import LoginModal from '../modal/Login';
 import { FaSearch, FaDollarSign, FaStore } from 'react-icons/fa';
 
 function Navbar() {
-  const { token, logout, setToken } = useContext(AuthContext); // user, token, logout 가져오기
+  const { token, logout } = useContext(AuthContext); // user, token, logout 가져오기
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태
   const navigate = useNavigate();
   const SURL = import.meta.env.VITE_APP_URI;
-
-  // 페이지 로드 시 로그인 상태 확인
-  useEffect(() => {
-    const loggedInToken = localStorage.getItem('jwt'); // 로컬 스토리지에서 토큰 가져오기
-    if (loggedInToken) {
-      setToken(loggedInToken); // AuthContext에서 setToken을 사용하여 token 상태 업데이트
-    }
-  }, [setToken]); // setToken은 의존성 배열에 포함시켜야 함
 
   // 모달 열기
   const openModal = () => setIsModalOpen(true);
