@@ -125,10 +125,9 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-  font-family: 'Bayon', sans-serif;
   font-size: 27px;
   color: #333;
-  margin-bottom: 20px;
+  font-weight: 500;
 `;
 
 const ProductList = styled.div`

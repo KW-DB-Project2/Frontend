@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { FaExclamationTriangle } from 'react-icons/fa'; // 신고 아이콘
 
 function Product() {
   const { id } = useParams();
@@ -51,22 +52,34 @@ function Product() {
 
         <Details>
           <ProductName>{product.name}</ProductName>
-          <Price>{product.price}</Price>
-
+          <PriceContainer>
+            <Price>{product.price}</Price>
+            <ReportButton>
+              <FaExclamationTriangle size={17} color="red" />
+              신고하기
+            </ReportButton>
+          </PriceContainer>
+          <BottomBar />
+          <div style={{ fontSize: '19px' }}>상품정보</div>
           <BottomBar />
           <Description>{product.description}</Description>
-
           <BuyButton>구매하기</BuyButton>
         </Details>
       </Content>
+      <br />
+      <br />
+      <br />
+      <BottomBar />
     </Container>
   );
 }
 
 const Container = styled.div`
-  font-family: 'Noto Sans KR', sans-serif;
+  width: 1500px;
   padding: 20px;
   margin-top: 0;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Content = styled.div`
@@ -87,24 +100,48 @@ const Details = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  width: 850px;
+  width: 100%;
 `;
 
 const ProductName = styled.h2`
+  font-size: 27px;
   color: #333;
-  font-size: 43px;
+  font-weight: 500;
+`;
+
+const PriceContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 `;
 
 const Price = styled.div`
   color: #333;
   font-size: 33px;
+  font-weight: 500;
+`;
+
+const ReportButton = styled.div`
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  color: red;
+  border-radius: 5px;
+  svg {
+    margin-right: 5px;
+  }
 `;
 
 const BottomBar = styled.div`
   height: 2px;
-  width: 850px;
-  background-color: #ccc;
-  margin-top: 20px;
+  width: 100%;
+  background-color: #f0f0f0;
+  margin: 20px 0px;
 `;
 
 const Description = styled.p`

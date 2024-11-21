@@ -161,7 +161,7 @@ const Right = styled.div`
   margin-right: 50px;
 `;
 
-const NavButton = styled.button`
+const NavButton = styled.div`
   font-family: 'Do Hyeon', sans-serif;
   background: none;
   color: #333;
@@ -213,10 +213,10 @@ const SearchInput = styled.input`
   border-radius: 15px;
   width: 550px;
   height: 30px;
-  font-size: 20px;
+  font-size: 17px;
 `;
 
-const SearchButton = styled.button`
+const SearchButton = styled.div`
   background: none;
   border: none;
   cursor: pointer;

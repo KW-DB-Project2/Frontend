@@ -82,7 +82,7 @@ export default App;
 
 const Container = styled.div`
   margin: 220px 150px 0px 150px;
-
+  position: relative;
   @media (max-width: 480px) {
     margin: 0px 50px; /* 작은 화면에서는 더 좁은 여백 */
   }
