@@ -1,3 +1,4 @@
+// 판매 등록 페이지
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -12,10 +13,12 @@ function Add() {
   return (
     <Container>
       <ButtonContainer>
-        <LeftButton>상품 등록</LeftButton>
-        <RightButton onClick={goToManage}>상품 관리</RightButton>
+        <LeftDiv>상품 등록</LeftDiv>
+        <VerticalBar />
+        <RightDiv onClick={goToManage}>상품 관리</RightDiv>
       </ButtonContainer>
-      <Title>판매 등록 페이지</Title>
+      <Bottombar />
+      <Title>상품 정보</Title>
     </Container>
   );
 }
@@ -27,36 +30,58 @@ const Container = styled.div`
   margin-top: 0;
 `;
 
-const Title = styled.h1`
-  font-size: 33px;
-  color: #333;
-  margin-bottom: 20px;
-`;
-
 const ButtonContainer = styled.div`
   margin-top: 20px;
   display: flex;
   justify-content: space-between;
   padding-bottom: 30px;
-  border-bottom: 1px solid #ccc;
+  width: 240px;
 `;
 
-const LeftButton = styled.button`
-  padding: 10px;
+const LeftDiv = styled.div`
   background-color: white;
   color: red;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-`;
-const RightButton = styled.button`
+  display: inline-block;
   padding: 10px;
-  background-color: white;
-  color: #333;
-  border: none;
+  font-size: 17px;
   cursor: pointer;
-  font-size: 20px;
+  text-align: center;
+
   &:hover {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
   }
+`;
+
+const RightDiv = styled.div`
+  background-color: white;
+  color: #333;
+  display: inline-block;
+  padding: 10px;
+  font-size: 17px;
+  cursor: pointer;
+  text-align: center;
+
+  &:hover {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+`;
+
+const VerticalBar = styled.div`
+  width: 1px;
+  height: 30px;
+  background-color: #ccc;
+  margin: 10px 20px 0 20px;
+`;
+
+const Bottombar = styled.div`
+  width: 1500px;
+  height: 1px;
+  background-color: #ccc;
+`;
+
+const Title = styled.h1`
+  font-size: 27px;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 500;
 `;
