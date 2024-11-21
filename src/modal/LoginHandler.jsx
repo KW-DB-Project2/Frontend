@@ -48,6 +48,7 @@ const LoginHandler = () => {
           login(account, jwt); // 로그인 시 토큰을 전역 상태에 저장
           localStorage.setItem('refreshToken', res.data.refreshToken);
           // 새 사용자일 경우, 회원가입 상세 모달창 띄우기
+          console.log(isNewUser);
           if (isNewUser) {
             openSignupDetailModal(); // 모달 열기
           } else {

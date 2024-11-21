@@ -19,6 +19,7 @@ function Add() {
       </ButtonContainer>
       <Bottombar />
       <Title>상품 정보</Title>
+      <TitleBottombar />
     </Container>
   );
 }
@@ -76,12 +77,18 @@ const VerticalBar = styled.div`
 const Bottombar = styled.div`
   width: 1500px;
   height: 1px;
-  background-color: #ccc;
+  background-color: #f0f0f0;
 `;
 
 const Title = styled.h1`
   font-size: 27px;
   color: #333;
-  margin-bottom: 20px;
+  margin: 40px 0px;
   font-weight: 500;
+`;
+
+const TitleBottombar = styled.div`
+  width: 1500px;
+  height: 3px;
+  background-color: #333;
 `;
