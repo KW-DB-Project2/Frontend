@@ -16,3 +16,5 @@ yarn add react-icons
 yarn add react-router-dom
 
 yarn add axios
+
+# 영상 찍을 때 화면 80%으로,,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 function Search() {
   const [searchResults, setSearchResults] = useState([]);
@@ -11,7 +12,7 @@ function Search() {
   const queryParams = new URLSearchParams(location.search);
   const query = queryParams.get('query');
 
-  // 상품 목록 예시
+  // 상품 목록 예시 (dummy 데이터)
   const dummyProducts = [
     {
       id: 1,
@@ -76,25 +77,21 @@ function Search() {
   ];
 
   useEffect(() => {
-    // 검색어가 있으면 검색 결과를 가져옵니다.
     if (query) {
-      const fetchResults = async () => {
-        setLoading(true);
+      setLoading(true);
 
-        // query와 일치하는 상품을 필터링
-        const filteredResults = dummyProducts.filter((product) =>
-          product.name.toLowerCase().includes(query.toLowerCase())
-        );
+      // query와 일치하는 상품을 필터링
+      const filteredResults = dummyProducts.filter((product) =>
+        product.name.toLowerCase().includes(query.toLowerCase())
+      );
 
-        setSearchResults(filteredResults);
-        setLoading(false);
-      };
-      fetchResults();
+      setSearchResults(filteredResults);
+      setLoading(false);
     } else {
       setSearchResults([]); // 검색어가 없으면 결과를 비웁니다.
       setLoading(false);
     }
-  }, [query]); // query가 바뀔 때마다 검색 결과를 새로 가져옵니다.
+  }, [query]); // query가 변경될 때마다 검색을 다시 실행
 
   return (
     <SearchContainer>
@@ -104,13 +101,15 @@ function Search() {
       ) : searchResults.length > 0 ? (
         <ResultsList>
           {searchResults.map((product) => (
-            <ResultItem key={product.id}>
-              <ProductImage src={product.imageUrl} alt={product.name} />
-              <ProductInfo>
-                <h3>{product.name}</h3>
-                <p>{product.price}</p>
-              </ProductInfo>
-            </ResultItem>
+            <ProductCard key={product.id}>
+              <StyledLink to={`/product/${product.id}`}>
+                <ProductImage src={product.imageUrl} alt={product.name} />
+                <ProductInfo>
+                  <h3>{product.name}</h3>
+                  <p>{product.price}</p>
+                </ProductInfo>
+              </StyledLink>
+            </ProductCard>
           ))}
         </ResultsList>
       ) : (
@@ -143,7 +142,7 @@ const ResultsList = styled.div`
   grid-template-columns: repeat(5, 1fr);
 `;
 
-const ResultItem = styled.div`
+const ProductCard = styled.div`
   width: 300px;
   border: 1px solid #ccc;
   text-align: center;
@@ -163,6 +162,15 @@ const ProductInfo = styled.div`
 const NoResultsMessage = styled.p`
   font-size: 23px;
   color: #666;
+`;
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    color: #333;
+  }
 `;
 
 export default Search;
