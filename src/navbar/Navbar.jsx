@@ -67,11 +67,12 @@ function Navbar() {
 
   // 판매하기/내상점 버튼 클릭 처리
   const handleButtonClick = (path) => {
-    if (token) {
-      navigate(path); // 로그인된 상태에서 페이지로 이동
-    } else {
-      openModal(); // 로그인 안된 상태면 로그인 모달 띄우기
-    }
+    navigate(path);
+    // if (token) {
+    //   navigate(path); // 로그인된 상태에서 페이지로 이동
+    // } else {
+    //   openModal(); // 로그인 안된 상태면 로그인 모달 띄우기
+    // }
   };
 
   return (

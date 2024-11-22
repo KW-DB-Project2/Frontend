@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
+/* 토큰 Context */
+import { AuthContext } from '../context/AuthContext';
+
 function Add() {
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [productName, setProductName] = useState('');
@@ -35,9 +39,11 @@ function Add() {
 
     // 상품 등록 요청을 위한 DTO 객체 생성
     const productDTO = {
+      userId: user.loginId,
       productTitle: productName,
       productContent: description,
       productPrice: parseInt(price, 10),
+      productStatus: true, // 등록 시 상태는 '판매중'으로 설정
       productImg: image.split(',')[1], // base64로 변환된 이미지 문자열만 추출
     };
 

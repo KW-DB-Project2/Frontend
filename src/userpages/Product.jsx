@@ -22,7 +22,7 @@ function Product() {
   const [qaItems, setQaItems] = useState([
     {
       user: 'Riia',
-      question: '혹시 덧으로 스트커 하나 더 주실 수 있나요?',
+      question: '혹시 덤으로 스트커 하나 더 주실 수 있나요?',
       answer: '감자나눔님 죄송하지만 그 불가능할 것 같습니다 ㅠㅠ',
       comments: [],
     },

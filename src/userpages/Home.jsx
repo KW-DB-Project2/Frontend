@@ -5,13 +5,12 @@ import axios from 'axios'; // axios import
 
 function Home() {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  const [loading, setLoading] = useState(true);
   const SURL = import.meta.env.VITE_APP_URI;
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // API 호출 (서버의 /product 엔드포인트로 상품 목록 요청)
         const response = await axios.get(`${SURL}/product`, {
           withCredentials: false, // 쿠키를 포함시키지 않음
           headers: {
@@ -23,7 +22,7 @@ function Home() {
       } catch (error) {
         console.error('상품 조회 실패:', error);
       } finally {
-        setLoading(false); // 로딩 상태 종료
+        setLoading(false);
       }
     };
 
@@ -43,15 +42,15 @@ function Home() {
             <StyledLink to={`/product/${product.productId}`}>
               <ProductImage
                 src={
-                  product.productImg ||
-                  'https://via.placeholder.com/300x200?text=No+Image'
+                  product.productImg
+                    ? `data:image/jpeg;base64,${product.productImg}` // base64 이미지 데이터 처리
+                    : 'https://via.placeholder.com/300x300?text=No+Image'
                 }
                 alt={product.productTitle}
               />
-
               <ProductInfo>
-                <h3>{product.productTitle}</h3>
-                <p>{product.productPrice}</p>
+                <ProductTitle>{product.productTitle}</ProductTitle>
+                <ProductPrice>{product.productPrice}</ProductPrice>
               </ProductInfo>
             </StyledLink>
           </ProductCard>
@@ -89,11 +88,25 @@ const ProductCard = styled.div`
 
 const ProductImage = styled.img`
   width: 100%;
-  height: auto;
+  height: 300px;
 `;
 
 const ProductInfo = styled.div`
   margin-top: 10px;
+`;
+
+const ProductTitle = styled.h3`
+  font-size: 20px;
+  color: #333;
+  font-weight: 600;
+  margin: 20px 0;
+`;
+
+const ProductPrice = styled.p`
+  font-size: 17px;
+  color: #333;
+  font-weight: 500;
+  margin: 20px;
 `;
 
 const StyledLink = styled(Link)`
