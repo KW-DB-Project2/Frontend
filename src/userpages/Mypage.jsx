@@ -13,12 +13,12 @@ function Mypage() {
   const [userInfo, setUserInfo] = useState({
     name: '',
     email: '',
-    phone: '',
+    phoneNumber: '',
   });
   const [isEditing, setIsEditing] = useState({
     name: false,
     email: false,
-    phone: false,
+    phoneNumber: false,
   });
 
   useEffect(() => {
@@ -33,11 +33,11 @@ function Mypage() {
         console.log('응답 데이터:', response.data); // 응답 데이터 확인
 
         // 응답 데이터에서 필요한 필드 추출
-        const { name, email, phone } = response.data;
+        const { name, email, phoneNumber } = response.data;
         setUserInfo({
           name: name,
           email: email,
-          phone: phone,
+          phoneNumber: phoneNumber,
         });
       } catch (error) {
         console.error('사용자 정보를 가져오는 중 오류 발생:', error);
@@ -66,8 +66,8 @@ function Mypage() {
       data.name = userInfo.name;
     } else if (field === 'email') {
       data.email = userInfo.email;
-    } else if (field === 'phone') {
-      data.phone = userInfo.phone;
+    } else if (field === 'phoneNumber') {
+      data.phoneNumber = userInfo.phoneNumber;
     }
 
     try {
@@ -96,7 +96,7 @@ function Mypage() {
         </ProfileCard>
         <AccountSection>
           <InfoTitle>개인정보</InfoTitle>
-          {['name', 'email', 'phone'].map((field) => (
+          {['name', 'email', 'phoneNumber'].map((field) => (
             <EditableRow
               key={field}
               label={
@@ -104,7 +104,7 @@ function Mypage() {
                   ? '상점명'
                   : field === 'email'
                   ? '이메일'
-                  : field === 'phone'
+                  : field === 'phoneNumber'
                   ? '전화번호'
                   : ''
               }
