@@ -63,7 +63,7 @@ function Mypage() {
   const handleSave = async (field) => {
     const data = {};
     if (field === 'name') {
-      data.username = userInfo.name;
+      data.name = userInfo.name;
     } else if (field === 'email') {
       data.email = userInfo.email;
     } else if (field === 'phone') {

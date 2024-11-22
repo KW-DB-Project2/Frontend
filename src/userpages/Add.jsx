@@ -8,32 +8,59 @@ function Add() {
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
+  const SURL = import.meta.env.VITE_APP_URI;
 
   const handleImageClick = () => {
     document.getElementById('fileInput').click(); // 파일 입력을 클릭하게 만듦
   };
 
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]); // 이미지 파일 상태 업데이트
+    const file = e.target.files[0]; // 선택한 파일
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // 이미지 파일을 base64로 변환하여 상태에 저장
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file); // 파일을 base64로 읽음
+    }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // 필수 입력값 확인
     if (!image || !productName || !description || !price) {
       alert('상품 정보를 모두 입력해주세요');
       return; // 입력되지 않은 필드가 있으면 제출을 중단
     }
 
-    // 상품 등록 로직 구현
-    console.log({
-      image,
-      productName,
-      description,
-      price,
-    });
+    // 상품 등록 요청을 위한 DTO 객체 생성
+    const productDTO = {
+      productTitle: productName,
+      productContent: description,
+      productPrice: parseInt(price, 10),
+      productImg: image.split(',')[1], // base64로 변환된 이미지 문자열만 추출
+    };
 
-    // 등록 후 관리 페이지로 이동
-    navigate('/');
+    try {
+      // 서버에 상품 등록 요청
+      const response = await fetch(`${SURL}/product/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productDTO), // DTO 객체를 JSON 형태로 요청 본문에 포함
+      });
+
+      if (response.ok) {
+        alert('상품이 성공적으로 추가되었습니다');
+        navigate('/'); // 등록 후 홈으로 리다이렉트
+      } else {
+        alert('상품 등록에 실패했습니다');
+      }
+    } catch (error) {
+      console.error('상품 등록 중 오류가 발생했습니다:', error);
+      alert('상품 등록 중 오류가 발생했습니다');
+    }
   };
 
   const goToManage = () => {
@@ -59,7 +86,7 @@ function Add() {
             {!image && <UploadText>이미지 등록</UploadText>}
             {image && (
               <PreviewImage
-                src={URL.createObjectURL(image)}
+                src={image} // base64로 인코딩된 이미지 표시
                 alt="상품 이미지 미리보기"
               />
             )}
@@ -251,6 +278,7 @@ const ImageUpload = styled.div`
     background-color: #f1f1f1;
   }
 `;
+
 const UploadText = styled.p`
   font-size: 16px;
   color: #aaa;
@@ -267,20 +295,19 @@ const PreviewImage = styled.img`
 const Register = styled.div`
   display: flex;
   justify-content: flex-end; // 오른쪽 정렬
-  margin: 40px;
+  margin-top: 20px;
 `;
 
 const RegisterButton = styled.button`
-  background-color: #b30000;
+  font-size: 18px;
+  padding: 15px 30px;
   color: white;
-  padding: 12px 60px;
-  font-size: 23px;
-  font-weight: 500;
+  background-color: red;
   border: none;
   border-radius: 10px;
   cursor: pointer;
 
   &:hover {
-    opacity: 0.6;
+    background-color: darkred;
   }
 `;
