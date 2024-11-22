@@ -1,32 +1,87 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import axios from 'axios';
+
+/* 토큰 Context */
+import { AuthContext } from '../context/AuthContext';
 
 function Mypage() {
+  const { token } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  const handleManageClick = () => {
-    navigate('/manage');
-  };
-
+  const SURL = import.meta.env.VITE_APP_URI;
+  const [userInfo, setUserInfo] = useState({
+    name: '',
+    email: '',
+    phone: '',
+  });
   const [isEditing, setIsEditing] = useState({
     name: false,
     email: false,
     phone: false,
   });
 
-  const [values, setValues] = useState({
-    name: 'DB000000',
-    email: 'Email@email.com',
-    phone: '010-0000-0000',
-  });
+  useEffect(() => {
+    // 사용자 정보 가져오기
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get(`${SURL}/mypage`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log('응답 데이터:', response.data); // 응답 데이터 확인
+
+        // 응답 데이터에서 필요한 필드 추출
+        const { name, email, phoneNumber } = response.data;
+        setUserInfo({
+          name: name,
+          email: email,
+          phone: phoneNumber,
+        });
+      } catch (error) {
+        console.error('사용자 정보를 가져오는 중 오류 발생:', error);
+        alert('사용자 정보를 불러오지 못했습니다. 다시 시도해주세요.');
+      }
+    };
+
+    fetchUserInfo();
+  }, [token]);
+
+  const handleManageClick = () => {
+    navigate('/manage');
+  };
 
   const toggleEdit = (field) => {
     setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   const handleChange = (e, field) => {
-    setValues((prev) => ({ ...prev, [field]: e.target.value }));
+    setUserInfo((prev) => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const handleSave = async (field) => {
+    const data = {};
+    if (field === 'name') {
+      data.username = userInfo.name;
+    } else if (field === 'email') {
+      data.email = userInfo.email;
+    } else if (field === 'phone') {
+      data.phoneNumber = userInfo.phone;
+    }
+
+    try {
+      const response = await axios.put(`${SURL}/edit/${field}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data.message); // 성공 메시지 표시
+      toggleEdit(field); // 수정 모드 종료
+    } catch (error) {
+      console.error('수정 중 오류 발생:', error);
+      alert('수정에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -36,7 +91,7 @@ function Mypage() {
           <ProfileImage>
             <Icon>🏠</Icon>
           </ProfileImage>
-          <StoreName>{values.name}</StoreName>
+          <StoreName>{userInfo.name}</StoreName>
           <ManageButton onClick={handleManageClick}>내 상점 관리</ManageButton>
         </ProfileCard>
         <AccountSection>
@@ -49,12 +104,15 @@ function Mypage() {
                   ? '상점명'
                   : field === 'email'
                   ? '이메일'
-                  : '전화번호'
+                  : field === 'phone'
+                  ? '전화번호'
+                  : ''
               }
-              value={values[field]}
+              value={userInfo[field]}
               isEditing={isEditing[field]}
               onEditClick={() => toggleEdit(field)}
               onChange={(e) => handleChange(e, field)}
+              onSave={() => handleSave(field)}
             />
           ))}
         </AccountSection>
@@ -65,7 +123,14 @@ function Mypage() {
   );
 }
 
-function EditableRow({ label, value, isEditing, onEditClick, onChange }) {
+function EditableRow({
+  label,
+  value,
+  isEditing,
+  onEditClick,
+  onChange,
+  onSave,
+}) {
   return (
     <Row>
       <Label>{label}</Label>
@@ -74,7 +139,7 @@ function EditableRow({ label, value, isEditing, onEditClick, onChange }) {
       ) : (
         <Value>{value}</Value>
       )}
-      <EditButton onClick={onEditClick}>
+      <EditButton onClick={isEditing ? onSave : onEditClick}>
         {isEditing ? '저장' : '수정'}
       </EditButton>
     </Row>
@@ -95,9 +160,9 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: row;
   gap: 30px;
-
   width: 1500px; /* 더 넓게 */
 `;
+
 const ProfileCard = styled.div`
   flex: 1;
   background-color: #f7f7f7;
@@ -112,7 +177,7 @@ const ProfileImage = styled.div`
   height: 100px;
   background-color: #ddd;
   border-radius: 50%;
-  margin: 0 auto 15px auto;
+  margin: 0 auto 20px auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -141,7 +206,7 @@ const ManageButton = styled.button`
     background-color: #ddd;
   }
 `;
-/* 개인정보 */
+
 const AccountSection = styled.div`
   flex: 2;
   background-color: #ffffff;
@@ -179,12 +244,12 @@ const Value = styled.span`
 
 const Input = styled.input`
   flex: 1;
-  padding: 5px; /* 여유 공간 추가 */
+  padding: 5px;
   font-size: 16px;
   border: 1px solid #f0f0f0;
   border-radius: 5px;
   margin-right: 50px;
-  transition: width 0.3s ease; /* 부드러운 변화 추가 */
+  transition: width 0.3s ease;
   color: #333;
 `;
 
@@ -208,7 +273,6 @@ const Bottombar = styled.div`
   margin-top: 20px;
 `;
 
-/*판매수익조회*/
 const FooterLabel = styled.div`
   margin-top: 10px;
   font-size: 20px;

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 
-/* 인증 관련 Context */
+/* 토큰 Context */
 import { AuthContext } from '../context/AuthContext';
 
 /* 모달창 임포트 */
@@ -13,7 +13,7 @@ import LoginModal from '../modal/Login';
 import { FaSearch, FaDollarSign, FaStore } from 'react-icons/fa';
 
 function Navbar() {
-  const { token, logout } = useContext(AuthContext); // user, token, logout 가져오기
+  const { token, logout } = useContext(AuthContext); // token, logout 가져오기
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태
   const navigate = useNavigate();
