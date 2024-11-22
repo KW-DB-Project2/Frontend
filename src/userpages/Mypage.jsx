@@ -67,7 +67,7 @@ function Mypage() {
     } else if (field === 'email') {
       data.email = userInfo.email;
     } else if (field === 'phone') {
-      data.phoneNumber = userInfo.phone;
+      data.phone = userInfo.phone;
     }
 
     try {
