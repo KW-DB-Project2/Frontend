@@ -33,11 +33,11 @@ function Mypage() {
         console.log('응답 데이터:', response.data); // 응답 데이터 확인
 
         // 응답 데이터에서 필요한 필드 추출
-        const { name, email, phoneNumber } = response.data;
+        const { name, email, phone } = response.data;
         setUserInfo({
           name: name,
           email: email,
-          phone: phoneNumber,
+          phone: phone,
         });
       } catch (error) {
         console.error('사용자 정보를 가져오는 중 오류 발생:', error);

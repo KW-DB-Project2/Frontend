@@ -13,7 +13,11 @@ function Home() {
       try {
         // API 호출 (서버의 /product 엔드포인트로 상품 목록 요청)
         const response = await axios.get(`${SURL}/product`, {
-          withCredentials: false,
+          withCredentials: false, // 쿠키를 포함시키지 않음
+          headers: {
+            // 불필요한 헤더를 포함시키지 않도록 주의
+            Authorization: '', // Authorization 헤더가 필요 없다면 삭제
+          },
         });
         setProducts(response.data); // 받아온 데이터를 상태에 저장
       } catch (error) {
