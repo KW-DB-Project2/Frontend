@@ -31,7 +31,7 @@ function SignupDetail({ showModal, closeModal }) {
       const response = await axios.post(
         `${import.meta.env.VITE_APP_URI}/kakao/user/extra-info`,
         {
-          loginId: user.loginId, // 로그인 ID (user 객체에서 가져옴)
+          id: user.id, // 로그인 ID (user 객체에서 가져옴)
           phoneNumber: phoneNumber, // 입력된 전화번호
         }
       );

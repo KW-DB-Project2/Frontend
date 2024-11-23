@@ -39,13 +39,14 @@ function Add() {
 
     // 상품 등록 요청을 위한 DTO 객체 생성
     const productDTO = {
-      userId: user.loginId,
+      userId: user.id,
       productTitle: productName,
       productContent: description,
       productPrice: parseInt(price, 10),
       productStatus: true, // 등록 시 상태는 '판매중'으로 설정
       productImg: image.split(',')[1], // base64로 변환된 이미지 문자열만 추출
     };
+    console.log(productDTO);
 
     try {
       // 서버에 상품 등록 요청
