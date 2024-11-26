@@ -1,68 +1,39 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaExclamationTriangle } from 'react-icons/fa'; // 신고 아이콘
 import axios from 'axios';
+// 아이콘
+import { FaExclamationTriangle, FaSearch, FaUserCircle } from 'react-icons/fa';
 import { FiLoader } from 'react-icons/fi';
 // 컴포넌트 임포트
 import { AuthContext } from '../context/AuthContext';
 
 function Product() {
-  const { token } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
+  const { user, token } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
   const { productid } = useParams(); // URL 파라미터에서 productid 값을 받음
   const navigate = useNavigate(); // 네비게이션 훅
   const [product, setProduct] = useState(null);
-  const [reviews, setReviews] = useState([
-    {
-      user: 'Riia',
-      text: '굿! 상품 너무 귀여워요!!',
-      comments: [],
-    },
-    {
-      user: 'Minji',
-      text: '상품 너무 좋아요! 배송도 빨랐어요~',
-      comments: [],
-    },
-  ]);
-  const [qaItems, setQaItems] = useState([
-    {
-      user: 'Riia',
-      question: '혹시 덤으로 스트커 하나 더 주실 수 있나요?',
-      answer: '감자나눔님 죄송하지만 그 불가능할 것 같습니다 ㅠㅠ',
-      comments: [],
-    },
-    {
-      user: 'Minji',
-      question: '상품이 언제 다시 입고되나요?',
-      answer: '다음 주 월요일에 재입고 예정입니다!',
-      comments: [],
-    },
-  ]);
+  const [reviews, setReviews] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [isCommenting, setIsCommenting] = useState(null); // 어떤 게시글에서 댓글을 쓸지 관리
+  const [searchKeyword, setSearchKeyword] = useState(''); // 검색 키워드 관리
 
+  // 상품 정보 가져오기
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // axios를 사용해서 상품 목록을 가져오는 API 요청
         const response = await axios.get(
           `${import.meta.env.VITE_APP_URI}/product`,
           {
             headers: {
-              Authorization: `Bearer ${token}`, // 인증 토큰
+              Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log('response.data', response.data);
-        console.log('productid', productid);
-        const products = response.data; // 상품 목록을 응답에서 가져옴
-
-        // id 값에 맞는 상품을 찾음
+        const products = response.data;
         const selectedProduct = products.find(
           (product) => product.productId === parseInt(productid)
         );
-
-        // 상품을 상태로 설정
         setProduct(selectedProduct);
       } catch (error) {
         console.error('상품 정보를 가져오는 중 오류 발생:', error);
@@ -70,39 +41,172 @@ function Product() {
     };
 
     fetchProducts();
-  }, [productid, token]); // id 값이나 token 값이 바뀔 때마다 상품 정보를 다시 가져옴
+  }, [productid, token]);
 
-  const handleAddComment = (index, type) => {
+  // 상품 리뷰를 가져오는 API 호출
+  useEffect(() => {
+    const fetchProductReviews = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_URI}/reviews/product/${productid}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response.data);
+        setReviews(response.data); // 서버에서 반환된 리뷰 데이터를 그대로 상태에 저장
+      } catch (error) {
+        console.error('리뷰를 가져오는 중 오류 발생:', error);
+      }
+    };
+
+    if (productid) {
+      fetchProductReviews();
+    }
+  }, [productid, token]);
+
+  // 리뷰 검색 API 호출
+  const fetchReviews = async (keyword) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_URI}/reviews/search`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: { keyword },
+        }
+      );
+
+      setReviews(response.data);
+    } catch (error) {
+      console.error('리뷰 검색 중 오류 발생:', error);
+    }
+  };
+
+  // 댓글 작성
+  const handleAddComment = async (index, type) => {
     if (newComment.trim() === '') return;
 
-    const updatedData = type === 'review' ? [...reviews] : [...qaItems];
-    const newCommentData = { user: 'A', text: newComment };
+    // reviews 상태에 있는 데이터를 사용하여 댓글 작성에 필요한 DTO 구성
+    const { userId, productId, reviewId } = reviews[index];
 
-    if (type === 'review') {
-      updatedData[index].comments.push(newCommentData);
-      setReviews(updatedData);
-    } else {
-      updatedData[index].comments.push(newCommentData);
-      setQaItems(updatedData);
+    const commentData = {
+      userId,
+      productId,
+      reviewId,
+      commentContent: newComment, // 추가된 댓글 내용만 포함
+    };
+
+    console.log(commentData);
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_URI}/comments`,
+        commentData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // 댓글 작성 후 리뷰 업데이트
+      const updatedReviews = [...reviews];
+      updatedReviews[index].comments.push(response.data);
+      setReviews(updatedReviews);
+      setNewComment('');
+      setIsCommenting(null); // 댓글 작성 완료 후 input 숨기기
+    } catch (error) {
+      console.error('댓글 작성 중 오류 발생:', error);
     }
-
-    setNewComment('');
-    setIsCommenting(null); // 댓글 작성 완료 후 input 숨기기
   };
 
-  const handleInputChange = (e) => {
-    setNewComment(e.target.value);
+  // 댓글 작성 취소 함수
+  const handleCancelComment = () => {
+    setNewComment(''); // 입력창 초기화
+    setIsCommenting(null); // 댓글 입력란 숨기기
   };
 
-  const handleCommentToggle = (index) => {
-    setIsCommenting(isCommenting === index ? null : index); // 댓글 창 토글
+  // // 댓글 수정
+  // const handleEditComment = async (commentId, updatedContent) => {
+  //   const updatedData = { commentContent: updatedContent };
+
+  //   try {
+  //     const response = await axios.put(
+  //       `${import.meta.env.VITE_APP_URI}/comments/${commentId}`,
+  //       updatedData,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     // 수정된 댓글 업데이트
+  //     const updatedReviews = reviews.map((review) => {
+  //       if (review.comments) {
+  //         review.comments = review.comments.map((comment) =>
+  //           comment.commentId === commentId
+  //             ? { ...comment, commentContent: updatedContent }
+  //             : comment
+  //         );
+  //       }
+  //       return review;
+  //     });
+  //     setReviews(updatedReviews);
+  //   } catch (error) {
+  //     console.error('댓글 수정 중 오류 발생:', error);
+  //   }
+  // };
+
+  // // 댓글 삭제
+  // const handleDeleteComment = async (commentId) => {
+  //   try {
+  //     await axios.delete(
+  //       `${import.meta.env.VITE_APP_URI}/comments/${commentId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         params: {
+  //           userId: user.id,
+  //         },
+  //       }
+  //     );
+
+  //     // 삭제된 댓글 제거
+  //     const updatedReviews = reviews.map((review) => {
+  //       if (review.comments) {
+  //         review.comments = review.comments.filter(
+  //           (comment) => comment.commentId !== commentId
+  //         );
+  //       }
+  //       return review;
+  //     });
+  //     setReviews(updatedReviews);
+  //   } catch (error) {
+  //     console.error('댓글 삭제 중 오류 발생:', error);
+  //   }
+  // };
+
+  // 검색 키워드 입력 시 업데이트
+  const handleSearchChange = (e) => {
+    setSearchKeyword(e.target.value);
+  };
+
+  // 검색 버튼 클릭 시 호출
+  const handleSearchClick = () => {
+    if (searchKeyword.trim() !== '') {
+      fetchReviews(searchKeyword.trim());
+    }
   };
 
   const handleWriteClick = (type) => {
     if (type === 'review') {
-      navigate('/write-review');
+      navigate(`/write-review/${productid}`);
     } else {
-      navigate('/write-qa');
+      navigate('/qna');
     }
   };
 
@@ -112,7 +216,7 @@ function Product() {
         <FiLoader size={40} className="loading-icon" />
         상품 정보를 불러오는 중...
       </LoadingContainer>
-    ); // 로딩 중일 때 아이콘 표시
+    );
   }
 
   return (
@@ -135,7 +239,12 @@ function Product() {
           <div style={{ fontSize: '19px' }}>상품정보</div>
           <BottomBar />
           <Description>{product.productContent}</Description>
-          <BuyButton>구매하기</BuyButton>
+          <ButtonContainer>
+            <QnAButton onClick={() => handleWriteClick('qna')}>
+              문의하기
+            </QnAButton>
+            <BuyButton>구매하기</BuyButton>
+          </ButtonContainer>
         </Details>
       </Content>
       <br />
@@ -146,7 +255,20 @@ function Product() {
       <BoardSection>
         <BoardTitle>
           REVIEW
+          {/* 리뷰 검색 */}
+          <SearchContainer>
+            <SearchInput
+              type="text"
+              value={searchKeyword}
+              onChange={handleSearchChange}
+              placeholder="리뷰 검색어를 입력하세요..."
+            />
+            <SearchButton onClick={handleSearchClick}>
+              <FaSearch size={23} color="#333" />
+            </SearchButton>
+          </SearchContainer>
           <RightAlign>
+            {/* 글쓰기 버튼 */}
             <WriteButton onClick={() => handleWriteClick('review')}>
               글쓰기
             </WriteButton>
@@ -155,88 +277,50 @@ function Product() {
         <BoardList>
           {reviews.map((review, index) => (
             <BoardItem key={index}>
-              <BoardUser>{review.user}</BoardUser>
-              <BoardText>{review.text}</BoardText>
-              <CommentSection>
-                {review.comments.map((comment, idx) => (
-                  <Comment key={idx}>
-                    <strong>{comment.user}: </strong>
-                    {comment.text}
-                  </Comment>
-                ))}
-                {/* 댓글 작성 입력 필드 토글 */}
-                {isCommenting === index && (
-                  <>
-                    <CommentInput
-                      type="text"
-                      value={newComment}
-                      onChange={handleInputChange}
-                      placeholder="댓글을 작성하세요..."
-                    />
-                    <CommentButton
-                      onClick={() => handleAddComment(index, 'review')}
-                    >
-                      댓글쓰기
-                    </CommentButton>
-                  </>
-                )}
-                <ToggleCommentButton onClick={() => handleCommentToggle(index)}>
-                  {isCommenting === index ? '취소' : '댓글 쓰기'}
-                </ToggleCommentButton>
-              </CommentSection>
-            </BoardItem>
-          ))}
-        </BoardList>
-      </BoardSection>
+              <BoardUser>
+                <ProfileIcon />
+                {user.name}
+              </BoardUser>
 
-      {/* Q&A 게시판 */}
-      <BoardSection>
-        <BoardTitle>
-          Q&A
-          <RightAlign>
-            <WriteButton onClick={() => handleWriteClick('qa')}>
-              글쓰기
-            </WriteButton>
-          </RightAlign>
-        </BoardTitle>
-        <BoardList>
-          {qaItems.map((item, index) => (
-            <BoardItem key={index}>
-              <BoardUser>{item.user}</BoardUser>
+              <BottomBar />
+              <BoardTt>{review.reviewTitle}</BoardTt>
               <BoardText>
-                <strong>Q: </strong>
-                {item.question}
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  {review.reviewContent}
+                </div>
+                {isCommenting !== index && (
+                  <CommentButton onClick={() => setIsCommenting(index)}>
+                    댓글 달기
+                  </CommentButton>
+                )}
               </BoardText>
-              <BoardText>
-                <strong>A: </strong>
-                {item.answer}
-              </BoardText>
+              <BottomBar />
               <CommentSection>
-                {item.comments.map((comment, idx) => (
-                  <Comment key={idx}>
-                    <strong>{comment.user}: </strong>
-                    {comment.text}
-                  </Comment>
-                ))}
-                {/* 댓글 작성 입력 필드 토글 */}
+                {review.comments &&
+                  review.comments.map((comment, idx) => (
+                    <Comment key={idx}>
+                      <strong>ㄴ </strong>
+                      {comment.commentContent}
+                    </Comment>
+                  ))}
+                {/* 댓글 작성 중일 때만 댓글 입력창과 버튼 표시 */}
                 {isCommenting === index && (
                   <>
                     <CommentInput
                       type="text"
                       value={newComment}
-                      onChange={handleInputChange}
-                      placeholder="댓글을 작성하세요..."
+                      onChange={(e) => setNewComment(e.target.value)}
                     />
-                    <CommentButton
-                      onClick={() => handleAddComment(index, 'qa')}
-                    >
-                      댓글쓰기
-                    </CommentButton>
+                    <div>
+                      <CommentButton onClick={() => handleAddComment(index)}>
+                        작성
+                      </CommentButton>
+                      <CommentButton onClick={handleCancelComment}>
+                        취소
+                      </CommentButton>
+                    </div>
                   </>
                 )}
-                <ToggleCommentButton onClick={() => handleCommentToggle(index)}>
-                  {isCommenting === index ? '취소' : '댓글 쓰기'}
-                </ToggleCommentButton>
               </CommentSection>
             </BoardItem>
           ))}
@@ -324,6 +408,13 @@ const Description = styled.p`
   margin-bottom: 100px;
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  align-self: flex-end;
+  gap: 10px; // 버튼 사이의 간격을 설정
+  margin-top: 20px; // 버튼의 위쪽 여백
+`;
+
 const BuyButton = styled.button`
   padding: 10px;
   background-color: #333;
@@ -332,24 +423,35 @@ const BuyButton = styled.button`
   border-radius: 4px;
   cursor: pointer;
   width: 150px;
-  align-self: flex-end;
+
   font-size: 20px;
   &:hover {
     opacity: 0.9;
   }
 `;
 
-/* borad */
+const QnAButton = styled.button`
+  padding: 10px;
+  background-color: white;
+  color: #ccc;
+  border: none;
 
+  cursor: pointer;
+  width: 150px;
+  align-self: flex-end;
+  font-size: 20px;
+`;
+/* board */
 const BoardSection = styled.div`
   margin-top: 40px;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #fff;
   border-radius: 8px;
+  border: 1px solid #ccc;
 `;
 
 const BoardTitle = styled.h3`
-  font-size: 24px;
+  font-size: 33px;
   color: #333;
   margin-bottom: 10px;
   display: flex;
@@ -367,49 +469,72 @@ const BoardList = styled.div`
 
 const BoardItem = styled.div`
   margin-bottom: 15px;
-  padding: 10px;
+  padding: 10px 30px;
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #333;
 `;
 
-const BoardUser = styled.p`
-  font-weight: bold;
+const ProfileIcon = styled(FaUserCircle)`
+  color: #ccc;
+  font-size: 25px;
+  margin-right: 15px;
+`;
+
+const BoardUser = styled.div`
+  font-weight: 500;
+  color: #555;
   margin-bottom: 5px;
+  font-size: 17px;
 `;
 
-const BoardText = styled.p`
-  font-size: 16px;
+const BoardTt = styled.div`
+  font-weight: 600;
+  font-size: 17px;
   margin-bottom: 10px;
+`;
+
+const BoardText = styled.div`
+  font-size: 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const CommentSection = styled.div`
   margin-top: 10px;
+  display: flex;
+  align-items: center;
 `;
 
 const Comment = styled.div`
   margin-top: 5px;
-  font-size: 16px;
+  font-size: 14px;
   color: #333;
 `;
 
 const CommentInput = styled.input`
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
+  background-color: white;
+  color: #333;
   border: 1px solid #ccc;
+  padding: 10px 20px;
+  cursor: pointer;
   border-radius: 5px;
+  font-size: 12px;
+  width: 300px;
 `;
 
 const CommentButton = styled.button`
   background-color: #333;
   color: white;
   border: none;
-  padding: 10px 30px;
+  padding: 10px 20px;
   cursor: pointer;
   border-radius: 5px;
-  font-size: 14px;
-  margin-top: 20px;
+  font-size: 12px;
+
   align-self: flex-start;
   &:hover {
     opacity: 0.8;
@@ -417,9 +542,8 @@ const CommentButton = styled.button`
 `;
 
 const WriteButton = styled.button`
-  background-color: #333;
-  color: white;
-  border: none;
+  color: #333;
+  border: 1px solid #333;
   padding: 10px 30px;
   cursor: pointer;
   border-radius: 5px;
@@ -427,22 +551,8 @@ const WriteButton = styled.button`
   margin-top: 20px;
   align-self: flex-start;
   &:hover {
-    opacity: 0.8;
-  }
-`;
-
-const ToggleCommentButton = styled.button`
-  background-color: #333;
-  color: white;
-  border: none;
-  padding: 10px 30px;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px;
-  margin-top: 20px;
-  align-self: flex-start;
-  &:hover {
-    opacity: 0.8;
+    border: 1px solid #333;
+    color: #aaa;
   }
 `;
 
@@ -467,5 +577,33 @@ const LoadingContainer = styled.div`
     100% {
       transform: rotate(360deg);
     }
+  }
+`;
+
+const SearchContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 20px 0px 20px 50px;
+`;
+
+const SearchInput = styled.input`
+  padding: 8px 15px;
+  border: 2px solid #ccc;
+  margin-right: 10px;
+  border-radius: 15px;
+  width: 300px;
+  height: 20px;
+  font-size: 17px;
+`;
+
+const SearchButton = styled.div`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
+
+  &:hover {
+    opacity: 0.7;
   }
 `;

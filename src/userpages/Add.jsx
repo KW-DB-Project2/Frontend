@@ -76,7 +76,9 @@ function Add() {
       productPrice: parseInt(price, 10),
       productStatus: true, // 등록 시 상태는 '판매중'으로 설정
       productImg: image && image.split(',')[1], // 수정할 때만 이미지가 없으면 기존 이미지 유지
+      updateTime: productId ? new Date().toISOString() : null, // 수정 시 현재 시간을 포함
     };
+
     console.log(productDTO);
     try {
       const response = await fetch(

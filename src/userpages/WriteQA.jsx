@@ -63,10 +63,11 @@ export default WriteQA;
 
 const Container = styled.div`
   width: 1500px;
-  margin: 40px auto;
+  margin: 40px auto 0px auto;
   padding: 40px;
   background-color: #ffffff;
   border-radius: 12px;
+  border: 1px solid #333;
 `;
 
 const Form = styled.form`

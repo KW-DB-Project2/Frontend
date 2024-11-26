@@ -1,37 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
+/* 토큰 Context */
+import { AuthContext } from '../context/AuthContext';
 
-function WriteQA() {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+function WriteQA({ reviewId, initialTitle = '', initialContent = '' }) {
+  const { user } = useContext(AuthContext); // AuthContext에서 user 가져오기
+  const [title, setTitle] = useState(initialTitle);
+  const [content, setContent] = useState(initialContent);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // 제목과 내용 상태 관리 함수
+  const { productid, reviewid } = useParams(); // URL 파라미터로 상품 ID 받아오기
+  const navigate = useNavigate(); // useNavigate 훅 사용
   const handleTitleChange = (e) => setTitle(e.target.value);
   const handleContentChange = (e) => setContent(e.target.value);
 
-  // 제출 함수
-  const handleSubmit = (e) => {
+  const SURL = import.meta.env.VITE_APP_URI;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (title && content) {
-      setIsSubmitting(true);
-      // Review 제출 로직 (예: API 호출)
-      setTimeout(() => {
-        // 제출 완료 후 초기화
-        setIsSubmitting(false);
-        alert('Review가 성공적으로 작성되었습니다!');
-        setTitle('');
-        setContent('');
-      }, 1000); // 잠시 후 알림
-    } else {
+
+    if (!title && !reviewid && !content) {
       alert('제목과 내용을 모두 작성해주세요.');
+      return;
+    }
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
+        userId: user.id,
+        reviewTitle: title,
+        reviewContent: content,
+      };
+
+      if (reviewid) {
+        // 수정 요청
+        await axios.put(`${SURL}/reviews`, {
+          ...payload,
+          reviewId: reviewid,
+        });
+        alert('리뷰가 성공적으로 수정되었습니다!');
+      } else {
+        // 작성 요청
+        await axios.post(`${SURL}/reviews`, {
+          ...payload,
+          productId: productid,
+        });
+        alert('리뷰가 성공적으로 작성되었습니다!');
+      }
+
+      // 리뷰 작성 또는 수정 후, 해당 상품 페이지로 이동
+      navigate(`/product/${productid}`); // 리뷰 작성 후 상품 페이지로 리디렉션
+
+      // 초기화
+      setTitle('');
+      setContent('');
+    } catch (error) {
+      console.error('요청 실패:', error);
+      alert('요청 처리 중 오류가 발생했습니다.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <Container>
       <Form onSubmit={handleSubmit}>
-        <Title>Review</Title>
+        <Title>{reviewId ? 'Review 수정' : 'Review 작성'}</Title>
         <BottomBar />
         <Label>제목</Label>
         <Input
@@ -40,7 +75,6 @@ function WriteQA() {
           onChange={handleTitleChange}
           placeholder="Review 제목을 입력하세요"
         />
-
         <Label>내용</Label>
         <TextArea
           value={content}
@@ -48,10 +82,9 @@ function WriteQA() {
           placeholder="Review 내용을 입력하세요"
           rows="6"
         />
-
         <ButtonContainer>
           <SubmitButton type="submit" disabled={isSubmitting}>
-            {isSubmitting ? '작성 중...' : '제출하기'}
+            {isSubmitting ? '작성 중...' : reviewId ? '수정하기' : '제출하기'}
           </SubmitButton>
         </ButtonContainer>
       </Form>
@@ -63,10 +96,11 @@ export default WriteQA;
 
 const Container = styled.div`
   width: 1500px;
-  margin: 40px auto;
+  margin: 40px auto 0px auto;
   padding: 40px;
   background-color: #ffffff;
   border-radius: 12px;
+  border: 1px solid #333;
 `;
 
 const Form = styled.form`
@@ -81,6 +115,7 @@ const Title = styled.h1`
   color: #333;
   text-align: center;
 `;
+
 const BottomBar = styled.div`
   width: 1500px;
   height: 1px;
@@ -139,6 +174,7 @@ const SubmitButton = styled.button`
   font-size: 17px;
   margin-top: 20px;
   align-self: flex-start;
+
   &:hover {
     opacity: 0.8;
   }

@@ -24,6 +24,7 @@ import WriteQA from './userpages/WriteQA';
 import WriteReview from './userpages/WriteReview';
 import Home from './userpages/Home';
 import Search from './userpages/Search';
+import QnA from './userpages/QnA';
 
 // modal
 import Login from './modal/Login';
@@ -63,7 +64,12 @@ function App() {
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/product/:productid" element={<Product />} />
             <Route path="/write-qa" element={<WriteQA />} />
-            <Route path="/write-review" element={<WriteReview />} />
+            <Route path="/write-review/:productid" element={<WriteReview />} />
+            <Route
+              path="/write-review/:productid/:reviewid"
+              element={<WriteReview />}
+            />
+            <Route path="/qna" element={<QnA />} />
             <Route path="/Search" element={<Search />} />
             {/* Modal Pages */}
             <Route path="/login" element={<Login />} />
@@ -83,7 +89,7 @@ export default App;
 
 const Container = styled.div`
   margin: 220px 150px 0px 150px;
-  position: relative;
+
   @media (max-width: 480px) {
     margin: 0px 50px; /* 작은 화면에서는 더 좁은 여백 */
   }
