@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaExclamationTriangle } from 'react-icons/fa'; // 신고 아이콘
+import axios from 'axios';
+import { FiLoader } from 'react-icons/fi';
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
 
 function Product() {
-  const { id } = useParams();
-  const navigate = useNavigate(); // useNavigate hook to handle navigation
+  const { token } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
+  const { productid } = useParams(); // URL 파라미터에서 productid 값을 받음
+  const navigate = useNavigate(); // 네비게이션 훅
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([
     {
@@ -37,32 +42,35 @@ function Product() {
   const [isCommenting, setIsCommenting] = useState(null); // 어떤 게시글에서 댓글을 쓸지 관리
 
   useEffect(() => {
-    const fetchProduct = () => {
-      const dummyProducts = [
-        {
-          id: 1,
-          name: '상품 1',
-          price: '10,000원',
-          imageUrl: 'https://via.placeholder.com/300?text=상품1',
-          description: '상품 1의 상세 설명입니다.',
-        },
-        {
-          id: 2,
-          name: '상품 2',
-          price: '20,000원',
-          imageUrl: 'https://via.placeholder.com/300?text=상품2',
-          description: '상품 2의 상세 설명입니다.',
-        },
-      ];
+    const fetchProducts = async () => {
+      try {
+        // axios를 사용해서 상품 목록을 가져오는 API 요청
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_URI}/product`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // 인증 토큰
+            },
+          }
+        );
+        console.log('response.data', response.data);
+        console.log('productid', productid);
+        const products = response.data; // 상품 목록을 응답에서 가져옴
 
-      const selectedProduct = dummyProducts.find(
-        (product) => product.id === parseInt(id)
-      );
-      setProduct(selectedProduct);
+        // id 값에 맞는 상품을 찾음
+        const selectedProduct = products.find(
+          (product) => product.productId === parseInt(productid)
+        );
+
+        // 상품을 상태로 설정
+        setProduct(selectedProduct);
+      } catch (error) {
+        console.error('상품 정보를 가져오는 중 오류 발생:', error);
+      }
     };
 
-    fetchProduct();
-  }, [id]);
+    fetchProducts();
+  }, [productid, token]); // id 값이나 token 값이 바뀔 때마다 상품 정보를 다시 가져옴
 
   const handleAddComment = (index, type) => {
     if (newComment.trim() === '') return;
@@ -100,21 +108,24 @@ function Product() {
 
   if (!product) {
     return (
-      <Container>
-        <p>상품 정보를 불러오는 중입니다...</p>
-      </Container>
-    );
+      <LoadingContainer>
+        <FiLoader size={40} className="loading-icon" />
+        상품 정보를 불러오는 중...
+      </LoadingContainer>
+    ); // 로딩 중일 때 아이콘 표시
   }
 
   return (
     <Container>
       <Content>
-        <Image src={product.imageUrl} alt={product.name} />
-
+        <Image
+          src={`data:image/png;base64,${product.productImg}`}
+          alt={product.productTitle || '상품 이미지'}
+        />
         <Details>
-          <ProductName>{product.name}</ProductName>
+          <ProductName>{product.productTitle}</ProductName>
           <PriceContainer>
-            <Price>{product.price}</Price>
+            <Price>{product.productPrice.toLocaleString()}원</Price>
             <ReportButton>
               <FaExclamationTriangle size={17} color="red" />
               신고하기
@@ -123,11 +134,10 @@ function Product() {
           <BottomBar />
           <div style={{ fontSize: '19px' }}>상품정보</div>
           <BottomBar />
-          <Description>{product.description}</Description>
+          <Description>{product.productContent}</Description>
           <BuyButton>구매하기</BuyButton>
         </Details>
       </Content>
-      <br />
       <br />
       <br />
       <BottomBar />
@@ -240,7 +250,8 @@ export default Product;
 
 const Container = styled.div`
   width: 1500px;
-  padding: 20px;
+  margin-top: 20px;
+  padding: 50px;
   margin-top: 0;
   display: flex;
   flex-direction: column;
@@ -310,7 +321,7 @@ const BottomBar = styled.div`
 
 const Description = styled.p`
   flex-grow: 1;
-  margin-bottom: 20px;
+  margin-bottom: 100px;
 `;
 
 const BuyButton = styled.button`
@@ -420,7 +431,6 @@ const WriteButton = styled.button`
   }
 `;
 
-// 스타일 컴포넌트 추가
 const ToggleCommentButton = styled.button`
   background-color: #333;
   color: white;
@@ -433,5 +443,29 @@ const ToggleCommentButton = styled.button`
   align-self: flex-start;
   &:hover {
     opacity: 0.8;
+  }
+`;
+
+const LoadingContainer = styled.div`
+  position: fixed; /* 화면에 고정 */
+  top: 50%; /* 화면의 세로 중앙 */
+  left: 50%; /* 화면의 가로 중앙 */
+  transform: translate(-50%, -50%); /* 정확히 중앙에 맞추기 위해 이동 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .loading-icon {
+    animation: rotate 1s linear infinite;
+  }
+
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;

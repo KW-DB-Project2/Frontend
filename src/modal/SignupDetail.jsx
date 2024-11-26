@@ -9,6 +9,7 @@ import { AuthContext } from '../context/AuthContext';
 function SignupDetail({ showModal, closeModal }) {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
+
   /* 회원 상세정보 상태 */
   const [phoneNumber, setPhoneNumber] = useState('');
   // 오류 메시지 상태

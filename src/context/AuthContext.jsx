@@ -1,11 +1,14 @@
-//인증 관련 context
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // 사용자 정보 상태
+  const [user, setUser] = useState(() => {
+    // localStorage에 저장된 user 정보가 있으면 이를 복원
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [token, setToken] = useState(localStorage.getItem('jwt')); // 토큰 상태를 localStorage에서 복원
 
   useEffect(() => {
@@ -21,6 +24,8 @@ export const AuthProvider = ({ children }) => {
             },
           });
           setUser(response.data);
+          // user 정보를 localStorage에 저장
+          localStorage.setItem('user', JSON.stringify(response.data));
         } catch (error) {
           console.error('Error fetching user info:', error);
           // 토큰이 유효하지 않으면 초기화하고 로그아웃 처리
@@ -37,6 +42,7 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
     setToken(jwtToken);
     localStorage.setItem('jwt', jwtToken); // 로컬 스토리지에 토큰 저장
+    localStorage.setItem('user', JSON.stringify(userData)); // 로컬 스토리지에 user 정보 저장
   };
 
   // 로그아웃 함수: 로그아웃 시 토큰을 삭제하고 상태를 초기화
@@ -44,6 +50,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('jwt'); // 로컬 스토리지에서 토큰 제거
+    localStorage.removeItem('user'); // 로컬 스토리지에서 user 정보 제거
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('name');
   };

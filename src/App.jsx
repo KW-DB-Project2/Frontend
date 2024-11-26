@@ -60,7 +60,7 @@ function App() {
             <Route path="/add" element={<Add />} />
             <Route path="/manage" element={<Manage />} />
             <Route path="/mypage" element={<Mypage />} />
-            <Route path="/product/:id" element={<Product />} />
+            <Route path="/product/:productid" element={<Product />} />
             <Route path="/write-qa" element={<WriteQA />} />
             <Route path="/write-review" element={<WriteReview />} />
             <Route path="/Search" element={<Search />} />

@@ -1,17 +1,90 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
+import axios from 'axios';
+import { FiLoader } from 'react-icons/fi'; // 로딩 아이콘 import
+
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
 
 function Manage() {
   const navigate = useNavigate();
+  const { user, token } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
+  const [selectedStatus, setSelectedStatus] = useState('전체'); // 선택된 상태 관리
+  const [searchKeyword, setSearchKeyword] = useState(''); // 검색어 상태 관리
+  const [products, setProducts] = useState([]); // 서버에서 가져온 상품 목록
+  const [loading, setLoading] = useState(true); // 로딩 상태 관리
+
+  useEffect(() => {
+    // 상품 데이터 가져오기
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_URI}/product`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // 인증 토큰
+            },
+          }
+        );
+        console.log('user.id', user.id);
+        console.log('response.data', response.data);
+
+        // 로그인한 유저 ID에 맞는 상품 필터링
+        const userProducts = response.data.filter(
+          (product) => product.userId === user.id
+        );
+        setProducts(userProducts);
+        setLoading(false);
+      } catch (error) {
+        console.error('상품 데이터를 가져오는 중 오류 발생:', error);
+      }
+    };
+
+    fetchProducts();
+  }, [token]);
+
+  // 상품 삭제
+  const handleDelete = async (productId) => {
+    try {
+      console.log(productId);
+      await axios.delete(
+        `${import.meta.env.VITE_APP_URI}/product/${productId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
+        }
+      );
+
+      alert('상품이 성공적으로 삭제되었습니다.');
+      // 삭제된 상품 제외한 나머지 상품 업데이트
+      setProducts(
+        products.filter((product) => product.productId !== productId)
+      );
+    } catch (error) {
+      console.error('상품 삭제 중 오류 발생:', error);
+      alert('상품 삭제에 실패했습니다.');
+    }
+  };
+
+  // 검색과 상태에 따른 상품 필터링
+  const filteredProducts = products.filter((product) => {
+    const title = product.productTitle || ''; // productTitle 필드를 사용
+    const matchesStatus =
+      selectedStatus === '전체' ||
+      (selectedStatus === '판매중' && product.productStatus === true) ||
+      (selectedStatus === '판매완료' && product.productStatus === false);
+    const matchesKeyword = title
+      .toLowerCase()
+      .includes(searchKeyword.toLowerCase());
+    return matchesStatus && matchesKeyword;
+  });
 
   const goToAdd = () => {
     navigate('/add'); // 상품 등록 페이지로 이동
   };
-
-  const [selectedStatus, setSelectedStatus] = useState('전체'); // 선택된 상태 관리
-  const [searchKeyword, setSearchKeyword] = useState(''); // 검색어 상태 관리
 
   const handleStatusClick = (status) => {
     setSelectedStatus(status); // 상태 버튼 클릭 시 선택 상태 업데이트
@@ -21,74 +94,14 @@ function Manage() {
     setSearchKeyword(e.target.value); // 검색 입력값 업데이트
   };
 
-  const products = [
-    {
-      id: 1,
-      image: 'https://via.placeholder.com/50',
-      status: '판매중',
-      name: '스마트폰',
-      price: '1,000,000원',
-    },
-    {
-      id: 2,
-      image: 'https://via.placeholder.com/50',
-      status: '판매완료',
-      name: '노트북',
-      price: '2,000,000원',
-    },
-    {
-      id: 3,
-      image: 'https://via.placeholder.com/50',
-      status: '판매중',
-      name: '태블릿',
-      price: '800,000원',
-    },
-    {
-      id: 4,
-      image: 'https://via.placeholder.com/50',
-      status: '판매중',
-      name: '무선 이어폰',
-      price: '200,000원',
-    },
-    {
-      id: 5,
-      image: 'https://via.placeholder.com/50',
-      status: '판매완료',
-      name: '스마트 워치',
-      price: '300,000원',
-    },
-    {
-      id: 6,
-      image: 'https://via.placeholder.com/50',
-      status: '판매중',
-      name: '모니터',
-      price: '500,000원',
-    },
-    {
-      id: 7,
-      image: 'https://via.placeholder.com/50',
-      status: '판매완료',
-      name: '키보드',
-      price: '150,000원',
-    },
-    {
-      id: 8,
-      image: 'https://via.placeholder.com/50',
-      status: '판매중',
-      name: '마우스',
-      price: '50,000원',
-    },
-  ];
-
-  // 검색과 상태에 따른 상품 필터링
-  const filteredProducts = products.filter((product) => {
-    const matchesStatus =
-      selectedStatus === '전체' || product.status === selectedStatus; // 상태 필터링
-    const matchesKeyword = product.name
-      .toLowerCase()
-      .includes(searchKeyword.toLowerCase()); // 검색어 필터링
-    return matchesStatus && matchesKeyword;
-  });
+  if (loading) {
+    return (
+      <LoadingContainer>
+        <FiLoader size={40} className="loading-icon" />
+        로딩 중...
+      </LoadingContainer>
+    ); // 로딩 중일 때 아이콘 표시
+  }
 
   return (
     <Container>
@@ -141,16 +154,32 @@ function Manage() {
       <ProductContainer>
         {/* 필터링된 상품 렌더링 */}
         {filteredProducts.map((product) => (
-          <ProductRow key={product.id}>
+          <ProductRow key={product.productId}>
+            {/* 이미지 렌더링: Base64 데이터 사용 */}
             <ProductItem width="150px">
-              <Image src={product.image} alt={product.name} />
+              <Image
+                src={`data:image/png;base64,${product.productImg}`}
+                alt={product.productTitle || '상품 이미지'}
+              />
             </ProductItem>
-            <ProductItem width="200px">{product.status}</ProductItem>
-            <ProductItem width="150px">{product.name}</ProductItem>
-            <ProductItem width="150px">{product.price}</ProductItem>
-            <ProductItem width="100px">
-              <Button>수정</Button>
-              <Button>삭제</Button>
+            {/* 상품 상태 */}
+            <ProductItem width="200px">
+              {product.productStatus ? '판매 중' : '판매 종료'}
+            </ProductItem>
+            {/* 상품 제목 */}
+            <ProductItem width="150px">{product.productTitle}</ProductItem>
+            {/* 상품 가격 */}
+            <ProductItem width="140px">
+              {product.productPrice.toLocaleString()}원
+            </ProductItem>
+            {/* 수정/삭제 버튼 */}
+            <ProductItem width="130px">
+              <Button onClick={() => handleEdit(product.productId)}>
+                수정
+              </Button>
+              <Button onClick={() => handleDelete(product.productId)}>
+                삭제
+              </Button>
             </ProductItem>
           </ProductRow>
         ))}
@@ -333,5 +362,29 @@ const Button = styled.div`
   color: red;
   &:hover {
     border: 1px solid red;
+  }
+`;
+
+const LoadingContainer = styled.div`
+  position: fixed; /* 화면에 고정 */
+  top: 50%; /* 화면의 세로 중앙 */
+  left: 50%; /* 화면의 가로 중앙 */
+  transform: translate(-50%, -50%); /* 정확히 중앙에 맞추기 위해 이동 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .loading-icon {
+    animation: rotate 1s linear infinite;
+  }
+
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
