@@ -58,7 +58,6 @@ function Add() {
   };
 
   const handleSubmit = async () => {
-    // 수정일 경우, 이미 데이터가 존재하면 빈값일 때 알림이 뜨지 않도록 수정
     if (
       !productName ||
       !description ||
@@ -70,6 +69,7 @@ function Add() {
     }
 
     const productDTO = {
+      productId: productId ? parseInt(productId, 10) : null, // 수정 시 포함
       userId: user.id,
       productTitle: productName,
       productContent: description,
@@ -77,28 +77,19 @@ function Add() {
       productStatus: true, // 등록 시 상태는 '판매중'으로 설정
       productImg: image && image.split(',')[1], // 수정할 때만 이미지가 없으면 기존 이미지 유지
     };
-
+    console.log(productDTO);
     try {
-      let response;
-      if (productId) {
-        // 상품 ID가 있으면 수정 요청
-        response = await fetch(`${SURL}/product/${productId}`, {
-          method: 'PUT',
+      const response = await fetch(
+        `${SURL}/product/${productId ? productId : 'add'}`,
+        {
+          method: productId ? 'PUT' : 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`, // 추가된 Authorization 헤더
           },
           body: JSON.stringify(productDTO),
-        });
-      } else {
-        // 상품 ID가 없으면 등록 요청
-        response = await fetch(`${SURL}/product/add`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(productDTO),
-        });
-      }
+        }
+      );
 
       if (response.ok) {
         alert(
