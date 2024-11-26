@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 /* 토큰 Context */
 import { AuthContext } from '../context/AuthContext';
@@ -8,11 +8,39 @@ import { AuthContext } from '../context/AuthContext';
 function Add() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { productId } = useParams(); // URL 파라미터로 상품 ID 받아오기
   const [image, setImage] = useState(null);
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const SURL = import.meta.env.VITE_APP_URI;
+
+  // 상품 수정 시 기존 정보 불러오기
+  useEffect(() => {
+    if (productId) {
+      // 모든 상품 정보 가져오기
+      fetch(`${SURL}/product`)
+        .then((response) => response.json())
+        .then((data) => {
+          // data는 모든 상품의 배열이므로, productId에 맞는 상품을 찾기
+          const product = data.find(
+            (item) => item.productId === parseInt(productId)
+          );
+          if (product) {
+            setProductName(product.productTitle);
+            setDescription(product.productContent);
+            setPrice(product.productPrice);
+            setImage(`data:image/jpeg;base64,${product.productImg}`); // 서버에서 base64로 이미지 데이터가 오면
+          } else {
+            alert('해당 상품을 찾을 수 없습니다.');
+          }
+        })
+        .catch((error) => {
+          console.error('상품 정보를 불러오는 중 오류 발생:', error);
+          alert('상품 정보를 불러오는 중 오류가 발생했습니다.');
+        });
+    }
+  }, [productId]);
 
   const handleImageClick = () => {
     document.getElementById('fileInput').click(); // 파일 입력을 클릭하게 만듦
@@ -23,7 +51,6 @@ function Add() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        // 이미지 파일을 base64로 변환하여 상태에 저장
         setImage(reader.result);
       };
       reader.readAsDataURL(file); // 파일을 base64로 읽음
@@ -34,10 +61,9 @@ function Add() {
     // 필수 입력값 확인
     if (!image || !productName || !description || !price) {
       alert('상품 정보를 모두 입력해주세요');
-      return; // 입력되지 않은 필드가 있으면 제출을 중단
+      return;
     }
 
-    // 상품 등록 요청을 위한 DTO 객체 생성
     const productDTO = {
       userId: user.id,
       productTitle: productName,
@@ -46,27 +72,42 @@ function Add() {
       productStatus: true, // 등록 시 상태는 '판매중'으로 설정
       productImg: image.split(',')[1], // base64로 변환된 이미지 문자열만 추출
     };
-    console.log(productDTO);
 
     try {
-      // 서버에 상품 등록 요청
-      const response = await fetch(`${SURL}/product/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(productDTO), // DTO 객체를 JSON 형태로 요청 본문에 포함
-      });
+      let response;
+      if (productId) {
+        // 상품 ID가 있으면 수정 요청
+        response = await fetch(`${SURL}/product/${productId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productDTO),
+        });
+      } else {
+        // 상품 ID가 없으면 등록 요청
+        response = await fetch(`${SURL}/product/add`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productDTO),
+        });
+      }
 
       if (response.ok) {
-        alert('상품이 성공적으로 추가되었습니다');
-        navigate('/'); // 등록 후 홈으로 리다이렉트
+        alert(
+          productId
+            ? '상품이 성공적으로 수정되었습니다'
+            : '상품이 성공적으로 등록되었습니다'
+        );
+        navigate('/'); // 홈 페이지로 리다이렉트
       } else {
-        alert('상품 등록에 실패했습니다');
+        alert('상품 처리에 실패했습니다');
       }
     } catch (error) {
-      console.error('상품 등록 중 오류가 발생했습니다:', error);
-      alert('상품 등록 중 오류가 발생했습니다');
+      console.error('상품 등록/수정 중 오류가 발생했습니다:', error);
+      alert('상품 처리 중 오류가 발생했습니다');
     }
   };
 
@@ -77,31 +118,24 @@ function Add() {
   return (
     <Container>
       <ButtonContainer>
-        <LeftDiv>상품 등록</LeftDiv>
+        <LeftDiv>{productId ? '상품 수정' : '상품 등록'}</LeftDiv>
         <VerticalBar />
         <RightDiv onClick={goToManage}>상품 관리</RightDiv>
       </ButtonContainer>
       <Bottombar />
-      <Title>상품 정보</Title>
+      <Title>{productId ? '상품 수정' : '상품 정보'}</Title>
       <TitleBottombar />
       <InfoContainer>
         <InputContainer height="300px">
-          {/* 상품 이미지 업로드 */}
           <Label>상품 이미지</Label>
           <ImageUpload onClick={handleImageClick}>
             <input id="fileInput" type="file" onChange={handleImageChange} />
             {!image && <UploadText>이미지 등록</UploadText>}
-            {image && (
-              <PreviewImage
-                src={image} // base64로 인코딩된 이미지 표시
-                alt="상품 이미지 미리보기"
-              />
-            )}
+            {image && <PreviewImage src={image} alt="상품 이미지 미리보기" />}
           </ImageUpload>
         </InputContainer>
         <Bottombar />
         <InputContainer>
-          {/* 상품명 입력 */}
           <Label>상품명</Label>
           <Input
             type="text"
@@ -112,7 +146,6 @@ function Add() {
         </InputContainer>
         <Bottombar />
         <InputContainer>
-          {/* 상품 설명 입력 */}
           <Label>상품 설명</Label>
           <TextArea
             value={description}
@@ -125,7 +158,6 @@ function Add() {
 
       <Title>가격</Title>
       <TitleBottombar />
-      {/* 가격 입력 */}
       <PriceContainer>
         <Label>가격</Label>
         <Input
@@ -136,9 +168,10 @@ function Add() {
         />
       </PriceContainer>
       <Bottombar />
-      {/* 등록 버튼 */}
       <Register>
-        <RegisterButton onClick={handleSubmit}>등록하기</RegisterButton>
+        <RegisterButton onClick={handleSubmit}>
+          {productId ? '수정하기' : '등록하기'}
+        </RegisterButton>
       </Register>
     </Container>
   );

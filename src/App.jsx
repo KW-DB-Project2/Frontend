@@ -58,6 +58,7 @@ function App() {
             <Route path="/admin/user-rpt" element={<UserRpt />} />
             {/* User Pages */}
             <Route path="/add" element={<Add />} />
+            <Route path="/add/:productId" element={<Add />} />
             <Route path="/manage" element={<Manage />} />
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/product/:productid" element={<Product />} />

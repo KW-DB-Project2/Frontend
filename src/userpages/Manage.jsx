@@ -3,18 +3,18 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
 import axios from 'axios';
-import { FiLoader } from 'react-icons/fi'; // 로딩 아이콘 import
+import { FiLoader } from 'react-icons/fi';
 
 // 컴포넌트 임포트
 import { AuthContext } from '../context/AuthContext';
 
 function Manage() {
   const navigate = useNavigate();
-  const { user, token } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
-  const [selectedStatus, setSelectedStatus] = useState('전체'); // 선택된 상태 관리
-  const [searchKeyword, setSearchKeyword] = useState(''); // 검색어 상태 관리
-  const [products, setProducts] = useState([]); // 서버에서 가져온 상품 목록
-  const [loading, setLoading] = useState(true); // 로딩 상태 관리
+  const { user, token } = useContext(AuthContext);
+  const [selectedStatus, setSelectedStatus] = useState('전체');
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // 상품 데이터 가져오기
@@ -24,12 +24,10 @@ function Manage() {
           `${import.meta.env.VITE_APP_URI}/product`,
           {
             headers: {
-              Authorization: `Bearer ${token}`, // 인증 토큰
+              Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log('user.id', user.id);
-        console.log('response.data', response.data);
 
         // 로그인한 유저 ID에 맞는 상품 필터링
         const userProducts = response.data.filter(
@@ -45,21 +43,18 @@ function Manage() {
     fetchProducts();
   }, [token]);
 
-  // 상품 삭제
   const handleDelete = async (productId) => {
     try {
-      console.log(productId);
       await axios.delete(
         `${import.meta.env.VITE_APP_URI}/product/${productId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // 인증 토큰
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       alert('상품이 성공적으로 삭제되었습니다.');
-      // 삭제된 상품 제외한 나머지 상품 업데이트
       setProducts(
         products.filter((product) => product.productId !== productId)
       );
@@ -69,9 +64,8 @@ function Manage() {
     }
   };
 
-  // 검색과 상태에 따른 상품 필터링
   const filteredProducts = products.filter((product) => {
-    const title = product.productTitle || ''; // productTitle 필드를 사용
+    const title = product.productTitle || '';
     const matchesStatus =
       selectedStatus === '전체' ||
       (selectedStatus === '판매중' && product.productStatus === true) ||
@@ -83,15 +77,20 @@ function Manage() {
   });
 
   const goToAdd = () => {
-    navigate('/add'); // 상품 등록 페이지로 이동
+    navigate('/add');
   };
 
   const handleStatusClick = (status) => {
-    setSelectedStatus(status); // 상태 버튼 클릭 시 선택 상태 업데이트
+    setSelectedStatus(status);
   };
 
   const handleSearchChange = (e) => {
-    setSearchKeyword(e.target.value); // 검색 입력값 업데이트
+    setSearchKeyword(e.target.value);
+  };
+
+  // 수정 버튼 클릭 시 수정 페이지로 이동
+  const handleEdit = (productId) => {
+    navigate(`/add/${productId}`);
   };
 
   if (loading) {
@@ -100,7 +99,7 @@ function Manage() {
         <FiLoader size={40} className="loading-icon" />
         로딩 중...
       </LoadingContainer>
-    ); // 로딩 중일 때 아이콘 표시
+    );
   }
 
   return (
@@ -152,27 +151,21 @@ function Manage() {
       </Attribute>
       <TitleBottombar />
       <ProductContainer>
-        {/* 필터링된 상품 렌더링 */}
         {filteredProducts.map((product) => (
           <ProductRow key={product.productId}>
-            {/* 이미지 렌더링: Base64 데이터 사용 */}
             <ProductItem width="150px">
               <Image
                 src={`data:image/png;base64,${product.productImg}`}
                 alt={product.productTitle || '상품 이미지'}
               />
             </ProductItem>
-            {/* 상품 상태 */}
             <ProductItem width="200px">
               {product.productStatus ? '판매 중' : '판매 종료'}
             </ProductItem>
-            {/* 상품 제목 */}
             <ProductItem width="150px">{product.productTitle}</ProductItem>
-            {/* 상품 가격 */}
             <ProductItem width="140px">
               {product.productPrice.toLocaleString()}원
             </ProductItem>
-            {/* 수정/삭제 버튼 */}
             <ProductItem width="130px">
               <Button onClick={() => handleEdit(product.productId)}>
                 수정
