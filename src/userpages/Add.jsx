@@ -58,8 +58,13 @@ function Add() {
   };
 
   const handleSubmit = async () => {
-    // 필수 입력값 확인
-    if (!image || !productName || !description || !price) {
+    // 수정일 경우, 이미 데이터가 존재하면 빈값일 때 알림이 뜨지 않도록 수정
+    if (
+      !productName ||
+      !description ||
+      !price ||
+      (productId && !image && !image.startsWith('data:image/jpeg;base64,'))
+    ) {
       alert('상품 정보를 모두 입력해주세요');
       return;
     }
@@ -70,7 +75,7 @@ function Add() {
       productContent: description,
       productPrice: parseInt(price, 10),
       productStatus: true, // 등록 시 상태는 '판매중'으로 설정
-      productImg: image.split(',')[1], // base64로 변환된 이미지 문자열만 추출
+      productImg: image && image.split(',')[1], // 수정할 때만 이미지가 없으면 기존 이미지 유지
     };
 
     try {
