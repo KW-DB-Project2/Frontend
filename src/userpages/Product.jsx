@@ -102,10 +102,9 @@ function Product() {
         }
       );
 
-      setReviews(response.data.length ? response.data : dummyReviews);
+      setReviews(response.data);
     } catch (error) {
       console.error('리뷰 검색 중 오류 발생:', error);
-      setReviews(dummyReviews); // 에러가 나면 더미 데이터 사용
     }
   };
 

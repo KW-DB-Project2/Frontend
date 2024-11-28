@@ -60,6 +60,7 @@ const QnA = () => {
       })
       .catch((error) => {
         console.error('Q&A 삭제 실패:', error);
+        alert('삭제 실패');
       });
   };
 
