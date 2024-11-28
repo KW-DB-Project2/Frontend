@@ -16,61 +16,73 @@ function Product() {
   const [reviews, setReviews] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState(''); // 검색 키워드 관리
 
-  // 더미 상품 데이터
-  const dummyProduct = {
-    productId: 1,
-    productTitle: '더미 상품 제목',
-    productImg: 'dummy-image-base64', // 실제 이미지 base64를 넣어야 하지만 여기서는 더미로 처리
-    productPrice: 10000,
-    productContent: '더미 상품 설명입니다.',
-  };
-
-  // 더미 리뷰 데이터
-  const dummyReviews = [
-    {
-      reviewId: 1,
-      username: '홍길동',
-      reviewTitle: '좋은 상품입니다!',
-      reviewContent: '이 상품은 정말 마음에 들어요. 추천합니다!',
-      comments: [
-        { userName: '김철수', commentContent: '정말 좋은 상품 같아요!' },
-        { userName: '이영희', commentContent: '좋은 리뷰 감사합니다!' },
-      ],
-    },
-    {
-      reviewId: 2,
-      username: '김민수',
-      reviewTitle: '상품이 조금 별로네요',
-      reviewContent: '상품 품질이 생각보다 떨어집니다.',
-      comments: [
-        {
-          userName: '박지훈',
-          commentContent: '다시 한 번 사용해 보고 싶습니다.',
-        },
-      ],
-    },
-  ];
-
-  // 상품 정보 가져오기 (실제 API 호출 대신 더미 데이터 사용)
+  // 상품 정보 가져오기
   useEffect(() => {
-    setProduct(dummyProduct); // 더미 데이터로 설정
-  }, []);
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_URI}/product`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const products = response.data;
+        const selectedProduct = products.find(
+          (product) => product.productId === parseInt(productid)
+        );
+        setProduct(selectedProduct); // 실제 상품 데이터 사용
+      } catch (error) {
+        console.error('상품 정보를 가져오는 중 오류 발생:', error);
+        setProduct(null); // 에러 발생 시 상품 정보 없다고 설정
+      }
+    };
 
-  // 리뷰 가져오기 (실제 API 호출 대신 더미 데이터 사용)
+    fetchProducts();
+  }, [productid, token]);
+
+  // 상품 리뷰를 가져오는 API 호출
   useEffect(() => {
-    setReviews(dummyReviews); // 더미 데이터로 설정
-  }, []);
+    const fetchProductReviews = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_URI}/reviews/product/${productid}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setReviews(response.data); // 실제 리뷰 데이터 사용
+      } catch (error) {
+        console.error('리뷰를 가져오는 중 오류 발생:', error);
+        setReviews([]); // 에러 발생 시 리뷰 없다고 설정
+      }
+    };
+
+    if (productid) {
+      fetchProductReviews();
+    }
+  }, [productid, token]);
 
   // 리뷰 검색 API 호출
   const fetchReviews = async (keyword) => {
-    console.log('검색된 리뷰:', keyword);
-    // 실제 API 호출이 필요하지만, 더미 데이터로 대체
-    const filteredReviews = dummyReviews.filter(
-      (review) =>
-        review.reviewTitle.includes(keyword) ||
-        review.reviewContent.includes(keyword)
-    );
-    setReviews(filteredReviews);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_URI}/reviews/search`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: { keyword },
+        }
+      );
+
+      setReviews(response.data); // 검색된 리뷰 데이터 사용
+    } catch (error) {
+      console.error('리뷰 검색 중 오류 발생:', error);
+    }
   };
 
   // 검색 키워드 입력 시 업데이트
@@ -85,7 +97,11 @@ function Product() {
     }
   };
 
-  // 상품 로딩 중 처리
+  // 리뷰 수정/삭제 버튼 클릭 시 해당 리뷰의 productid와 reviewid를 기반으로 이동
+  const handleEditClick = (reviewid) => {
+    navigate(`/write-review/${productid}/${reviewid}`);
+  };
+
   if (!product) {
     return (
       <LoadingContainer>
@@ -179,9 +195,7 @@ function Product() {
                   >
                     {/* 수정/삭제 버튼 */}
                     <EditButton
-                      onClick={() =>
-                        navigate(`/edit-review/${review.reviewId}`)
-                      }
+                      onClick={() => handleEditClick(review.reviewId)}
                     >
                       게시글 수정/삭제
                     </EditButton>
@@ -195,7 +209,11 @@ function Product() {
               </BoardContent>
               <BottomBar />
               <BoardTt>{review.reviewTitle}</BoardTt>
-              <BoardText>{review.reviewContent}</BoardText>
+              <BoardText>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  {review.reviewContent}
+                </div>
+              </BoardText>
             </BoardItem>
           ))}
         </BoardList>
