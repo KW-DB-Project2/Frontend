@@ -81,6 +81,14 @@ function App() {
               path="/write-review/:productid/:reviewid"
               element={<WriteReview />}
             />
+            <Route
+              path="/write-comment/:productid"
+              element={<WriteComment />}
+            />
+            <Route
+              path="/write-comment/:productid/:reviewid"
+              element={<WriteComment />}
+            />
             <Route path="/qna/:productid" element={<QnA />} />
             <Route path="/write-qa/:productid" element={<WriteQA />} />
             <Route path="/Search" element={<Search />} />

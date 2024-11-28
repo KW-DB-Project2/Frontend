@@ -16,73 +16,61 @@ function Product() {
   const [reviews, setReviews] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState(''); // 검색 키워드 관리
 
-  // 상품 정보 가져오기
+  // 더미 상품 데이터
+  const dummyProduct = {
+    productId: 1,
+    productTitle: '더미 상품 제목',
+    productImg: 'dummy-image-base64', // 실제 이미지 base64를 넣어야 하지만 여기서는 더미로 처리
+    productPrice: 10000,
+    productContent: '더미 상품 설명입니다.',
+  };
+
+  // 더미 리뷰 데이터
+  const dummyReviews = [
+    {
+      reviewId: 1,
+      username: '홍길동',
+      reviewTitle: '좋은 상품입니다!',
+      reviewContent: '이 상품은 정말 마음에 들어요. 추천합니다!',
+      comments: [
+        { userName: '김철수', commentContent: '정말 좋은 상품 같아요!' },
+        { userName: '이영희', commentContent: '좋은 리뷰 감사합니다!' },
+      ],
+    },
+    {
+      reviewId: 2,
+      username: '김민수',
+      reviewTitle: '상품이 조금 별로네요',
+      reviewContent: '상품 품질이 생각보다 떨어집니다.',
+      comments: [
+        {
+          userName: '박지훈',
+          commentContent: '다시 한 번 사용해 보고 싶습니다.',
+        },
+      ],
+    },
+  ];
+
+  // 상품 정보 가져오기 (실제 API 호출 대신 더미 데이터 사용)
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_APP_URI}/product`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const products = response.data;
-        const selectedProduct = products.find(
-          (product) => product.productId === parseInt(productid)
-        );
-        setProduct(selectedProduct); // 실제 상품 데이터 사용
-      } catch (error) {
-        console.error('상품 정보를 가져오는 중 오류 발생:', error);
-        setProduct(null); // 에러 발생 시 상품 정보 없다고 설정
-      }
-    };
+    setProduct(dummyProduct); // 더미 데이터로 설정
+  }, []);
 
-    fetchProducts();
-  }, [productid, token]);
-
-  // 상품 리뷰를 가져오는 API 호출
+  // 리뷰 가져오기 (실제 API 호출 대신 더미 데이터 사용)
   useEffect(() => {
-    const fetchProductReviews = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_APP_URI}/reviews/product/${productid}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setReviews(response.data); // 실제 리뷰 데이터 사용
-      } catch (error) {
-        console.error('리뷰를 가져오는 중 오류 발생:', error);
-        setReviews([]); // 에러 발생 시 리뷰 없다고 설정
-      }
-    };
-
-    if (productid) {
-      fetchProductReviews();
-    }
-  }, [productid, token]);
+    setReviews(dummyReviews); // 더미 데이터로 설정
+  }, []);
 
   // 리뷰 검색 API 호출
   const fetchReviews = async (keyword) => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_APP_URI}/reviews/search`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: { keyword },
-        }
-      );
-
-      setReviews(response.data); // 검색된 리뷰 데이터 사용
-    } catch (error) {
-      console.error('리뷰 검색 중 오류 발생:', error);
-    }
+    console.log('검색된 리뷰:', keyword);
+    // 실제 API 호출이 필요하지만, 더미 데이터로 대체
+    const filteredReviews = dummyReviews.filter(
+      (review) =>
+        review.reviewTitle.includes(keyword) ||
+        review.reviewContent.includes(keyword)
+    );
+    setReviews(filteredReviews);
   };
 
   // 검색 키워드 입력 시 업데이트
@@ -97,11 +85,7 @@ function Product() {
     }
   };
 
-  // 리뷰 수정/삭제 버튼 클릭 시 해당 리뷰의 productid와 reviewid를 기반으로 이동
-  const handleEditClick = (reviewid) => {
-    navigate(`/write-review/${productid}/${reviewid}`);
-  };
-
+  // 상품 로딩 중 처리
   if (!product) {
     return (
       <LoadingContainer>
@@ -110,36 +94,6 @@ function Product() {
       </LoadingContainer>
     );
   }
-
-  // 댓글 작성
-  const postComment = async (reviewId, commentContent) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_APP_URI}/comments`,
-        {
-          userId: user.id, // AuthContext에서 사용자 정보 사용
-          productId: productid, // 현재 상품 정보 사용
-          reviewId: reviewId, // 댓글을 달 리뷰 ID
-          commentContent: commentContent, // 댓글 내용
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // 댓글 작성 후 반환된 댓글 정보 처리
-      setReviews((prevReviews) =>
-        prevReviews.map((review) =>
-          review.reviewId === reviewId
-            ? { ...review, comments: [...review.comments, response.data] }
-            : review
-        )
-      );
-    } catch (error) {
-      console.error('댓글 작성 중 오류 발생:', error);
-    }
-  };
 
   return (
     <Container>
@@ -225,7 +179,9 @@ function Product() {
                   >
                     {/* 수정/삭제 버튼 */}
                     <EditButton
-                      onClick={() => handleEditClick(review.reviewId)}
+                      onClick={() =>
+                        navigate(`/edit-review/${review.reviewId}`)
+                      }
                     >
                       게시글 수정/삭제
                     </EditButton>
@@ -239,64 +195,7 @@ function Product() {
               </BoardContent>
               <BottomBar />
               <BoardTt>{review.reviewTitle}</BoardTt>
-              <BoardText>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  {review.reviewContent}
-                </div>
-              </BoardText>
-
-              {/* 댓글 작성 버튼 */}
-              <ButtonContainer
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  width: '100%',
-                }}
-              >
-                <CommentButton
-                  onClick={() => setIsCommenting(true)} // 버튼 클릭 시 입력창 표시
-                >
-                  댓글 작성
-                </CommentButton>
-              </ButtonContainer>
-
-              {/* 댓글 입력창 */}
-              {isCommenting && (
-                <div style={{ marginTop: '10px' }}>
-                  <textarea
-                    value={newCommentContent}
-                    onChange={(e) => setNewCommentContent(e.target.value)}
-                    placeholder="댓글을 작성하세요..."
-                    rows="4"
-                    style={{ width: '100%', marginBottom: '10px' }}
-                  />
-                  <ButtonContainer>
-                    <SubmitButton
-                      onClick={() => {
-                        postComment(review.reviewId, newCommentContent);
-                        setIsCommenting(false); // 댓글 작성 후 입력창 닫기
-                        setNewCommentContent(''); // 입력 내용 초기화
-                      }}
-                    >
-                      댓글 작성하기
-                    </SubmitButton>
-                  </ButtonContainer>
-                </div>
-              )}
-
-              {/* 댓글 목록 */}
-              {review.comments && review.comments.length > 0 && (
-                <div style={{ marginTop: '10px' }}>
-                  {review.comments.map((comment, idx) => (
-                    <div key={idx}>
-                      <Comment>
-                        <strong>{comment.userName}</strong>
-                        <p>{comment.commentContent}</p>
-                      </Comment>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <BoardText>{review.reviewContent}</BoardText>
             </BoardItem>
           ))}
         </BoardList>
@@ -555,34 +454,4 @@ const LoadingContainer = styled.div`
       transform: rotate(360deg);
     }
   }
-`;
-
-const CommentButton = styled.button`
-  padding: 10px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-`;
-
-const SubmitButton = styled.button`
-  padding: 10px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  margin-top: 10px;
-`;
-// 댓글 컨테이너 스타일
-const Comment = styled.div`
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
 `;
