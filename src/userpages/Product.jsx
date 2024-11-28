@@ -213,6 +213,7 @@ function Product() {
               <BoardContent>
                 <BoardUser>
                   <ProfileIcon />
+                  {review.username}
                 </BoardUser>
                 <ButtonContainer>
                   <div

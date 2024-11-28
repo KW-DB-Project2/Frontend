@@ -81,7 +81,7 @@ const QnA = () => {
                 <UserContainer>
                   <QnAUser>
                     <ProfileIcon />
-                    사용자 이름
+                    {review.username}
                   </QnAUser>
                 </UserContainer>
                 <QnAContent>{review.askContent}</QnAContent>
