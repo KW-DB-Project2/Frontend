@@ -7,6 +7,7 @@ import { FaExclamationTriangle, FaSearch, FaUserCircle } from 'react-icons/fa';
 import { FiLoader } from 'react-icons/fi';
 // 컴포넌트 임포트
 import { AuthContext } from '../context/AuthContext';
+import Review from './Review';
 
 function Product() {
   const { user, token } = useContext(AuthContext);
