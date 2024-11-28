@@ -17,31 +17,29 @@ function Manage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 상품 데이터 가져오기
+    // 내 상품 데이터 가져오기
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_URI}/product`,
+          `${import.meta.env.VITE_APP_URI}/product/mypage`, // 변경된 API 경로
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token}`, // 인증 토큰
             },
           }
         );
 
-        // 로그인한 유저 ID에 맞는 상품 필터링
-        const userProducts = response.data.filter(
-          (product) => product.userId === user.id
-        );
-        setProducts(userProducts);
+        // 응답받은 상품 데이터를 상태에 설정
+        setProducts(response.data);
         setLoading(false);
       } catch (error) {
         console.error('상품 데이터를 가져오는 중 오류 발생:', error);
+        setLoading(false); // 오류 발생 시 로딩 상태 끝내기
       }
     };
 
-    fetchProducts();
-  }, [token]);
+    fetchProducts(); // 상품 데이터 요청 호출
+  }, [token]); // token이 변경될 때마다 실행
 
   const handleDelete = async (productId) => {
     if (window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {

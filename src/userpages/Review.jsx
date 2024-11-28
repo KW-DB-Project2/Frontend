@@ -11,7 +11,7 @@ import { AuthContext } from '../context/AuthContext';
 function Review({ productid }) {
   const [reviews, setReviews] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const { token } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
+  const { token, userId } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
   const navigate = useNavigate(); // 네비게이션 훅
 
   // 상품 리뷰를 가져오는 API 호출
@@ -73,6 +73,37 @@ function Review({ productid }) {
     navigate(`/write-review/${productid}/${reviewid}`);
   };
 
+  // 리뷰 신고 API 호출
+  const reportReview = async (reviewId, reviewContent) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_URI}/report/review`,
+        {
+          userId, // AuthContext에서 가져온 userId
+          productId: productid, // 현재 상품의 productid
+          reviewReportContent: reviewContent, // 신고 내용
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert('신고가 접수되었습니다.');
+      console.log(response.data); // 서버의 응답을 확인
+    } catch (error) {
+      console.error('리뷰 신고 중 오류 발생:', error);
+    }
+  };
+
+  // 신고 버튼 클릭 시 호출
+  const handleReportClick = (reviewId) => {
+    const reportContent = prompt('신고 내용을 입력하세요'); // 신고 내용 입력받기
+    if (reportContent) {
+      reportReview(reviewId, reportContent);
+    }
+  };
+
   return (
     <BoardSection>
       <BoardTitle>
@@ -122,7 +153,9 @@ function Review({ productid }) {
                     게시글 수정/삭제
                   </EditButton>
                   {/* 신고하기 버튼 */}
-                  <ReportButton>
+                  <ReportButton
+                    onClick={() => handleReportClick(review.reviewId)}
+                  >
                     <FaExclamationTriangle size={17} color="red" />
                     신고하기
                   </ReportButton>
