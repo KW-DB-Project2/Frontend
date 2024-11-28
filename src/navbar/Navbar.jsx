@@ -67,11 +67,12 @@ function Navbar() {
 
   // 판매하기/내상점 버튼 클릭 처리
   const handleButtonClick = (path) => {
-    if (token) {
-      navigate(path); // 로그인된 상태에서 페이지로 이동
-    } else {
-      openModal(); // 로그인 안된 상태면 로그인 모달 띄우기
-    }
+    navigate(path);
+    // if (token) {
+    //   navigate(path); // 로그인된 상태에서 페이지로 이동
+    // } else {
+    //   openModal(); // 로그인 안된 상태면 로그인 모달 띄우기
+    // }
   };
 
   return (
@@ -79,18 +80,18 @@ function Navbar() {
       <TopBar>
         {/* 관리자 로그인 버튼 */}
         <Left>
-          <NavButton as={Link} to="/admin/product-list">
+          <TopButton as={Link} to="/admin/product-list">
             관리자 페이지
-          </NavButton>
+          </TopButton>
         </Left>
         {/* 로그인/회원가입 버튼, 판매하기, 내상점 */}
         <Right>
           {token ? (
             <>
-              <NavButton onClick={handleLogout}>로그아웃</NavButton>
+              <TopButton onClick={handleLogout}>로그아웃</TopButton>
             </>
           ) : (
-            <NavButton onClick={openModal}>로그인/회원가입</NavButton>
+            <TopButton onClick={openModal}>로그인/회원가입</TopButton>
           )}
           {/* 로그인 모달 */}
           <LoginModal showModal={isModalOpen} closeModal={closeModal} />
@@ -136,8 +137,9 @@ const NavbarContainer = styled.div`
   right: 0;
   width: 100%;
   z-index: 1000; /* 다른 요소보다 위에 나타나게 하기 */
-  padding: 20px 0;
+  padding: 15px 0;
   border-bottom: 3px solid #333;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
 `;
 
 // TopBar
@@ -145,7 +147,7 @@ const TopBar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 15px;
   margin-bottom: 30px;
 `;
 
@@ -159,6 +161,21 @@ const Right = styled.div`
   display: flex;
   align-items: center;
   margin-right: 50px;
+`;
+
+const TopButton = styled.div`
+  background: none;
+  color: #333;
+  border: none;
+  padding: 0px 15px;
+  margin: 0 10px;
+  cursor: pointer;
+  font-size: 17px;
+
+  &:hover {
+    color: #333;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
 `;
 
 const NavButton = styled.div`
@@ -179,7 +196,7 @@ const NavButton = styled.div`
 
 const BottomBar = styled.div`
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   display: flex;
   justify-content: space-between; /* Market 이름과 검색창을 양쪽에 배치 */
   align-items: center;

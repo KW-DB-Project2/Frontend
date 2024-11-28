@@ -1,9 +1,15 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 import styled from 'styled-components';
 
 // Navbar 컴포넌트
 import Navbar from './navbar/Navbar';
+import AdminNavbar from './navbar/AdminNavbar';
 
 // adminpages
 import ProductList from './adminpages/ProductList';
@@ -13,7 +19,7 @@ import SalesVolume from './adminpages/SalesVolume';
 import UserList from './adminpages/UserList';
 import UserProduct from './adminpages/UserProduct';
 import UserReview from './adminpages/UserReview';
-import UserRpt from './adminpages/UserRpt';
+import ReviewReports from './adminpages/ReviewReports';
 
 // userpages
 import Add from './userpages/Add';
@@ -34,7 +40,7 @@ import Signup from './modal/Signup';
 import { AuthProvider } from './context/AuthContext';
 import LoginHandler from './modal/LoginHandler';
 
-//font
+// font
 import GlobalStyle from './fontStyle/GlobalStyle';
 
 function App() {
@@ -42,7 +48,7 @@ function App() {
     <AuthProvider>
       <Router>
         <GlobalStyle />
-        <Navbar />
+        <NavbarWrapper />
         <Container>
           <Routes>
             {/* 루트 경로에 상품 리스트 추가 */}
@@ -54,9 +60,15 @@ function App() {
             <Route path="/admin/review-list" element={<ReviewList />} />
             <Route path="/admin/sales-volume" element={<SalesVolume />} />
             <Route path="/admin/user-list" element={<UserList />} />
-            <Route path="/admin/user-product" element={<UserProduct />} />
-            <Route path="/admin/user-review" element={<UserReview />} />
-            <Route path="/admin/user-rpt" element={<UserRpt />} />
+            <Route
+              path="/admin/user-product/:productid"
+              element={<UserProduct />}
+            />
+            <Route
+              path="/admin/user-review/:reviewid"
+              element={<UserReview />}
+            />
+            <Route path="/admin/review-reports" element={<ReviewReports />} />
             {/* User Pages */}
             <Route path="/add" element={<Add />} />
             <Route path="/add/:productId" element={<Add />} />
@@ -87,10 +99,14 @@ function App() {
 
 export default App;
 
-const Container = styled.div`
-  margin: 220px 150px 0px 150px;
+// Navbar와 AdminNavbar를 경로에 따라 조건부로 렌더링
+const NavbarWrapper = () => {
+  const location = useLocation();
+  const isAdminPage = location.pathname.startsWith('/admin');
 
-  @media (max-width: 480px) {
-    margin: 0px 50px; /* 작은 화면에서는 더 좁은 여백 */
-  }
+  return isAdminPage ? <AdminNavbar /> : <Navbar />;
+};
+
+const Container = styled.div`
+  margin: 160px 150px 0px 150px;
 `;
