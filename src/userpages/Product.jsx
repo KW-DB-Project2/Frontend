@@ -382,6 +382,9 @@ const ProfileIcon = styled(FaUserCircle)`
 const BoardUser = styled.div`
   display: flex;
   align-items: center;
+  font-size: 17px;
+  color: #333;
+  font-weight: 500;
 `;
 
 const BoardTt = styled.h4`

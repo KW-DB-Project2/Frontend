@@ -12,13 +12,6 @@ const QnA = () => {
   const navigate = useNavigate(); // 페이지 이동을 위한 navigate
   const [reviews, setReviews] = useState([]); // Q&A 목록 저장
 
-  // 더미 데이터
-  const dummyData = [
-    { askId: 1, askContent: '이 제품은 언제 배송되나요?' },
-    { askId: 2, askContent: '제품 사용법에 대한 안내가 필요해요.' },
-    { askId: 3, askContent: '제품 색상은 어떤 색상들이 있나요?' },
-  ];
-
   // Q&A 목록 가져오기 (백엔드에서 데이터 가져오기)
   useEffect(() => {
     // 만약 백엔드에서 데이터를 가져오지 못하면 더미 데이터를 사용
@@ -28,7 +21,6 @@ const QnA = () => {
         .then((response) => setReviews(response.data))
         .catch((error) => {
           console.error('Q&A 조회 실패:', error);
-          setReviews(dummyData); // 백엔드 조회 실패 시 더미 데이터 사용
         });
     }
   }, [productid]);
