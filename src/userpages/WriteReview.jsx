@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 function WriteReview({ initialTitle = '', initialContent = '' }) {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext); // token을 AuthContext에서 가져옴
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,7 +17,12 @@ function WriteReview({ initialTitle = '', initialContent = '' }) {
   const handleDelete = async () => {
     if (window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
       try {
-        await axios.delete(`${SURL}/reviews/${reviewid}`);
+        // 헤더에 Authorization 토큰 추가
+        await axios.delete(`${SURL}/reviews/${reviewid}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         alert('리뷰가 성공적으로 삭제되었습니다!');
         navigate(`/product/${productid}`);
       } catch (error) {
@@ -32,7 +37,12 @@ function WriteReview({ initialTitle = '', initialContent = '' }) {
     if (reviewid) {
       const fetchReview = async () => {
         try {
-          const response = await axios.get(`${SURL}/reviews/${reviewid}`);
+          // 헤더에 Authorization 토큰 추가
+          const response = await axios.get(`${SURL}/reviews/${reviewid}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
           const review = response.data;
           setTitle(review.reviewTitle);
           setContent(review.reviewContent);
@@ -43,7 +53,7 @@ function WriteReview({ initialTitle = '', initialContent = '' }) {
       };
       fetchReview();
     }
-  }, [reviewid]);
+  }, [reviewid, token]); // token 의존성 추가
 
   // 제목, 내용 변경 처리 함수
   const handleTitleChange = (e) => setTitle(e.target.value);
@@ -68,17 +78,33 @@ function WriteReview({ initialTitle = '', initialContent = '' }) {
 
       if (reviewid) {
         // 수정 요청
-        await axios.put(`${SURL}/reviews`, {
-          ...payload,
-          reviewId: reviewid,
-        });
+        await axios.put(
+          `${SURL}/reviews`,
+          {
+            ...payload,
+            reviewId: reviewid,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         alert('리뷰가 성공적으로 수정되었습니다!');
       } else {
         // 작성 요청
-        await axios.post(`${SURL}/reviews`, {
-          ...payload,
-          productId: productid,
-        });
+        await axios.post(
+          `${SURL}/reviews`,
+          {
+            ...payload,
+            productId: productid,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         alert('리뷰가 성공적으로 작성되었습니다!');
       }
 
