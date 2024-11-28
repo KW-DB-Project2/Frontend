@@ -14,8 +14,6 @@ function Product() {
   const navigate = useNavigate(); // 네비게이션 훅
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
-  const [newComment, setNewComment] = useState('');
-  const [isCommenting, setIsCommenting] = useState(null); // 어떤 게시글에서 댓글을 쓸지 관리
   const [searchKeyword, setSearchKeyword] = useState(''); // 검색 키워드 관리
 
   // 상품 정보 가져오기
@@ -85,110 +83,6 @@ function Product() {
       console.error('리뷰 검색 중 오류 발생:', error);
     }
   };
-
-  // 댓글 작성
-  const handleAddComment = async (index, type) => {
-    if (newComment.trim() === '') return;
-
-    // reviews 상태에 있는 데이터를 사용하여 댓글 작성에 필요한 DTO 구성
-    const { userId, productId, reviewId } = reviews[index];
-
-    const commentData = {
-      userId,
-      productId,
-      reviewId,
-      commentContent: newComment, // 추가된 댓글 내용만 포함
-    };
-
-    console.log(commentData);
-
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_APP_URI}/comments`,
-        commentData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // 댓글 작성 후 리뷰 업데이트
-      const updatedReviews = [...reviews];
-      updatedReviews[index].comments.push(response.data);
-      setReviews(updatedReviews);
-      setNewComment('');
-      setIsCommenting(null); // 댓글 작성 완료 후 input 숨기기
-    } catch (error) {
-      console.error('댓글 작성 중 오류 발생:', error);
-    }
-  };
-
-  // 댓글 작성 취소 함수
-  const handleCancelComment = () => {
-    setNewComment(''); // 입력창 초기화
-    setIsCommenting(null); // 댓글 입력란 숨기기
-  };
-
-  // // 댓글 수정
-  // const handleEditComment = async (commentId, updatedContent) => {
-  //   const updatedData = { commentContent: updatedContent };
-
-  //   try {
-  //     const response = await axios.put(
-  //       `${import.meta.env.VITE_APP_URI}/comments/${commentId}`,
-  //       updatedData,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-  //     // 수정된 댓글 업데이트
-  //     const updatedReviews = reviews.map((review) => {
-  //       if (review.comments) {
-  //         review.comments = review.comments.map((comment) =>
-  //           comment.commentId === commentId
-  //             ? { ...comment, commentContent: updatedContent }
-  //             : comment
-  //         );
-  //       }
-  //       return review;
-  //     });
-  //     setReviews(updatedReviews);
-  //   } catch (error) {
-  //     console.error('댓글 수정 중 오류 발생:', error);
-  //   }
-  // };
-
-  // // 댓글 삭제
-  // const handleDeleteComment = async (commentId) => {
-  //   try {
-  //     await axios.delete(
-  //       `${import.meta.env.VITE_APP_URI}/comments/${commentId}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //         params: {
-  //           userId: user.id,
-  //         },
-  //       }
-  //     );
-
-  //     // 삭제된 댓글 제거
-  //     const updatedReviews = reviews.map((review) => {
-  //       if (review.comments) {
-  //         review.comments = review.comments.filter(
-  //           (comment) => comment.commentId !== commentId
-  //         );
-  //       }
-  //       return review;
-  //     });
-  //     setReviews(updatedReviews);
-  //   } catch (error) {
-  //     console.error('댓글 삭제 중 오류 발생:', error);
-  //   }
-  // };
 
   // 검색 키워드 입력 시 업데이트
   const handleSearchChange = (e) => {
@@ -288,40 +182,8 @@ function Product() {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   {review.reviewContent}
                 </div>
-                {isCommenting !== index && (
-                  <CommentButton onClick={() => setIsCommenting(index)}>
-                    댓글 달기
-                  </CommentButton>
-                )}
               </BoardText>
               <BottomBar />
-              <CommentSection>
-                {review.comments &&
-                  review.comments.map((comment, idx) => (
-                    <Comment key={idx}>
-                      <strong>ㄴ </strong>
-                      {comment.commentContent}
-                    </Comment>
-                  ))}
-                {/* 댓글 작성 중일 때만 댓글 입력창과 버튼 표시 */}
-                {isCommenting === index && (
-                  <>
-                    <CommentInput
-                      type="text"
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                    />
-                    <div>
-                      <CommentButton onClick={() => handleAddComment(index)}>
-                        작성
-                      </CommentButton>
-                      <CommentButton onClick={handleCancelComment}>
-                        취소
-                      </CommentButton>
-                    </div>
-                  </>
-                )}
-              </CommentSection>
             </BoardItem>
           ))}
         </BoardList>
@@ -441,6 +303,7 @@ const QnAButton = styled.button`
   align-self: flex-end;
   font-size: 20px;
 `;
+
 /* board */
 const BoardSection = styled.div`
   margin-top: 40px;
@@ -477,133 +340,78 @@ const BoardItem = styled.div`
 `;
 
 const ProfileIcon = styled(FaUserCircle)`
-  color: #ccc;
-  font-size: 25px;
-  margin-right: 15px;
+  margin-right: 10px;
 `;
 
 const BoardUser = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const BoardTt = styled.h4`
+  font-size: 20px;
+  color: #333;
   font-weight: 500;
-  color: #555;
-  margin-bottom: 5px;
-  font-size: 17px;
 `;
 
-const BoardTt = styled.div`
-  font-weight: 600;
-  font-size: 17px;
-  margin-bottom: 10px;
-`;
-
-const BoardText = styled.div`
-  font-size: 17px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const CommentSection = styled.div`
+const BoardText = styled.p`
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
   margin-top: 10px;
+`;
+
+/* 검색창 */
+const SearchContainer = styled.div`
   display: flex;
   align-items: center;
+  margin-right: 50px;
 `;
 
-const Comment = styled.div`
-  margin-top: 5px;
-  font-size: 14px;
-  color: #333;
-`;
-
-const CommentInput = styled.input`
-  background-color: white;
-  color: #333;
+const SearchInput = styled.input`
+  padding: 10px;
+  font-size: 18px;
   border: 1px solid #ccc;
-  padding: 10px 20px;
-  cursor: pointer;
   border-radius: 5px;
-  font-size: 12px;
-  width: 300px;
+  width: 200px;
 `;
 
-const CommentButton = styled.button`
+const SearchButton = styled.button`
+  padding: 10px;
   background-color: #333;
   color: white;
   border: none;
-  padding: 10px 20px;
-  cursor: pointer;
   border-radius: 5px;
-  font-size: 12px;
+  cursor: pointer;
+  margin-left: 10px;
 
-  align-self: flex-start;
   &:hover {
     opacity: 0.8;
   }
 `;
 
 const WriteButton = styled.button`
-  color: #333;
-  border: 1px solid #333;
-  padding: 10px 30px;
-  cursor: pointer;
+  padding: 10px 20px;
+  background-color: #3b82f6;
+  color: white;
+  font-size: 16px;
   border-radius: 5px;
-  font-size: 14px;
-  margin-top: 20px;
-  align-self: flex-start;
+  border: none;
+  cursor: pointer;
+
   &:hover {
-    border: 1px solid #333;
-    color: #aaa;
+    opacity: 0.9;
   }
 `;
 
 const LoadingContainer = styled.div`
-  position: fixed; /* 화면에 고정 */
-  top: 50%; /* 화면의 세로 중앙 */
-  left: 50%; /* 화면의 가로 중앙 */
-  transform: translate(-50%, -50%); /* 정확히 중앙에 맞추기 위해 이동 */
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
-
+  height: 60vh;
+  font-size: 25px;
+  color: #999;
   .loading-icon {
-    animation: rotate 1s linear infinite;
-  }
-
-  @keyframes rotate {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-`;
-
-const SearchContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin: 20px 0px 20px 50px;
-`;
-
-const SearchInput = styled.input`
-  padding: 8px 15px;
-  border: 2px solid #ccc;
-  margin-right: 10px;
-  border-radius: 15px;
-  width: 300px;
-  height: 20px;
-  font-size: 17px;
-`;
-
-const SearchButton = styled.div`
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  margin-left: 10px;
-
-  &:hover {
-    opacity: 0.7;
+    margin-right: 10px;
   }
 `;

@@ -31,6 +31,7 @@ import WriteReview from './userpages/WriteReview';
 import Home from './userpages/Home';
 import Search from './userpages/Search';
 import QnA from './userpages/QnA';
+import WriteComment from './userpages/WriteComment';
 
 // modal
 import Login from './modal/Login';
@@ -81,6 +82,7 @@ function App() {
               path="/write-review/:productid/:reviewid"
               element={<WriteReview />}
             />
+            <Route path="/write-comment" element={<WriteComment />} />
             <Route path="/qna" element={<QnA />} />
             <Route path="/Search" element={<Search />} />
             {/* Modal Pages */}
