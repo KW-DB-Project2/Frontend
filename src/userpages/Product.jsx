@@ -88,20 +88,39 @@ function Product() {
     <Container>
       <Content>
         <Image
-          src={`data:image/png;base64,${product.productImg}`}
+          src={data:image/png;base64,${product.productImg}}
           alt={product.productTitle || '상품 이미지'}
         />
         <Details>
           <ProductName>{product.productTitle}</ProductName>
           <PriceContainer>
             <Price>{product.productPrice.toLocaleString()}원</Price>
+            <ReportButton>
+              <FaExclamationTriangle size={17} color="red" />
+              신고하기
+            </ReportButton>
           </PriceContainer>
           <BottomBar />
+          <div style={{ fontSize: '19px' }}>상품정보</div>
+          <BottomBar />
           <Description>{product.productContent}</Description>
+          <ButtonContainer
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              width: '100%',
+            }}
+          >
+            <QnAButton onClick={() => navigate(`/qna/${productid}`)}>
+              문의하기
+            </QnAButton>
+            <BuyButton>구매하기</BuyButton>
+          </ButtonContainer>
         </Details>
       </Content>
+      <br />
+      <br />
       <BottomBar />
-      <Review productid={productid} />
 
       {/* 상품 신고 폼 */}
       <ReportSection>
@@ -116,6 +135,7 @@ function Product() {
           <SuccessMessage>신고가 성공적으로 접수되었습니다.</SuccessMessage>
         )}
       </ReportSection>
+      <Review productid={productid} />
     </Container>
   );
 }
@@ -127,6 +147,7 @@ const Container = styled.div`
   width: 1500px;
   margin-top: 20px;
   padding: 50px;
+  margin-top: 0;
   display: flex;
   flex-direction: column;
 `;
@@ -171,6 +192,21 @@ const Price = styled.div`
   font-weight: 500;
 `;
 
+const ReportButton = styled.div`
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  color: red;
+  border-radius: 5px;
+  svg {
+    margin-right: 5px;
+  }
+`;
+
 const BottomBar = styled.div`
   height: 2px;
   width: 100%;
@@ -183,11 +219,50 @@ const Description = styled.p`
   margin-bottom: 100px;
 `;
 
+const BoardContent = styled.div`
+  display: flex;
+  justify-content: space-between; /* 왼쪽은 BoardUser, 오른쪽은 ButtonContainer */
+  align-items: center; /* 세로 정렬 */
+  width: 100%;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px; /* 버튼들 사이 간격 */
+`;
+
+const BuyButton = styled.button`
+  padding: 10px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 150px;
+  font-size: 20px;
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+const QnAButton = styled.button`
+  padding: 10px;
+  background-color: white;
+  color: #ccc;
+  border: none;
+  cursor: pointer;
+  width: 150px;
+  align-self: flex-end;
+  font-size: 20px;
+`;
+
+
 const LoadingContainer = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: fixed; /* 화면에 고정 */
+  top: 50%; /* 화면의 세로 중앙 */
+  left: 50%; /* 화면의 가로 중앙 */
+  transform: translate(-50%, -50%); /* 정확히 중앙에 맞추기 위해 이동 */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -205,43 +280,4 @@ const LoadingContainer = styled.div`
       transform: rotate(360deg);
     }
   }
-`;
-
-const ReportSection = styled.div`
-  margin-top: 40px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-
-  h3 {
-    margin-bottom: 10px;
-  }
-
-  textarea {
-    width: 100%;
-    height: 100px;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-
-  button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #0056b3;
-    }
-  }
-`;
-
-const SuccessMessage = styled.p`
-  color: green;
-  margin-top: 10px;
-  font-size: 14px;
 `;
