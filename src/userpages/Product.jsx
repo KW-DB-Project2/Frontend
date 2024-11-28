@@ -173,7 +173,26 @@ function Product() {
               <BoardUser>
                 <ProfileIcon />
               </BoardUser>
-
+              {/* 버튼들을 오른쪽 끝으로 정렬 */}
+              <ButtonContainer>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    width: '100%',
+                  }}
+                >
+                  {/* 수정/삭제 버튼 */}
+                  <EditButton onClick={() => handleEditClick(review.reviewId)}>
+                    게시글 수정/삭제
+                  </EditButton>
+                  {/* 신고하기 버튼 */}
+                  <ReportButton>
+                    <FaExclamationTriangle size={17} color="red" />
+                    신고하기
+                  </ReportButton>
+                </div>
+              </ButtonContainer>
               <BottomBar />
               <BoardTt>{review.reviewTitle}</BoardTt>
               <BoardText>
@@ -181,13 +200,6 @@ function Product() {
                   {review.reviewContent}
                 </div>
               </BoardText>
-              {/* 수정/삭제 버튼 추가 */}
-              <ButtonContainer>
-                <EditButton onClick={() => handleEditClick(review.reviewId)}>
-                  수정/삭제
-                </EditButton>
-              </ButtonContainer>
-              <BottomBar />
             </BoardItem>
           ))}
         </BoardList>
@@ -409,16 +421,13 @@ const WriteButton = styled.button`
 `;
 
 const EditButton = styled.button`
-  background-color: #f0f0f0;
+  background-color: white;
   color: #666;
-  font-size: 12px;
+  font-size: 14px;
   padding: 5px 10px;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
-  &:hover {
-    background-color: #e0e0e0;
-  }
 `;
 
 const LoadingContainer = styled.div`

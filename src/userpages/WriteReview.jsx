@@ -20,6 +20,9 @@ function WriteReview({ reviewId, initialTitle = '', initialContent = '' }) {
 
   // 리뷰 삭제 처리 함수
   const handleDelete = async () => {
+    console.log('reviewid:', reviewid);
+    console.log('reviewid 타입:', typeof reviewid);
+
     if (window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
       try {
         await axios.delete(`${SURL}/reviews/${reviewid}`);
