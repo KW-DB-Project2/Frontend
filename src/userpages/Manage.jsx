@@ -66,6 +66,44 @@ function Manage() {
     }
   };
 
+  const handleStatus = async (productId) => {
+    // 현재 상태를 찾음
+    const product = products.find((product) => product.productId === productId);
+    const newStatus = !product.productStatus; // 판매 상태 반전
+
+    if (window.confirm('판매 상태를 변경하시겠습니까?')) {
+      try {
+        // PUT 요청을 통해 상태 변경
+        await axios.put(
+          `${import.meta.env.VITE_APP_URI}/product/${productId}`,
+          {
+            ...product,
+            productStatus: newStatus, // 반전된 상태
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // 상태 변경 후, 상품 상태 업데이트
+        setProducts((prevProducts) =>
+          prevProducts.map((prod) =>
+            prod.productId === productId
+              ? { ...prod, productStatus: newStatus }
+              : prod
+          )
+        );
+
+        alert('판매 상태가 성공적으로 업데이트되었습니다.');
+      } catch (error) {
+        console.error('상품 상태 변경 중 오류 발생:', error);
+        alert('상품 상태 변경에 실패했습니다.');
+      }
+    }
+  };
+
   const filteredProducts = products.filter((product) => {
     const title = product.productTitle || '';
     const matchesStatus =
@@ -174,6 +212,9 @@ function Manage() {
               </Button>
               <Button onClick={() => handleDelete(product.productId)}>
                 삭제
+              </Button>
+              <Button onClick={() => handleStatus(product.productId)}>
+                판매 상태
               </Button>
             </ProductItem>
           </ProductRow>
