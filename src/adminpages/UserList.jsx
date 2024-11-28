@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaUserCircle } from 'react-icons/fa'; // Profile Icon으로 FaUserCircle 사용
 
 // 더미 데이터 배열
 const users = [
-  { id: 1, name: '회원 1', image: 'https://via.placeholder.com/50' },
-  { id: 2, name: '회원 2', image: 'https://via.placeholder.com/50' },
-  { id: 3, name: '회원 3', image: 'https://via.placeholder.com/50' },
-  { id: 4, name: '회원 4', image: 'https://via.placeholder.com/50' },
-  { id: 5, name: '회원 5', image: 'https://via.placeholder.com/50' },
-  { id: 6, name: '회원 6', image: 'https://via.placeholder.com/50' },
-  { id: 3, name: '회원 3', image: 'https://via.placeholder.com/50' },
-  { id: 4, name: '회원 4', image: 'https://via.placeholder.com/50' },
-  { id: 5, name: '회원 5', image: 'https://via.placeholder.com/50' },
-  { id: 6, name: '회원 6', image: 'https://via.placeholder.com/50' },
+  { id: 1, name: '회원 1' },
+  { id: 2, name: '회원 2' },
+  { id: 3, name: '회원 3' },
+  { id: 4, name: '회원 4' },
+  { id: 5, name: '회원 5' },
+  { id: 6, name: '회원 6' },
+  { id: 3, name: '회원 3' },
+  { id: 4, name: '회원 4' },
+  { id: 5, name: '회원 5' },
+  { id: 6, name: '회원 6' },
 ];
 
 function UserList() {
@@ -42,7 +42,9 @@ function UserList() {
         {filteredUsers.map((user) => (
           <UserRow key={user.id}>
             <UserProfile>
-              <UserImage src={user.image} alt="Profile" />
+              <ProfileIcon>
+                <FaUserCircle size={50} color="#ccc" />
+              </ProfileIcon>
               <UserName>{user.name}</UserName>
             </UserProfile>
             <ActionButtons>
@@ -63,6 +65,7 @@ const Container = styled.div`
   padding: 20px 40px;
   width: 1500px;
 `;
+
 const Title = styled.h1`
   font-size: 24px;
   color: #333;
@@ -82,7 +85,6 @@ const SearchInput = styled.input`
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  item-self: flex-end;
 `;
 
 const SearchButton = styled.button`
@@ -116,11 +118,15 @@ const UserProfile = styled.div`
   align-items: center;
 `;
 
-const UserImage = styled.img`
+const ProfileIcon = styled.div`
   width: 50px;
   height: 50px;
-  border-radius: 50%;
   margin-right: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #f0f0f0;
 `;
 
 const UserName = styled.div`

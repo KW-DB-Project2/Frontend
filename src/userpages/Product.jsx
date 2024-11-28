@@ -156,6 +156,11 @@ function Product() {
               value={searchKeyword}
               onChange={handleSearchChange}
               placeholder="리뷰 검색어를 입력하세요..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearchClick();
+                }
+              }}
             />
             <SearchButton onClick={handleSearchClick}>
               <FaSearch size={23} color="#333" />
@@ -173,7 +178,7 @@ function Product() {
             <BoardItem key={index}>
               <BoardUser>
                 <ProfileIcon />
-                {user.name}
+                {user.id}
               </BoardUser>
 
               <BottomBar />
