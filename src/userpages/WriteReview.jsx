@@ -51,8 +51,9 @@ function WriteReview({ initialTitle = '', initialContent = '' }) {
           );
 
           // 반환된 리뷰 목록에서 현재 reviewid에 해당하는 리뷰를 찾기
+          console.log(typeof reviewid); // reviewid의 타입을 확인
           const review = response.data.find(
-            (r) => r.reviewId === Number(reviewid)
+            (r) => String(r.reviewId) === String(reviewid) // String으로 변환하여 비교
           );
 
           if (review) {
