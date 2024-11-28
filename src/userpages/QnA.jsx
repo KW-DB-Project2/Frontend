@@ -40,28 +40,30 @@ const QnA = () => {
 
   // Q&A 삭제 요청
   const handleDelete = (askId) => {
-    const userId = user.id; // 예시: 로그인한 사용자 ID를 가져와야 합니다.
-    const askContent = reviews.find(
-      (review) => review.askId === askId
-    ).askContent;
+    if (window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
+      const userId = user.id;
+      const askContent = reviews.find(
+        (review) => review.askId === askId
+      ).askContent;
 
-    axios
-      .delete(`${import.meta.env.VITE_APP_URI}/ask/${askId}`, {
-        data: {
-          userId,
-          productId: productid,
-          askContent,
-        },
-      })
-      .then((response) => {
-        if (response.data === 'delete success') {
-          setReviews(reviews.filter((review) => review.askId !== askId)); // 삭제 후 리뷰 목록 업데이트
-        }
-      })
-      .catch((error) => {
-        console.error('Q&A 삭제 실패:', error);
-        alert('삭제 실패');
-      });
+      axios
+        .delete(`${import.meta.env.VITE_APP_URI}/ask/${askId}`, {
+          data: {
+            userId,
+            productId: productid,
+            askContent,
+          },
+        })
+        .then((response) => {
+          if (response.data === 'delete success') {
+            setReviews(reviews.filter((review) => review.askId !== askId)); // 삭제 후 리뷰 목록 업데이트
+          }
+        })
+        .catch((error) => {
+          console.error('Q&A 삭제 실패:', error);
+          alert('삭제 실패');
+        });
+    }
   };
 
   return (
@@ -71,20 +73,24 @@ const QnA = () => {
         <WriteButton onClick={handleWrite}>글쓰기</WriteButton>
 
         <QnAList>
-          {reviews.map((review) => (
-            <QnAItem key={review.askId}>
-              <UserContainer>
-                <QnAUser>
-                  <ProfileIcon />
-                  사용자 이름
-                </QnAUser>
-              </UserContainer>
-              <QnAContent>{review.askContent}</QnAContent>
-              <DeleteButton onClick={() => handleDelete(review.askId)}>
-                삭제
-              </DeleteButton>
-            </QnAItem>
-          ))}
+          {reviews.length === 0 ? (
+            <NoQnA>문의를 작성해주세요...</NoQnA> // 리뷰 목록이 없으면 "문의가 없습니다." 메시지 표시
+          ) : (
+            reviews.map((review) => (
+              <QnAItem key={review.askId}>
+                <UserContainer>
+                  <QnAUser>
+                    <ProfileIcon />
+                    사용자 이름
+                  </QnAUser>
+                </UserContainer>
+                <QnAContent>{review.askContent}</QnAContent>
+                <DeleteButton onClick={() => handleDelete(review.askId)}>
+                  삭제
+                </DeleteButton>
+              </QnAItem>
+            ))
+          )}
         </QnAList>
       </QnASection>
     </Container>
@@ -130,6 +136,13 @@ const WriteButton = styled.button`
 `;
 
 const QnAList = styled.div`
+  margin-top: 20px;
+`;
+
+const NoQnA = styled.div`
+  text-align: center;
+  color: #ccc;
+  font-size: 20px;
   margin-top: 20px;
 `;
 
