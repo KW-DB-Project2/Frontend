@@ -30,33 +30,46 @@ function WriteReview({ initialTitle = '', initialContent = '' }) {
         navigate(`/product/${productid}`);
       } catch (error) {
         console.error('삭제 실패:', error);
-        alert('리뷰 삭제 중 오류가 발생했습니다.');
+        alert('리뷰를 수정할 수 없습니다.');
       }
     }
   };
 
   // 리뷰 수정 시 기존 내용 불러오기
   useEffect(() => {
-    if (reviewid) {
+    if (reviewid && productid) {
       const fetchReview = async () => {
         try {
           // 헤더에 Authorization 토큰 추가
-          const response = await axios.get(`${SURL}/reviews/${reviewid}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          const review = response.data;
-          setTitle(review.reviewTitle);
-          setContent(review.reviewContent);
+          const response = await axios.get(
+            `${SURL}/reviews/product/${productid}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          // 반환된 리뷰 목록에서 현재 reviewid에 해당하는 리뷰를 찾기
+          const review = response.data.find((r) => r.reviewId === reviewid);
+
+          if (review) {
+            // 리뷰가 존재하는 경우 제목과 내용을 상태에 설정
+            setTitle(review.reviewTitle);
+            setContent(review.reviewContent);
+          } else {
+            // 리뷰가 없는 경우 경고 메시지 출력
+            alert('해당 리뷰를 찾을 수 없습니다.');
+          }
         } catch (error) {
           console.error('리뷰 정보를 불러오는 중 오류 발생:', error);
           alert('리뷰 정보를 불러오는 중 오류가 발생했습니다.');
         }
       };
+
       fetchReview();
     }
-  }, [reviewid, token]); // token 의존성 추가
+  }, [reviewid, productid, token]); // reviewid, productid, token 의존성 추가
 
   // 제목, 내용 변경 처리 함수
   const handleTitleChange = (e) => setTitle(e.target.value);
