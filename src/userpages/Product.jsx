@@ -53,7 +53,6 @@ function Product() {
             },
           }
         );
-        console.log(response.data);
         setReviews(response.data); // 서버에서 반환된 리뷰 데이터를 그대로 상태에 저장
       } catch (error) {
         console.error('리뷰를 가져오는 중 오류 발생:', error);
@@ -96,12 +95,9 @@ function Product() {
     }
   };
 
-  const handleWriteClick = (type) => {
-    if (type === 'review') {
-      navigate(`/write-review/${productid}`);
-    } else {
-      navigate('/qna');
-    }
+  // 리뷰 수정/삭제 버튼 클릭 시 해당 리뷰의 productid와 reviewid를 기반으로 이동
+  const handleEditClick = (reviewid) => {
+    navigate(`/write-review/${productid}/${reviewid}`);
   };
 
   if (!product) {
@@ -134,9 +130,7 @@ function Product() {
           <BottomBar />
           <Description>{product.productContent}</Description>
           <ButtonContainer>
-            <QnAButton onClick={() => handleWriteClick('qna')}>
-              문의하기
-            </QnAButton>
+            <QnAButton onClick={() => navigate('/qna')}>문의하기</QnAButton>
             <BuyButton>구매하기</BuyButton>
           </ButtonContainer>
         </Details>
@@ -168,7 +162,7 @@ function Product() {
           </SearchContainer>
           <RightAlign>
             {/* 글쓰기 버튼 */}
-            <WriteButton onClick={() => handleWriteClick('review')}>
+            <WriteButton onClick={() => navigate(`/write-review/${productid}`)}>
               글쓰기
             </WriteButton>
           </RightAlign>
@@ -178,7 +172,6 @@ function Product() {
             <BoardItem key={index}>
               <BoardUser>
                 <ProfileIcon />
-                {user.id}
               </BoardUser>
 
               <BottomBar />
@@ -188,6 +181,12 @@ function Product() {
                   {review.reviewContent}
                 </div>
               </BoardText>
+              {/* 수정/삭제 버튼 추가 */}
+              <ButtonContainer>
+                <EditButton onClick={() => handleEditClick(review.reviewId)}>
+                  수정/삭제
+                </EditButton>
+              </ButtonContainer>
               <BottomBar />
             </BoardItem>
           ))}
@@ -406,6 +405,19 @@ const WriteButton = styled.button`
   &:hover {
     border: 1px solid #333;
     color: #aaa;
+  }
+`;
+
+const EditButton = styled.button`
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 12px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover {
+    background-color: #e0e0e0;
   }
 `;
 

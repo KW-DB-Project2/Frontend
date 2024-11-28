@@ -44,23 +44,25 @@ function Manage() {
   }, [token]);
 
   const handleDelete = async (productId) => {
-    try {
-      await axios.delete(
-        `${import.meta.env.VITE_APP_URI}/product/${productId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    if (window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
+      try {
+        await axios.delete(
+          `${import.meta.env.VITE_APP_URI}/product/${productId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-      alert('상품이 성공적으로 삭제되었습니다.');
-      setProducts(
-        products.filter((product) => product.productId !== productId)
-      );
-    } catch (error) {
-      console.error('상품 삭제 중 오류 발생:', error);
-      alert('상품 삭제에 실패했습니다.');
+        alert('상품이 성공적으로 삭제되었습니다.');
+        setProducts(
+          products.filter((product) => product.productId !== productId)
+        );
+      } catch (error) {
+        console.error('상품 삭제 중 오류 발생:', error);
+        alert('상품 삭제에 실패했습니다.');
+      }
     }
   };
 

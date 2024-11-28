@@ -5,17 +5,32 @@ import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
 /* 토큰 Context */
 import { AuthContext } from '../context/AuthContext';
 
-function WriteQA({ reviewId, initialTitle = '', initialContent = '' }) {
+function WriteReview({ reviewId, initialTitle = '', initialContent = '' }) {
   const { user } = useContext(AuthContext); // AuthContext에서 user 가져오기
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { productid, reviewid } = useParams(); // URL 파라미터로 상품 ID 받아오기
   const navigate = useNavigate(); // useNavigate 훅 사용
+
   const handleTitleChange = (e) => setTitle(e.target.value);
   const handleContentChange = (e) => setContent(e.target.value);
 
   const SURL = import.meta.env.VITE_APP_URI;
+
+  // 리뷰 삭제 처리 함수
+  const handleDelete = async () => {
+    if (window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
+      try {
+        await axios.delete(`${SURL}/reviews/${reviewid}`);
+        alert('리뷰가 성공적으로 삭제되었습니다!');
+        navigate(`/product/${productid}`); // 삭제 후 해당 상품 페이지로 이동
+      } catch (error) {
+        console.error('삭제 실패:', error);
+        alert('리뷰 삭제 중 오류가 발생했습니다.');
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,7 +81,7 @@ function WriteQA({ reviewId, initialTitle = '', initialContent = '' }) {
   return (
     <Container>
       <Form onSubmit={handleSubmit}>
-        <Title>{reviewId ? 'Review 수정' : 'Review 작성'}</Title>
+        <Title>{reviewid ? 'Review 수정' : 'Review 작성'}</Title>
         <BottomBar />
         <Label>제목</Label>
         <Input
@@ -84,15 +99,20 @@ function WriteQA({ reviewId, initialTitle = '', initialContent = '' }) {
         />
         <ButtonContainer>
           <SubmitButton type="submit" disabled={isSubmitting}>
-            {isSubmitting ? '작성 중...' : reviewId ? '수정하기' : '제출하기'}
+            {isSubmitting ? '작성 중...' : reviewid ? '수정하기' : '제출하기'}
           </SubmitButton>
+          {reviewid && (
+            <DeleteButton type="button" onClick={handleDelete}>
+              삭제하기
+            </DeleteButton>
+          )}
         </ButtonContainer>
       </Form>
     </Container>
   );
 }
 
-export default WriteQA;
+export default WriteReview;
 
 const Container = styled.div`
   width: 1500px;
@@ -174,6 +194,22 @@ const SubmitButton = styled.button`
   font-size: 17px;
   margin-top: 20px;
   align-self: flex-start;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+const DeleteButton = styled.button`
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 30px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 17px;
+  margin-top: 20px;
+  margin-left: 10px;
 
   &:hover {
     opacity: 0.8;
