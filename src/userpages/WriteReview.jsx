@@ -17,10 +17,13 @@ function WriteReview({ initialTitle = '', initialContent = '' }) {
   const handleDelete = async () => {
     if (window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
       try {
-        // 헤더에 Authorization 토큰 추가
+        // 헤더에 Authorization 토큰 및 파라미터로 userId 추가
         await axios.delete(`${SURL}/reviews/${reviewid}`, {
+          params: {
+            userId: user.id, // 현재 로그인한 사용자의 ID
+          },
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Bearer 토큰 추가
           },
         });
         alert('리뷰가 성공적으로 삭제되었습니다!');
