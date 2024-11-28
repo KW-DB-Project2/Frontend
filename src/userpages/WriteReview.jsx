@@ -1,33 +1,25 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
-/* 토큰 Context */
+import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
-function WriteReview({ reviewId, initialTitle = '', initialContent = '' }) {
-  const { user } = useContext(AuthContext); // AuthContext에서 user 가져오기
+function WriteReview({ initialTitle = '', initialContent = '' }) {
+  const { user } = useContext(AuthContext);
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { productid, reviewid } = useParams(); // URL 파라미터로 상품 ID 받아오기
-  const navigate = useNavigate(); // useNavigate 훅 사용
-
-  const handleTitleChange = (e) => setTitle(e.target.value);
-  const handleContentChange = (e) => setContent(e.target.value);
-
+  const { productid, reviewid } = useParams();
+  const navigate = useNavigate();
   const SURL = import.meta.env.VITE_APP_URI;
 
   // 리뷰 삭제 처리 함수
   const handleDelete = async () => {
-    console.log('reviewid:', reviewid);
-    console.log('reviewid 타입:', typeof reviewid);
-
     if (window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
       try {
         await axios.delete(`${SURL}/reviews/${reviewid}`);
         alert('리뷰가 성공적으로 삭제되었습니다!');
-        navigate(`/product/${productid}`); // 삭제 후 해당 상품 페이지로 이동
+        navigate(`/product/${productid}`);
       } catch (error) {
         console.error('삭제 실패:', error);
         alert('리뷰 삭제 중 오류가 발생했습니다.');
@@ -35,13 +27,36 @@ function WriteReview({ reviewId, initialTitle = '', initialContent = '' }) {
     }
   };
 
+  // 리뷰 수정 시 기존 내용 불러오기
+  useEffect(() => {
+    if (reviewid) {
+      const fetchReview = async () => {
+        try {
+          const response = await axios.get(`${SURL}/reviews/${reviewid}`);
+          const review = response.data;
+          setTitle(review.reviewTitle);
+          setContent(review.reviewContent);
+        } catch (error) {
+          console.error('리뷰 정보를 불러오는 중 오류 발생:', error);
+          alert('리뷰 정보를 불러오는 중 오류가 발생했습니다.');
+        }
+      };
+      fetchReview();
+    }
+  }, [reviewid]);
+
+  // 제목, 내용 변경 처리 함수
+  const handleTitleChange = (e) => setTitle(e.target.value);
+  const handleContentChange = (e) => setContent(e.target.value);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title && !reviewid && !content) {
+    if (!title || !content) {
       alert('제목과 내용을 모두 작성해주세요.');
       return;
     }
+
     setIsSubmitting(true);
 
     try {
@@ -67,8 +82,7 @@ function WriteReview({ reviewId, initialTitle = '', initialContent = '' }) {
         alert('리뷰가 성공적으로 작성되었습니다!');
       }
 
-      // 리뷰 작성 또는 수정 후, 해당 상품 페이지로 이동
-      navigate(`/product/${productid}`); // 리뷰 작성 후 상품 페이지로 리디렉션
+      navigate(`/product/${productid}`);
 
       // 초기화
       setTitle('');

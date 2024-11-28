@@ -16,6 +16,29 @@ function Product() {
   const [reviews, setReviews] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState(''); // 검색 키워드 관리
 
+  // 더미 상품 데이터
+  const dummyProduct = {
+    productId: 1,
+    productTitle: '예시 상품',
+    productPrice: 10000,
+    productContent: '이 상품은 예시 상품입니다. 상세 내용이 없습니다.',
+    productImg: '', // 기본 이미지 경로 (이미지가 없으면 빈 문자열)
+  };
+
+  // 더미 리뷰 데이터
+  const dummyReviews = [
+    {
+      reviewId: 1,
+      reviewTitle: '예시 리뷰 1',
+      reviewContent: '이 상품은 정말 좋습니다!',
+    },
+    {
+      reviewId: 2,
+      reviewTitle: '예시 리뷰 2',
+      reviewContent: '가격 대비 품질이 우수합니다.',
+    },
+  ];
+
   // 상품 정보 가져오기
   useEffect(() => {
     const fetchProducts = async () => {
@@ -32,9 +55,10 @@ function Product() {
         const selectedProduct = products.find(
           (product) => product.productId === parseInt(productid)
         );
-        setProduct(selectedProduct);
+        setProduct(selectedProduct || dummyProduct); // 상품이 없으면 더미 데이터 사용
       } catch (error) {
         console.error('상품 정보를 가져오는 중 오류 발생:', error);
+        setProduct(dummyProduct); // 에러가 나면 더미 데이터 사용
       }
     };
 
@@ -53,9 +77,10 @@ function Product() {
             },
           }
         );
-        setReviews(response.data); // 서버에서 반환된 리뷰 데이터를 그대로 상태에 저장
+        setReviews(response.data.length ? response.data : dummyReviews); // 리뷰가 없으면 더미 데이터 사용
       } catch (error) {
         console.error('리뷰를 가져오는 중 오류 발생:', error);
+        setReviews(dummyReviews); // 에러가 나면 더미 데이터 사용
       }
     };
 
@@ -77,9 +102,10 @@ function Product() {
         }
       );
 
-      setReviews(response.data);
+      setReviews(response.data.length ? response.data : dummyReviews);
     } catch (error) {
       console.error('리뷰 검색 중 오류 발생:', error);
+      setReviews(dummyReviews); // 에러가 나면 더미 데이터 사용
     }
   };
 
@@ -129,8 +155,16 @@ function Product() {
           <div style={{ fontSize: '19px' }}>상품정보</div>
           <BottomBar />
           <Description>{product.productContent}</Description>
-          <ButtonContainer>
-            <QnAButton onClick={() => navigate('/qna')}>문의하기</QnAButton>
+          <ButtonContainer
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              width: '100%',
+            }}
+          >
+            <QnAButton onClick={() => navigate(`/qna/${productid}`)}>
+              문의하기
+            </QnAButton>
             <BuyButton>구매하기</BuyButton>
           </ButtonContainer>
         </Details>
@@ -170,29 +204,32 @@ function Product() {
         <BoardList>
           {reviews.map((review, index) => (
             <BoardItem key={index}>
-              <BoardUser>
-                <ProfileIcon />
-              </BoardUser>
-              {/* 버튼들을 오른쪽 끝으로 정렬 */}
-              <ButtonContainer>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    width: '100%',
-                  }}
-                >
-                  {/* 수정/삭제 버튼 */}
-                  <EditButton onClick={() => handleEditClick(review.reviewId)}>
-                    게시글 수정/삭제
-                  </EditButton>
-                  {/* 신고하기 버튼 */}
-                  <ReportButton>
-                    <FaExclamationTriangle size={17} color="red" />
-                    신고하기
-                  </ReportButton>
-                </div>
-              </ButtonContainer>
+              <BoardContent>
+                <BoardUser>
+                  <ProfileIcon />
+                </BoardUser>
+                <ButtonContainer>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'flex-end',
+                      width: '100%',
+                    }}
+                  >
+                    {/* 수정/삭제 버튼 */}
+                    <EditButton
+                      onClick={() => handleEditClick(review.reviewId)}
+                    >
+                      게시글 수정/삭제
+                    </EditButton>
+                    {/* 신고하기 버튼 */}
+                    <ReportButton>
+                      <FaExclamationTriangle size={17} color="red" />
+                      신고하기
+                    </ReportButton>
+                  </div>
+                </ButtonContainer>
+              </BoardContent>
               <BottomBar />
               <BoardTt>{review.reviewTitle}</BoardTt>
               <BoardText>
@@ -286,11 +323,17 @@ const Description = styled.p`
   margin-bottom: 100px;
 `;
 
+const BoardContent = styled.div`
+  display: flex;
+  justify-content: space-between; /* 왼쪽은 BoardUser, 오른쪽은 ButtonContainer */
+  align-items: center; /* 세로 정렬 */
+  width: 100%;
+`;
+
 const ButtonContainer = styled.div`
   display: flex;
-  align-self: flex-end;
-  gap: 10px; // 버튼 사이의 간격을 설정
-  margin-top: 20px; // 버튼의 위쪽 여백
+  justify-content: flex-end;
+  gap: 10px; /* 버튼들 사이 간격 */
 `;
 
 const BuyButton = styled.button`

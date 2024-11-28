@@ -1,95 +1,104 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import styled from 'styled-components';
-import { FaUserCircle, FaSearch } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
 
 const QnA = () => {
-  const [searchKeyword, setSearchKeyword] = useState('');
-  const [newComment, setNewComment] = useState('');
-  const [isCommenting, setIsCommenting] = useState(null);
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { user } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
+  const { productid } = useParams(); // URL에서 productid 추출
+  const navigate = useNavigate(); // 페이지 이동을 위한 navigate
+  const [reviews, setReviews] = useState([]); // Q&A 목록 저장
 
-  const handleWriteClick = () => {
-    // 글쓰기 로직 추가
-    console.log('글쓰기 버튼 클릭');
+  // 더미 데이터
+  const dummyData = [
+    { askId: 1, askContent: '이 제품은 언제 배송되나요?' },
+    { askId: 2, askContent: '제품 사용법에 대한 안내가 필요해요.' },
+    { askId: 3, askContent: '제품 색상은 어떤 색상들이 있나요?' },
+  ];
+
+  // Q&A 목록 가져오기 (백엔드에서 데이터 가져오기)
+  useEffect(() => {
+    // 만약 백엔드에서 데이터를 가져오지 못하면 더미 데이터를 사용
+    if (productid) {
+      axios
+        .get(`${import.meta.env.VITE_APP_URI}/ask/${productid}`) // 환경 변수 사용
+        .then((response) => setReviews(response.data))
+        .catch((error) => {
+          console.error('Q&A 조회 실패:', error);
+          setReviews(dummyData); // 백엔드 조회 실패 시 더미 데이터 사용
+        });
+    }
+  }, [productid]);
+
+  // Q&A 글쓰기 페이지로 이동
+  const handleWrite = () => {
+    navigate(`/write-qa/${productid}`);
   };
 
-  const handleAddComment = (index) => {
-    const updatedReviews = [...reviews];
-    updatedReviews[index].comments.push({ commentContent: newComment });
-    setReviews(updatedReviews);
-    setNewComment('');
-    setIsCommenting(null);
-  };
+  // Q&A 삭제 요청
+  const handleDelete = (askId) => {
+    const userId = user.id; // 예시: 로그인한 사용자 ID를 가져와야 합니다.
+    const askContent = reviews.find(
+      (review) => review.askId === askId
+    ).askContent;
 
-  const handleCancelComment = () => {
-    setNewComment('');
-    setIsCommenting(null);
+    axios
+      .delete(`${import.meta.env.VITE_APP_URI}/ask/${askId}`, {
+        data: {
+          userId,
+          productId: productid,
+          askContent,
+        },
+      })
+      .then((response) => {
+        if (response.data === 'delete success') {
+          setReviews(reviews.filter((review) => review.askId !== askId)); // 삭제 후 리뷰 목록 업데이트
+        }
+      })
+      .catch((error) => {
+        console.error('Q&A 삭제 실패:', error);
+      });
   };
 
   return (
-    <QnASection>
-      <QnATitle>
-        문의하기
-        <RightAlign>
-          <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
-        </RightAlign>
-      </QnATitle>
-      <QnAList>
-        {reviews.map((review, index) => (
-          <QnAItem key={index}>
-            <QnAUser>
-              <ProfileIcon />
-              사용자 이름
-            </QnAUser>
-            <QnATitleText>{review.reviewTitle}</QnATitleText>
-            <QnAContent>{review.reviewContent}</QnAContent>
-            <CommentSection>
-              {review.comments &&
-                review.comments.map((comment, idx) => (
-                  <Comment key={idx}>
-                    <strong>ㄴ </strong>
-                    {comment.commentContent}
-                  </Comment>
-                ))}
-              {isCommenting === index && (
-                <>
-                  <CommentInput
-                    type="text"
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                  />
-                  <div>
-                    <CommentButton onClick={() => handleAddComment(index)}>
-                      작성
-                    </CommentButton>
-                    <CommentButton onClick={handleCancelComment}>
-                      취소
-                    </CommentButton>
-                  </div>
-                </>
-              )}
-              {isCommenting !== index && (
-                <CommentButton onClick={() => setIsCommenting(index)}>
-                  댓글 달기
-                </CommentButton>
-              )}
-            </CommentSection>
-          </QnAItem>
-        ))}
-      </QnAList>
-      {loading && (
-        <LoadingContainer>
-          <div className="loading-icon">로딩 중...</div>
-        </LoadingContainer>
-      )}
-    </QnASection>
+    <Container>
+      <QnASection>
+        <QnATitle>Q&A</QnATitle>
+        <WriteButton onClick={handleWrite}>글쓰기</WriteButton>
+
+        <QnAList>
+          {reviews.map((review) => (
+            <QnAItem key={review.askId}>
+              <UserContainer>
+                <QnAUser>
+                  <ProfileIcon />
+                  사용자 이름
+                </QnAUser>
+              </UserContainer>
+              <QnAContent>{review.askContent}</QnAContent>
+              <DeleteButton onClick={() => handleDelete(review.askId)}>
+                삭제
+              </DeleteButton>
+            </QnAItem>
+          ))}
+        </QnAList>
+      </QnASection>
+    </Container>
   );
 };
 
 export default QnA;
 
 // 스타일 정의
+const Container = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+`;
+
 const QnASection = styled.div`
   margin-top: 40px;
   padding: 20px;
@@ -102,13 +111,6 @@ const QnATitle = styled.h3`
   font-size: 33px;
   color: #333;
   margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const RightAlign = styled.div`
-  margin-left: auto;
 `;
 
 const WriteButton = styled.button`
@@ -152,71 +154,33 @@ const QnAUser = styled.div`
   font-size: 17px;
 `;
 
-const QnATitleText = styled.div`
-  font-weight: 600;
-  font-size: 17px;
-  margin-bottom: 10px;
-`;
-
 const QnAContent = styled.div`
   font-size: 17px;
 `;
 
-const CommentSection = styled.div`
-  margin-top: 10px;
-`;
-
-const Comment = styled.div`
-  margin-top: 5px;
-  font-size: 14px;
-  color: #333;
-`;
-
-const CommentInput = styled.input`
-  background-color: white;
+const DeleteButton = styled.button`
+  background-color: #f4f4f4;
   color: #333;
   border: 1px solid #ccc;
-  padding: 10px 20px;
+  padding: 5px 15px;
   cursor: pointer;
   border-radius: 5px;
-  font-size: 12px;
-  width: 300px;
-`;
-
-const CommentButton = styled.button`
-  background-color: #333;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 12px;
+  font-size: 14px;
+  margin-top: 10px;
 
   &:hover {
-    opacity: 0.8;
+    background-color: #e4e4e4;
   }
 `;
 
-const LoadingContainer = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+const UserContainer = styled.div`
   display: flex;
-  justify-content: center;
   align-items: center;
-  flex-direction: column;
+  margin-bottom: 10px;
+`;
 
-  .loading-icon {
-    animation: rotate 1s linear infinite;
-  }
-
-  @keyframes rotate {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+const ErrorMessage = styled.div`
+  color: red;
+  font-size: 16px;
+  margin-top: 10px;
 `;

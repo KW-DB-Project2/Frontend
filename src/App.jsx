@@ -76,14 +76,14 @@ function App() {
             <Route path="/manage" element={<Manage />} />
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/product/:productid" element={<Product />} />
-            <Route path="/write-qa" element={<WriteQA />} />
+            <Route path="/write-qa/:productid" element={<WriteQA />} />
             <Route path="/write-review/:productid" element={<WriteReview />} />
             <Route
               path="/write-review/:productid/:reviewid"
               element={<WriteReview />}
             />
             <Route path="/write-comment" element={<WriteComment />} />
-            <Route path="/qna" element={<QnA />} />
+            <Route path="/qna/:productid" element={<QnA />} />
             <Route path="/Search" element={<Search />} />
             {/* Modal Pages */}
             <Route path="/login" element={<Login />} />
