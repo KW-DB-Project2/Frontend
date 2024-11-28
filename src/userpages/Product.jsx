@@ -1,20 +1,22 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 // 아이콘
+import { FaExclamationTriangle, FaSearch, FaUserCircle } from 'react-icons/fa';
 import { FiLoader } from 'react-icons/fi';
 // 컴포넌트 임포트
 import { AuthContext } from '../context/AuthContext';
-import Review from './Review'; // 분리한 리뷰 게시판 컴포넌트
+import Review from './Review';
 
 function Product() {
-  const { user, token } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
-  const { productid } = useParams(); // URL 파라미터에서 productid 값을 받음
-  const navigate = useNavigate(); // 네비게이션 훅
+  const { user, token } = useContext(AuthContext);
+  const { productid } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
+  const [reportContent, setReportContent] = useState('');
+  const [reportSuccess, setReportSuccess] = useState(false);
 
-  // 상품 정보 가져오기
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -30,15 +32,48 @@ function Product() {
         const selectedProduct = products.find(
           (product) => product.productId === parseInt(productid)
         );
-        setProduct(selectedProduct); // 실제 상품 데이터 사용
+        setProduct(selectedProduct);
       } catch (error) {
         console.error('상품 정보를 가져오는 중 오류 발생:', error);
-        setProduct(null); // 에러 발생 시 상품 정보 없다고 설정
+        setProduct(null);
       }
     };
 
     fetchProducts();
   }, [productid, token]);
+
+  const handleReportSubmit = async () => {
+    if (!reportContent) {
+      alert('신고 내용을 입력해주세요.');
+      return;
+    }
+
+    try {
+      const reportData = {
+        userId: user.userId,
+        productId: parseInt(productid),
+        productReportContent: reportContent,
+      };
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_URI}/report/product`,
+        reportData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        setReportSuccess(true);
+        alert('상품 신고가 접수되었습니다.');
+      }
+    } catch (error) {
+      console.error('상품 신고 중 오류 발생:', error);
+      alert('상품 신고에 실패했습니다.');
+    }
+  };
 
   if (!product) {
     return (
@@ -66,8 +101,21 @@ function Product() {
         </Details>
       </Content>
       <BottomBar />
-      {/* 리뷰 게시판 부분을 분리한 Review 컴포넌트로 대체 */}
       <Review productid={productid} />
+
+      {/* 상품 신고 폼 */}
+      <ReportSection>
+        <h3>상품 신고하기</h3>
+        <textarea
+          placeholder="상품 신고 사유를 입력해주세요."
+          value={reportContent}
+          onChange={(e) => setReportContent(e.target.value)}
+        />
+        <button onClick={handleReportSubmit}>신고 제출</button>
+        {reportSuccess && (
+          <SuccessMessage>신고가 성공적으로 접수되었습니다.</SuccessMessage>
+        )}
+      </ReportSection>
     </Container>
   );
 }
@@ -157,4 +205,43 @@ const LoadingContainer = styled.div`
       transform: rotate(360deg);
     }
   }
+`;
+
+const ReportSection = styled.div`
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+
+  h3 {
+    margin-bottom: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+`;
+
+const SuccessMessage = styled.p`
+  color: green;
+  margin-top: 10px;
+  font-size: 14px;
 `;
