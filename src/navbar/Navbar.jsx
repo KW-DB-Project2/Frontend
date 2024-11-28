@@ -13,7 +13,7 @@ import LoginModal from '../modal/Login';
 import { FaSearch, FaDollarSign, FaStore } from 'react-icons/fa';
 
 function Navbar() {
-  const { token, logout } = useContext(AuthContext); // token, logout 가져오기
+  const { user, token, logout } = useContext(AuthContext); // token, logout 가져오기
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태
   const navigate = useNavigate();
@@ -79,9 +79,11 @@ function Navbar() {
       <TopBar>
         {/* 관리자 로그인 버튼 */}
         <Left>
-          <TopButton as={Link} to="/admin/product-list">
-            관리자 페이지
-          </TopButton>
+          {user && user.role === 'ADMIN' && (
+            <TopButton as={Link} to="/admin/product-list">
+              관리자 페이지
+            </TopButton>
+          )}
         </Left>
         {/* 로그인/회원가입 버튼, 판매하기, 내상점 */}
         <Right>
