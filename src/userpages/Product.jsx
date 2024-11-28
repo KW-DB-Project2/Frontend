@@ -148,7 +148,7 @@ function Product() {
       {/* 리뷰 게시판 */}
       <BoardSection>
         <BoardTitle>
-          REVIEW
+          Review
           {/* 리뷰 검색 */}
           <SearchContainer>
             <SearchInput
@@ -365,53 +365,65 @@ const BoardText = styled.p`
 const SearchContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-right: 50px;
+  margin: 20px 0px 20px 50px;
 `;
 
 const SearchInput = styled.input`
-  padding: 10px;
-  font-size: 18px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 200px;
+  padding: 8px 15px;
+  border: 2px solid #ccc;
+  margin-right: 10px;
+  border-radius: 15px;
+  width: 300px;
+  height: 20px;
+  font-size: 17px;
 `;
 
 const SearchButton = styled.button`
-  padding: 10px;
-  background-color: #333;
-  color: white;
+  background: none;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
+  padding: 0;
   margin-left: 10px;
 
   &:hover {
-    opacity: 0.8;
-  }
+    opacity: 0.7;
 `;
 
 const WriteButton = styled.button`
-  padding: 10px 20px;
-  background-color: #3b82f6;
-  color: white;
-  font-size: 16px;
-  border-radius: 5px;
-  border: none;
+  color: #333;
+  border: 1px solid #333;
+  padding: 10px 30px;
   cursor: pointer;
-
+  border-radius: 5px;
+  font-size: 14px;
+  margin-top: 20px;
+  align-self: flex-start;
   &:hover {
-    opacity: 0.9;
+    border: 1px solid #333;
+    color: #aaa;
   }
 `;
 
 const LoadingContainer = styled.div`
+  position: fixed; /* 화면에 고정 */
+  top: 50%; /* 화면의 세로 중앙 */
+  left: 50%; /* 화면의 가로 중앙 */
+  transform: translate(-50%, -50%); /* 정확히 중앙에 맞추기 위해 이동 */
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 60vh;
-  font-size: 25px;
-  color: #999;
+  flex-direction: column;
+
   .loading-icon {
-    margin-right: 10px;
+    animation: rotate 1s linear infinite;
+  }
+
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
