@@ -200,7 +200,7 @@ function Manage() {
               />
             </ProductItem>
             <ProductItem width="200px">
-              {product.productStatus ? '판매 중' : '판매 종료'}
+              {product.productStatus ? '판매중' : '판매완료'}
             </ProductItem>
             <ProductItem width="150px">{product.productTitle}</ProductItem>
             <ProductItem width="140px">
@@ -214,7 +214,7 @@ function Manage() {
                 삭제
               </Button>
               <Button onClick={() => handleStatus(product.productId)}>
-                판매 상태
+                상태변경
               </Button>
             </ProductItem>
           </ProductRow>

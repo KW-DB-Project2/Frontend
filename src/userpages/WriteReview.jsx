@@ -30,7 +30,7 @@ function WriteReview({ initialTitle = '', initialContent = '' }) {
         navigate(`/product/${productid}`);
       } catch (error) {
         console.error('삭제 실패:', error);
-        alert('리뷰를 수정할 수 없습니다.');
+        alert('리뷰를 수정할 권한이 없습니다.');
       }
     }
   };
