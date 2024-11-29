@@ -8,7 +8,6 @@ function UserProduct() {
   const [product, setProduct] = useState(null); // 상품 데이터 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
-  const [message, setMessage] = useState(''); // 메시지 상태
 
   const SURL = import.meta.env.VITE_APP_URI;
 
@@ -45,7 +44,7 @@ function UserProduct() {
             {},
             { withCredentials: false }
           );
-          setMessage('유저가 정지되었습니다.');
+          alret('유저가 정지되었습니다.');
           break;
         case 'withdraw':
           alert('유저 탈퇴 처리');
@@ -55,7 +54,7 @@ function UserProduct() {
           response = await axios.delete(`${SURL}/admin/products/${productid}`, {
             withCredentials: false,
           });
-          setMessage('상품이 삭제되었습니다.');
+          alret('상품이 삭제되었습니다.');
           // 삭제 후 /admin/product-list 페이지로 이동
           window.location.href = '/admin/product-list';
           break;
@@ -68,7 +67,7 @@ function UserProduct() {
       }
     } catch (error) {
       console.error('API 요청 실패:', error);
-      setMessage('요청 처리에 실패했습니다.');
+      alret('요청 처리에 실패했습니다.');
     }
   };
 
@@ -79,7 +78,10 @@ function UserProduct() {
     <Container>
       <Content>
         <Image
-          src={product.productImg || 'https://via.placeholder.com/500x500'}
+          src={
+            `data:image/png;base64,${product.productImg}` ||
+            'https://via.placeholder.com/500x500'
+          }
           alt={product.productTitle || '상품 이미지'}
         />
         <Details>
@@ -102,7 +104,6 @@ function UserProduct() {
               상품 삭제
             </ActionButton>
           </ButtonContainer>
-          {message && <Message>{message}</Message>}
         </Details>
       </Content>
     </Container>

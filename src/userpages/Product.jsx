@@ -15,7 +15,6 @@ function Product() {
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [reportContent, setReportContent] = useState('');
-  const [reportSuccess, setReportSuccess] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -51,7 +50,7 @@ function Product() {
     try {
       const reportData = {
         userId: user.id,
-        productId: parseInt(productid),
+        productId: productid,
         productReportContent: reportContent,
       };
 
@@ -66,7 +65,6 @@ function Product() {
       );
 
       if (response.data) {
-        setReportSuccess(true);
         alert('상품 신고가 접수되었습니다.');
       }
     } catch (error) {
