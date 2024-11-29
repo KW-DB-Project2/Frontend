@@ -7,7 +7,6 @@ import { FaExclamationTriangle, FaSearch, FaUserCircle } from 'react-icons/fa';
 import { FiLoader } from 'react-icons/fi';
 // 컴포넌트 임포트
 import { AuthContext } from '../context/AuthContext';
-import Review from './Review';
 
 function Product() {
   const { user, token } = useContext(AuthContext);
@@ -16,6 +15,7 @@ function Product() {
   const [product, setProduct] = useState(null);
   const [reportContent, setReportContent] = useState('');
   const [reportSuccess, setReportSuccess] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -94,7 +94,7 @@ function Product() {
           <ProductName>{product.productTitle}</ProductName>
           <PriceContainer>
             <Price>{product.productPrice.toLocaleString()}원</Price>
-            <ReportButton onClick={handleReportSubmit}>
+            <ReportButton onClick={() => setIsModalOpen(true)}>
               <FaExclamationTriangle size={17} color="red" />
               신고하기
             </ReportButton>
@@ -117,6 +117,27 @@ function Product() {
           </ButtonContainer>
         </Details>
       </Content>
+      {isModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <Title>상품 신고</Title>
+              <CloseButton onClick={() => setIsModalOpen(false)}>×</CloseButton>
+            </ModalHeader>
+            <Textarea
+              placeholder="신고 내용을 입력해주세요."
+              value={reportContent}
+              onChange={(e) => setReportContent(e.target.value)}
+            />
+            <ButtonContainer>
+              <SubmitButton onClick={handleReportSubmit}>제출</SubmitButton>
+              <CancelButton onClick={() => setIsModalOpen(false)}>
+                취소
+              </CancelButton>
+            </ButtonContainer>
+          </ModalContent>
+        </ModalOverlay>
+      )}
       <br />
       <br />
       <BottomBar />
@@ -265,4 +286,118 @@ const LoadingContainer = styled.div`
       transform: rotate(360deg);
     }
   }
+`;
+
+// 모달 스타일링
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background-color: white;
+  padding: 40px 30px;
+  border-radius: 10px;
+  width: 400px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: relative;
+`;
+
+const Title = styled.h1`
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #555;
+
+  &:hover {
+    color: #000;
+  }
+`;
+
+const Textarea = styled.textarea`
+  width: 100%;
+  height: 120px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  resize: none;
+  outline: none;
+
+  &:focus {
+    border-color: #333;
+  }
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+`;
+
+const SubmitButton = styled.button`
+  padding: 12px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  flex: 1;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+const CancelButton = styled.button`
+  padding: 12px;
+  background-color: white;
+  color: #333;
+  border: 1px solid #333;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  flex: 1;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;
+
+const ErrorMessage = styled.p`
+  color: red;
+  font-size: 14px;
+  margin-top: -10px;
+  text-align: center;
 `;
