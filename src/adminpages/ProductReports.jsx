@@ -24,7 +24,11 @@ function ProductReports() {
     const fetchProductReports = async () => {
       try {
         const response = await axios.get(`${SURL}/admin/reports`);
-        setReports(response.data); // 받아온 데이터로 상태 업데이트
+        // productReportId가 있는 항목만 필터링
+        const productReports = response.data.filter(
+          (report) => report.productReportId
+        );
+        setReports(productReports); // 필터링된 데이터로 상태 업데이트
       } catch (error) {
         console.error('상품 신고 목록을 가져오는 데 실패했습니다:', error);
       }
@@ -43,19 +47,23 @@ function ProductReports() {
 
       {/* 제품 신고 목록 출력 */}
       <ProductList>
-        {reports.map((report) => (
-          <ProductItem
-            key={report.productReportId}
-            onClick={() =>
-              navigateToProductDetail(report.userId, report.productId)
-            }
-          >
-            <ProductName> 신고내용 : </ProductName>
-            <ProductDescription>
-              {report.productReportContent}
-            </ProductDescription>
-          </ProductItem>
-        ))}
+        {reports.length > 0 ? (
+          reports.map((report) => (
+            <ProductItem
+              key={report.productReportId}
+              onClick={() =>
+                navigateToProductDetail(report.userId, report.productId)
+              }
+            >
+              <ProductName>{report.productId}</ProductName>
+              <ProductDescription>
+                {report.productReportContent}
+              </ProductDescription>
+            </ProductItem>
+          ))
+        ) : (
+          <div>상품 신고가 없습니다.</div>
+        )}
       </ProductList>
     </Container>
   );
@@ -110,14 +118,12 @@ const ProductItem = styled.div`
   }
 `;
 
-const ReviewTitle = styled.h3`
+const ProductName = styled.h3`
   font-size: 18px;
   font-weight: bold;
-  margin: 0; /* 기본 마진 제거 */
 `;
 
-const ReviewContent = styled.p`
+const ProductDescription = styled.p`
   font-size: 14px;
   color: #555;
-  margin: 0; /* 기본 마진 제거 */
 `;
