@@ -41,19 +41,16 @@ function WriteReview({ initialTitle = '', initialContent = '' }) {
       const fetchReview = async () => {
         try {
           // 헤더에 Authorization 토큰 추가
-          const response = await axios.get(
-            `${SURL}/reviews/product/${productid}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const response = await axios.get(`${SURL}/reviews/${productid}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
           // 반환된 리뷰 목록에서 현재 reviewid에 해당하는 리뷰를 찾기
           console.log(typeof reviewid); // reviewid의 타입을 확인
           const review = response.data.find(
-            (r) => String(r.reviewId) === String(reviewid) // String으로 변환하여 비교
+            (r) => r.reviewId === Number(reviewid) // String으로 변환하여 비교
           );
 
           if (review) {

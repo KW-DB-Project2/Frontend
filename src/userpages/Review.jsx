@@ -1,22 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
-// 아이콘
 import { FaExclamationTriangle, FaSearch, FaUserCircle } from 'react-icons/fa';
-// 컴포넌트 임포트
 import { AuthContext } from '../context/AuthContext';
 
 function Review({ productid }) {
   const [reviews, setReviews] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [selectedReviewId, setSelectedReviewId] = useState(null); // 선택된 리뷰 ID 상태 추가
-  const [reportContent, setReportContent] = useState(''); // 신고 내용 상태 추가
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태 추가
-  const { token, user } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
-  const navigate = useNavigate(); // 네비게이션 훅
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
+  const [reportContent, setReportContent] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { token, user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  // 상품 리뷰를 가져오는 API 호출
   useEffect(() => {
     const fetchProductReviews = async () => {
       try {
@@ -31,7 +28,7 @@ function Review({ productid }) {
         setReviews(response.data);
       } catch (error) {
         console.error('리뷰를 가져오는 중 오류 발생:', error);
-        setReviews([]); // 에러 발생 시 리뷰 없다고 설정
+        setReviews([]);
       }
     };
 
@@ -40,7 +37,6 @@ function Review({ productid }) {
     }
   }, [productid, token]);
 
-  // 리뷰 검색 API 호출
   const fetchReviews = async (keyword) => {
     try {
       const response = await axios.get(
@@ -52,25 +48,22 @@ function Review({ productid }) {
           params: { keyword },
         }
       );
-      setReviews(response.data); // 검색된 리뷰 데이터 사용
+      setReviews(response.data);
     } catch (error) {
       console.error('리뷰 검색 중 오류 발생:', error);
     }
   };
 
-  // 검색 버튼 클릭 시 호출
   const handleSearchClick = () => {
     if (searchKeyword.trim() !== '') {
       fetchReviews(searchKeyword.trim());
     }
   };
 
-  // 리뷰 수정/삭제 버튼 클릭 시 해당 리뷰의 reviewid를 기반으로 이동
   const handleEditClick = (reviewid) => {
     navigate(`/write-review/${productid}/${reviewid}`);
   };
 
-  // 리뷰 신고 API 호출
   const reportReview = async () => {
     if (!selectedReviewId || !reportContent.trim()) return;
 
@@ -78,9 +71,9 @@ function Review({ productid }) {
       const response = await axios.post(
         `${import.meta.env.VITE_APP_URI}/report/review`,
         {
-          userId: user.id, // AuthContext에서 가져온 userId
-          reviewId: selectedReviewId, // 선택된 리뷰의 reviewId
-          reviewReportContent: reportContent, // 신고 내용
+          userId: user.id,
+          reviewId: selectedReviewId,
+          reviewReportContent: reportContent,
         },
         {
           headers: {
@@ -89,23 +82,54 @@ function Review({ productid }) {
         }
       );
       alert('신고가 접수되었습니다.');
-      console.log(response.data); // 서버의 응답을 확인
-      setIsModalOpen(false); // 신고 후 모달 닫기
+      setIsModalOpen(false);
     } catch (error) {
       console.error('리뷰 신고 중 오류 발생:', error);
     }
   };
 
-  // 신고 버튼 클릭 시 모달 열기
   const handleReportClick = (reviewId) => {
-    setSelectedReviewId(reviewId); // 리뷰 ID를 상태로 저장
-    setReportContent(''); // 신고 내용 초기화
-    setIsModalOpen(true); // 모달 열기
+    setSelectedReviewId(reviewId);
+    setReportContent('');
+    setIsModalOpen(true);
   };
+
+  // 댓글 가져오기
+  const fetchComments = async (reviewId) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_URI}/comment/${reviewId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`댓글 가져오기 실패 (reviewId: ${reviewId}):`, error);
+      return [];
+    }
+  };
+
+  const [commentsByReview, setCommentsByReview] = useState({});
+
+  useEffect(() => {
+    const fetchAllComments = async () => {
+      const newComments = {};
+      for (const review of reviews) {
+        newComments[review.reviewId] = await fetchComments(review.reviewId);
+      }
+      setCommentsByReview(newComments);
+    };
+
+    if (reviews.length > 0) {
+      fetchAllComments();
+    }
+  }, [reviews]);
 
   return (
     <BoardSection>
-      {/* 모달 */}
       {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
@@ -128,7 +152,6 @@ function Review({ productid }) {
         </ModalOverlay>
       )}
 
-      {/* 리뷰 목록 */}
       <BoardTitle>
         Review
         <SearchContainer>
@@ -154,8 +177,8 @@ function Review({ productid }) {
         </RightAlign>
       </BoardTitle>
       <BoardList>
-        {reviews.map((review, index) => (
-          <BoardItem key={index}>
+        {reviews.map((review) => (
+          <BoardItem key={review.reviewId}>
             <BoardContent>
               <BoardUser>
                 <ProfileIcon />
@@ -175,11 +198,19 @@ function Review({ productid }) {
             </BoardContent>
             <BottomBar />
             <BoardTt>{review.reviewTitle}</BoardTt>
-            <BoardText>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                {review.reviewContent}
-              </div>
-            </BoardText>
+            <BoardText>{review.reviewContent}</BoardText>
+
+            {/* 댓글 목록 */}
+            <CommentList>
+              {commentsByReview[review.reviewId]?.map((comment) => (
+                <CommentItem key={comment.commentId}>
+                  <CommentHeader>
+                    <span>ㄴ{comment.username}</span>
+                  </CommentHeader>
+                  <CommentContent>{comment.commentContent}</CommentContent>
+                </CommentItem>
+              ))}
+            </CommentList>
           </BoardItem>
         ))}
       </BoardList>
@@ -188,6 +219,32 @@ function Review({ productid }) {
 }
 
 export default Review;
+
+const CommentList = styled.ul`
+  margin-top: 10px;
+  list-style: none;
+  padding: 0;
+`;
+
+const CommentItem = styled.li`
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+`;
+
+const CommentHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: bold;
+`;
+
+const CommentContent = styled.p`
+  font-size: 14px;
+  color: #333;
+  margin-top: 5px;
+`;
 
 const ReportButton = styled.div`
   display: flex;
