@@ -1,32 +1,52 @@
 import React from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+import { useParams } from 'react-router-dom'; // URL에서 파라미터를 받아옴
+
+const SURL = import.meta.env.VITE_APP_URI; // 환경 변수에서 백엔드 서버 URL 가져오기
 
 function UserReview() {
-  // 더미 데이터 (리뷰 관련 데이터)
-  const review = {
-    reviewTitle: '훌륭한 제품',
-    reviewContent:
-      '이 제품은 정말 좋습니다. 품질이 뛰어나고 사용하기 쉽습니다.',
-    reviewAuthor: '김철수',
-    reviewDate: '2024-11-28',
-  };
+  // URL 파라미터에서 reviewId, userId, productId를 가져옴
+  const { reviewid } = useParams();
+
+  // 리뷰에 대한 상태를 정의 (백엔드에서 받아올 데이터)
+  const [review, setReview] = React.useState(null);
+
+  // 컴포넌트가 마운트될 때 리뷰 데이터를 받아옴
+  React.useEffect(() => {
+    // 리뷰 정보를 받아오는 API 호출
+    const fetchReview = async () => {
+      try {
+        const response = await axios.get(`${SURL}/admin/reviews`);
+        // 리뷰 데이터에서 reviewId에 맞는 것만 필터링
+        const filteredReview = response.data.find(
+          (r) => r.reviewId === parseInt(reviewid)
+        );
+        setReview(filteredReview); // 필터링된 리뷰를 상태에 저장
+      } catch (error) {
+        console.error('리뷰 데이터를 불러오는 데 실패했습니다:', error);
+      }
+    };
+
+    fetchReview();
+  }, [reviewid]); // reviewid가 변경될 때마다 데이터를 다시 가져옴
 
   // 버튼 클릭 시 처리할 함수
-  const handleActionClick = (action) => {
-    switch (action) {
-      case 'block':
-        alert('유저 정지 처리');
-        break;
-      case 'withdraw':
-        alert('유저 탈퇴 처리');
-        break;
-      case 'delete':
-        alert('리뷰 삭제 처리');
-        break;
-      default:
-        break;
+  const handleActionClick = async () => {
+    // 리뷰 삭제 처리
+    try {
+      const response = await axios.delete(`${SURL}/admin/reviews/${reviewid}`);
+      alert('리뷰 삭제 처리: ' + response.data.message);
+    } catch (error) {
+      console.error('리뷰 삭제 처리 실패:', error);
+      alert('리뷰 삭제 처리에 실패했습니다.');
     }
   };
+
+  // 리뷰 데이터가 아직 로드되지 않았으면 로딩 상태를 표시
+  if (!review) {
+    return <div>로딩 중...</div>;
+  }
 
   return (
     <Container>
@@ -35,22 +55,14 @@ function UserReview() {
           <ReviewTitle>{review.reviewTitle}</ReviewTitle>
           <AuthorAndDate>
             <Author>{review.reviewAuthor}</Author>
-            <Date>{review.reviewDate}</Date>
+            <Date>{review.createTime}</Date>
           </AuthorAndDate>
           <BottomBar />
           <div style={{ fontSize: '19px' }}>리뷰 내용</div>
           <BottomBar />
           <Description>{review.reviewContent}</Description>
           <ButtonContainer>
-            <ActionButton onClick={() => handleActionClick('block')}>
-              유저 정지
-            </ActionButton>
-            <ActionButton onClick={() => handleActionClick('withdraw')}>
-              유저 탈퇴
-            </ActionButton>
-            <ActionButton onClick={() => handleActionClick('delete')}>
-              리뷰 삭제
-            </ActionButton>
+            <ActionButton onClick={handleActionClick}>리뷰 삭제</ActionButton>
           </ButtonContainer>
         </Details>
       </Content>

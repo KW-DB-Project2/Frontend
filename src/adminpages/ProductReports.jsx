@@ -1,27 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const products = [
-  { id: 1, name: '제품 1' },
-  { id: 2, name: '제품 2' },
-  { id: 3, name: '제품 3' },
-  { id: 4, name: '제품 4' },
-  { id: 5, name: '제품 5' },
-];
+const SURL = import.meta.env.VITE_APP_URI;
 
 function ProductReports() {
+  const [reports, setReports] = useState([]);
   const navigate = useNavigate();
 
   // 제품 항목 클릭 시 해당 제품 상세 페이지로 이동
-  const navigateToProductDetail = (productId) => {
-    navigate(`/admin/user-product/${productId}`); // 클릭된 제품의 id를 URL에 전달
+  const navigateToProductDetail = (userid, productid) => {
+    navigate(`/admin/user-product/${userid}/${productid}`); // 클릭된 제품의 id와 userid를 URL에 전달
   };
 
   // Review 신고 목록으로 이동
   const navigateToUserReport = () => {
     navigate('/admin/review-reports');
   };
+
+  useEffect(() => {
+    // 제품 신고 목록을 API에서 가져오는 함수
+    const fetchProductReports = async () => {
+      try {
+        const response = await axios.get(`${SURL}/admin/reports`);
+        setReports(response.data); // 받아온 데이터로 상태 업데이트
+      } catch (error) {
+        console.error('상품 신고 목록을 가져오는 데 실패했습니다:', error);
+      }
+    };
+
+    fetchProductReports();
+  }, []);
 
   return (
     <Container>
@@ -31,15 +41,19 @@ function ProductReports() {
         <PageTitle onClick={navigateToUserReport}>Review 신고 목록</PageTitle>
       </TitleContainer>
 
-      {/* 제품 목록 출력 */}
+      {/* 제품 신고 목록 출력 */}
       <ProductList>
-        {products.map((product) => (
+        {reports.map((report) => (
           <ProductItem
-            key={product.id}
-            onClick={() => navigateToProductDetail(product.id)}
+            key={report.productReportId}
+            onClick={() =>
+              navigateToProductDetail(report.userid, report.productId)
+            }
           >
-            <ProductName>{product.name}</ProductName>
-            <ProductDescription>{product.description}</ProductDescription>
+            <ProductName>{report.productId}</ProductName>
+            <ProductDescription>
+              {report.productReportContent}
+            </ProductDescription>
           </ProductItem>
         ))}
       </ProductList>

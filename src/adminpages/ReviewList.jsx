@@ -1,81 +1,63 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-
-const reviews = [
-  {
-    id: 1,
-    title: '후기 1',
-    content: '이 상품 너무 좋아요!',
-    image: 'https://via.placeholder.com/50',
-  },
-  {
-    id: 2,
-    title: '후기 2',
-    content: '아주 만족스럽습니다.',
-    image: 'https://via.placeholder.com/50',
-  },
-  {
-    id: 3,
-    title: '후기 3',
-    content: '가격 대비 품질이 좋습니다.',
-    image: 'https://via.placeholder.com/50',
-  },
-  {
-    id: 4,
-    title: '후기 4',
-    content: '정말 추천해요!',
-    image: 'https://via.placeholder.com/50',
-  },
-  {
-    id: 5,
-    title: '후기 5',
-    content: '생각보다 더 좋네요.',
-    image: 'https://via.placeholder.com/50',
-  },
-  {
-    id: 6,
-    title: '후기 6',
-    content: '만족스러운 구매였습니다.',
-    image: 'https://via.placeholder.com/50',
-  },
-  {
-    id: 7,
-    title: '후기 7',
-    content: '또 구매하고 싶어요.',
-    image: 'https://via.placeholder.com/50',
-  },
-  {
-    id: 8,
-    title: '후기 8',
-    content: '배송도 빠르고 좋아요.',
-    image: 'https://via.placeholder.com/50',
-  },
-  {
-    id: 9,
-    title: '후기 9',
-    content: '굿입니다.',
-    image: 'https://via.placeholder.com/50',
-  },
-  {
-    id: 10,
-    title: '후기 10',
-    content: '좋은 제품이에요.',
-    image: 'https://via.placeholder.com/50',
-  },
-];
+import axios from 'axios';
 
 function ReviewList() {
+  const [reviews, setReviews] = useState([]); // 리뷰 목록 상태
+  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [error, setError] = useState(null); // 에러 상태
+
+  // 리뷰 목록 조회
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get(`${SURL}/admin/reviews`, {
+          withCredentials: false,
+        });
+        setReviews(response.data); // 리뷰 목록 상태 업데이트
+      } catch (err) {
+        console.error('리뷰 조회 실패:', err);
+        setError('리뷰를 불러오는 데 실패했습니다.');
+      } finally {
+        setLoading(false); // 로딩 상태 변경
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  // 리뷰 삭제
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      const response = await axios.delete(`${SURL}/admin/reviews/${reviewId}`, {
+        withCredentials: false,
+      });
+      console.log('리뷰 삭제 성공:', response.data);
+      setReviews((prevReviews) =>
+        prevReviews.filter((review) => review.reviewId !== reviewId)
+      ); // 삭제된 리뷰는 목록에서 제거
+    } catch (err) {
+      console.error('리뷰 삭제 실패:', err);
+      setError('리뷰를 삭제하는 데 실패했습니다.');
+    }
+  };
+
+  if (loading) return <Container>로딩 중...</Container>;
+  if (error) return <Container>{error}</Container>;
+
   return (
     <Container>
       <Title>Review</Title>
       <ReviewTable>
         {reviews.map((review) => (
-          <ReviewRow key={review.id}>
+          <ReviewRow key={review.reviewId}>
             <ReviewProfile>
-              <ReviewTitle>{review.title}</ReviewTitle>
+              <ReviewTitle>{review.reviewTitle}</ReviewTitle>
             </ReviewProfile>
-            <ReviewContent>{review.content}</ReviewContent>
-            <ActionButton>삭제</ActionButton>
+            <ReviewContent>{review.reviewContent}</ReviewContent>
+            <ActionButton onClick={() => handleDeleteReview(review.reviewId)}>
+              삭제
+            </ActionButton>
           </ReviewRow>
         ))}
       </ReviewTable>
@@ -89,6 +71,7 @@ const Container = styled.div`
   width: 1500px;
   padding: 20px 40px;
 `;
+
 const Title = styled.h1`
   font-size: 24px;
   color: #333;

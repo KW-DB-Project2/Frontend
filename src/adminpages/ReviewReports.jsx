@@ -19,8 +19,8 @@ function ReviewReports() {
   };
 
   // 리뷰 항목 클릭 시 상세 페이지로 이동하는 함수
-  const navigateToReviewDetail = (reviewId) => {
-    navigate(`/admin/user-review/${reviewId}`); // 클릭된 리뷰의 id를 URL에 전달
+  const navigateToReviewDetail = (userid, reviewid) => {
+    navigate(`/admin/user-review/${userid}/${reviewid}`); // 클릭된 리뷰의 id를 URL에 전달
   };
 
   return (
@@ -38,7 +38,9 @@ function ReviewReports() {
         {reviews.map((review) => (
           <ReviewItem
             key={review.id}
-            onClick={() => navigateToReviewDetail(review.id)}
+            onClick={() =>
+              navigateToReviewDetail(review.userId, review.reviewId)
+            }
           >
             <ReviewTitle>{review.title}</ReviewTitle>
             <ReviewContent>{review.content}</ReviewContent>

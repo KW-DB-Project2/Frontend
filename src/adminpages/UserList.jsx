@@ -1,43 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaSearch, FaUserCircle } from 'react-icons/fa'; // Profile Icon으로 FaUserCircle 사용
-
-// 더미 데이터 배열
-const users = [
-  { id: 1, name: '회원 1' },
-  { id: 2, name: '회원 2' },
-  { id: 3, name: '회원 3' },
-  { id: 4, name: '회원 4' },
-  { id: 5, name: '회원 5' },
-  { id: 6, name: '회원 6' },
-  { id: 3, name: '회원 3' },
-  { id: 4, name: '회원 4' },
-  { id: 5, name: '회원 5' },
-  { id: 6, name: '회원 6' },
-];
+import axios from 'axios'; // axios import
 
 function UserList() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [users, setUsers] = useState([]);
+
+  const SURL = import.meta.env.VITE_APP_URI;
+
+  // 백엔드에서 모든 유저 데이터 가져오기
+  useEffect(() => {
+    axios
+      .get(`${SURL}/admin/users`) // 백엔드 URL로 사용자 목록 요청
+      .then((response) => {
+        setUsers(response.data); // 응답받은 사용자 목록을 상태에 저장
+      })
+      .catch((error) => {
+        console.error('유저 목록을 가져오는 데 실패했습니다:', error);
+      });
+  }, []);
 
   // 검색 필터링 함수
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(
+    (user) => user.username.toLowerCase().includes(searchTerm.toLowerCase()) // 검색어에 맞는 사용자 필터링
   );
+
+  // 유저 정지 함수
+  const suspendUser = (userId) => {
+    axios
+      .put(`${SURL}/admin/users/${userId}/suspend`) // 유저 정지 API 요청
+      .then((response) => {
+        alert('유저가 정지되었습니다.');
+        // 정지 후 상태 업데이트 (예: 유저 목록에서 정지된 사용자 제거)
+      })
+      .catch((error) => {
+        console.error('유저 정지에 실패했습니다:', error);
+        alert('유저 정지에 실패했습니다.');
+      });
+  };
 
   return (
     <Container>
       <SearchBar>
-        <Title>회원 목록</Title>
+        <Title>유저 목록</Title>
         <SearchInput
-          placeholder="회원 검색"
+          placeholder="유저 검색"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => setSearchTerm(e.target.value)} // 검색어 상태 업데이트
         />
         <SearchButton>
           <FaSearch size={24} />
         </SearchButton>
       </SearchBar>
-
       <UserTable>
         {filteredUsers.map((user) => (
           <UserRow key={user.id}>
@@ -45,11 +60,13 @@ function UserList() {
               <ProfileIcon>
                 <FaUserCircle size={50} color="#ccc" />
               </ProfileIcon>
-              <UserName>{user.name}</UserName>
+              <UserName>{user.username}</UserName>
             </UserProfile>
             <ActionButtons>
-              <ActionButton>회원 정지</ActionButton>
-              <ActionButton>회원 삭제</ActionButton>
+              <ActionButton onClick={() => suspendUser(user.id)}>
+                유저 정지
+              </ActionButton>
+              <ActionButton>유저 탈퇴</ActionButton>
               <ActionButton>등급 변경</ActionButton>
             </ActionButtons>
           </UserRow>

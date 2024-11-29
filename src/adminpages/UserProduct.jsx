@@ -54,7 +54,7 @@ function UserProduct() {
           response = await axios.delete(`${SURL}/admin/products/${productid}`, {
             withCredentials: false,
           });
-          alret('상품이 삭제되었습니다.');
+          alert('상품이 삭제되었습니다.');
           // 삭제 후 /admin/product-list 페이지로 이동
           window.location.href = '/admin/product-list';
           break;

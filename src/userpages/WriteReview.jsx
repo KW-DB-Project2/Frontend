@@ -134,7 +134,7 @@ function WriteReview({ initialTitle = '', initialContent = '' }) {
       setContent('');
     } catch (error) {
       console.error('요청 실패:', error);
-      alert('리뷰를 수정/작성할 권한이 없습니다.');
+      alert('리뷰를 작성/수정할 권한이 없습니다.');
     } finally {
       setIsSubmitting(false);
     }

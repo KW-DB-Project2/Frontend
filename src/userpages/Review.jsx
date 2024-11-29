@@ -4,13 +4,15 @@ import styled from 'styled-components';
 import axios from 'axios';
 // 아이콘
 import { FaExclamationTriangle, FaSearch, FaUserCircle } from 'react-icons/fa';
-import { FiLoader } from 'react-icons/fi';
 // 컴포넌트 임포트
 import { AuthContext } from '../context/AuthContext';
 
 function Review({ productid }) {
   const [reviews, setReviews] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [selectedReviewId, setSelectedReviewId] = useState(null); // 선택된 리뷰 ID 상태 추가
+  const [reportContent, setReportContent] = useState(''); // 신고 내용 상태 추가
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태 추가
   const { token, user } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
   const navigate = useNavigate(); // 네비게이션 훅
 
@@ -69,14 +71,16 @@ function Review({ productid }) {
   };
 
   // 리뷰 신고 API 호출
-  const reportReview = async (reviewId, reviewContent) => {
+  const reportReview = async () => {
+    if (!selectedReviewId || !reportContent.trim()) return;
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_APP_URI}/report/review`,
         {
           userId: user.id, // AuthContext에서 가져온 userId
-          productId: productid, // 현재 상품의 productid
-          reviewReportContent: reviewContent, // 신고 내용
+          reviewId: selectedReviewId, // 선택된 리뷰의 reviewId
+          reviewReportContent: reportContent, // 신고 내용
         },
         {
           headers: {
@@ -86,6 +90,7 @@ function Review({ productid }) {
       );
       alert('신고가 접수되었습니다.');
       console.log(response.data); // 서버의 응답을 확인
+      setIsModalOpen(false); // 신고 후 모달 닫기
     } catch (error) {
       console.error('리뷰 신고 중 오류 발생:', error);
     }
@@ -93,9 +98,9 @@ function Review({ productid }) {
 
   // 신고 버튼 클릭 시 모달 열기
   const handleReportClick = (reviewId) => {
-    setSelectedReviewId(reviewId);
-    setReportContent('');
-    setIsModalOpen(true);
+    setSelectedReviewId(reviewId); // 리뷰 ID를 상태로 저장
+    setReportContent(''); // 신고 내용 초기화
+    setIsModalOpen(true); // 모달 열기
   };
 
   return (
