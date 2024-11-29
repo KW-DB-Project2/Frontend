@@ -111,7 +111,11 @@ function Manage() {
     const matchesKeyword = title
       .toLowerCase()
       .includes(searchKeyword.toLowerCase());
-    return matchesStatus && matchesKeyword;
+
+    // userId가 현재 로그인된 user.id와 일치하는 상품만 필터링
+    const matchesUserId = product.userId === user.id;
+
+    return matchesUserId && matchesStatus && matchesKeyword;
   });
 
   const goToAdd = () => {
