@@ -36,7 +36,7 @@ function UserReview() {
     // 리뷰 삭제 처리
     try {
       const response = await axios.delete(`${SURL}/admin/reviews/${reviewid}`);
-      alert('리뷰 삭제 처리: ' + response.data.message);
+      alert('리뷰가 성공적으로 삭제되었습니다.');
     } catch (error) {
       console.error('리뷰 삭제 처리 실패:', error);
       alert('리뷰 삭제 처리에 실패했습니다.');

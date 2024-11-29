@@ -377,7 +377,7 @@ const CloseButton = styled.button`
 `;
 
 const Textarea = styled.textarea`
-  width: 100%;
+  width: 90%;
   height: 100px;
   border: 1px solid #ccc;
   border-radius: 8px;

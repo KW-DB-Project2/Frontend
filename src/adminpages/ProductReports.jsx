@@ -47,10 +47,10 @@ function ProductReports() {
           <ProductItem
             key={report.productReportId}
             onClick={() =>
-              navigateToProductDetail(report.userid, report.productId)
+              navigateToProductDetail(report.userId, report.productId)
             }
           >
-            <ProductName>{report.productId}</ProductName>
+            <ProductName> 신고내용 : </ProductName>
             <ProductDescription>
               {report.productReportContent}
             </ProductDescription>
@@ -98,23 +98,26 @@ const ProductList = styled.div`
 `;
 
 const ProductItem = styled.div`
+  display: flex; /* 자식 요소들을 가로로 배치 */
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
-
+  gap: 20px; /* 자식 요소 간의 간격 설정 */
   &:hover {
     background-color: #f4f4f4;
   }
 `;
 
-const ProductName = styled.h3`
+const ReviewTitle = styled.h3`
   font-size: 18px;
   font-weight: bold;
+  margin: 0; /* 기본 마진 제거 */
 `;
 
-const ProductDescription = styled.p`
+const ReviewContent = styled.p`
   font-size: 14px;
   color: #555;
+  margin: 0; /* 기본 마진 제거 */
 `;

@@ -9,16 +9,19 @@ const SURL = import.meta.env.VITE_APP_URI; // 백엔드 URL
 function ReviewReports() {
   const navigate = useNavigate();
 
-  // 리뷰 목록 상태
+  // 리뷰 신고 목록 상태
   const [reviews, setReviews] = React.useState([]);
 
-  // 컴포넌트가 마운트될 때 리뷰 데이터 로드
   React.useEffect(() => {
-    // 백엔드에서 리뷰 데이터 가져오기
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(`${SURL}/admin/reviews`);
-        setReviews(response.data); // 리뷰 목록 상태에 저장
+        const response = await axios.get(`${SURL}/admin/reports`);
+
+        // 리뷰 신고만 필터링
+        const filteredReviews = response.data.filter(
+          (item) => item.reviewReportId
+        );
+        setReviews(filteredReviews);
       } catch (error) {
         console.error('리뷰 데이터를 불러오는 데 실패했습니다:', error);
       }
@@ -52,15 +55,15 @@ function ReviewReports() {
         {reviews.length > 0 ? (
           reviews.map((review) => (
             <ReviewItem
-              key={review.reviewId} // reviewId를 key로 사용
-              onClick={() => navigateToReviewDetail(review.reviewId)} // 리뷰 클릭 시 상세 페이지로 이동
+              key={review.reviewReportId} // reviewReportId를 key로 사용
+              onClick={() => navigateToReviewDetail(review.reviewReportId)} // 리뷰 클릭 시 상세 페이지로 이동
             >
-              <ReviewTitle>{review.reviewTitle}</ReviewTitle>
-              <ReviewContent>{review.reviewContent}</ReviewContent>
+              <ReviewTitle>신고 내용: </ReviewTitle>
+              <ReviewContent>{review.reviewReportContent}</ReviewContent>
             </ReviewItem>
           ))
         ) : (
-          <div>리뷰가 없습니다.</div>
+          <div>리뷰 신고가 없습니다.</div>
         )}
       </ReviewList>
     </Container>
@@ -104,11 +107,13 @@ const ReviewList = styled.div`
 `;
 
 const ReviewItem = styled.div`
+  display: flex; /* 자식 요소들을 가로로 배치 */
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
+  gap: 20px; /* 자식 요소 간의 간격 설정 */
 
   &:hover {
     background-color: #f4f4f4;
@@ -118,9 +123,11 @@ const ReviewItem = styled.div`
 const ReviewTitle = styled.h3`
   font-size: 18px;
   font-weight: bold;
+  margin: 0; /* 기본 마진 제거 */
 `;
 
 const ReviewContent = styled.p`
   font-size: 14px;
   color: #555;
+  margin: 0; /* 기본 마진 제거 */
 `;

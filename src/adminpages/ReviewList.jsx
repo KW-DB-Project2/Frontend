@@ -6,7 +6,7 @@ function ReviewList() {
   const [reviews, setReviews] = useState([]); // 리뷰 목록 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
-
+  const SURL = import.meta.env.VITE_APP_URI;
   // 리뷰 목록 조회
   useEffect(() => {
     const fetchReviews = async () => {

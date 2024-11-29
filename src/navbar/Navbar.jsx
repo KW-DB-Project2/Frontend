@@ -37,9 +37,11 @@ function Navbar() {
   const handleSearch = () => {
     if (searchQuery) {
       console.log('검색어:', searchQuery);
-      // 여기에 실제 검색 기능을 추가하거나, 검색 결과를 처리할 수 있음
-      // 검색어를 쿼리 파라미터로 전달하여 / 경로로 이동
+      // 검색어가 있을 경우, 검색 결과 페이지로 이동
       navigate(`/search?query=${searchQuery}`);
+    } else {
+      // 검색어가 없을 경우, 홈으로 이동
+      navigate('/');
     }
   };
 
