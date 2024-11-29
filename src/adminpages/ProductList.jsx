@@ -9,38 +9,10 @@ function AdminProductList() {
   const [loading, setLoading] = useState(true);
   const SURL = import.meta.env.VITE_APP_URI;
 
-  // 더미 데이터 (API 호출 대신 사용)
-  const dummyData = [
-    {
-      productId: 1,
-      productTitle: '상품1',
-      productPrice: 10000,
-      createTime: '2024-01-01T00:00:00Z',
-      updateTime: '2024-01-02T00:00:00Z',
-      productImg: '', // 이미지 없음
-    },
-    {
-      productId: 2,
-      productTitle: '상품2',
-      productPrice: 15000,
-      createTime: '2024-02-01T00:00:00Z',
-      updateTime: '2024-02-02T00:00:00Z',
-      productImg: '', // 이미지 없음
-    },
-    {
-      productId: 3,
-      productTitle: '상품3',
-      productPrice: 20000,
-      createTime: '2024-03-01T00:00:00Z',
-      updateTime: '2024-03-02T00:00:00Z',
-      productImg: '', // 이미지 없음
-    },
-  ];
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${SURL}/product`, {
+        const response = await axios.get(`${SURL}/admin/products`, {
           withCredentials: false, // 쿠키를 포함시키지 않음
           headers: {
             // 불필요한 헤더를 포함시키지 않도록 주의
@@ -50,8 +22,6 @@ function AdminProductList() {
         setProducts(response.data); // 받아온 데이터를 상태에 저장
       } catch (error) {
         console.error('상품 조회 실패:', error);
-        // 에러가 나면 더미 데이터 사용
-        setProducts(dummyData);
       } finally {
         setLoading(false);
       }
@@ -75,7 +45,9 @@ function AdminProductList() {
       <ProductList>
         {products.map((product) => (
           <ProductCard key={product.productId}>
-            <StyledLink to={`/admin/user-product/${product.productId}`}>
+            <StyledLink
+              to={`/admin/user-product/${product.userId}/${product.productId}`}
+            >
               <ProductImage
                 src={
                   product.productImg

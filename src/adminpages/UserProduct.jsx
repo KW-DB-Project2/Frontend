@@ -4,22 +4,27 @@ import styled from 'styled-components';
 import axios from 'axios';
 
 function UserProduct() {
-  const { productid } = useParams(); // URL에서 productid 파라미터 추출
+  const { productid, userid } = useParams(); // URL에서 productid, userid 파라미터 추출
   const [product, setProduct] = useState(null); // 상품 데이터 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
+  const [message, setMessage] = useState(''); // 메시지 상태
+
+  const SURL = import.meta.env.VITE_APP_URI;
 
   useEffect(() => {
-    // API 호출
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_APP_URI}/admin/user-product/${productid}`
+        const response = await axios.get(`${SURL}/admin/products`, {
+          withCredentials: false,
+        });
+        const filteredProducts = response.data.filter(
+          (product) => product.productId === parseInt(productid)
         );
-        setProduct(response.data);
-      } catch (err) {
-        console.error(err);
-        setError('상품 정보를 불러오는 중 문제가 발생했습니다.');
+        setProduct(filteredProducts[0]); // 첫 번째 상품만 설정
+      } catch (error) {
+        console.error('상품 조회 실패:', error);
+        setError('상품 조회에 실패했습니다.');
       } finally {
         setLoading(false);
       }
@@ -28,24 +33,48 @@ function UserProduct() {
     fetchProduct();
   }, [productid]);
 
-  const handleActionClick = (action) => {
-    switch (action) {
-      case 'block':
-        alert('유저 정지 처리');
-        break;
-      case 'withdraw':
-        alert('유저 탈퇴 처리');
-        break;
-      case 'delete':
-        alert('상품 삭제 처리');
-        break;
-      default:
-        break;
+  // 액션 클릭 처리
+  const handleActionClick = async (action) => {
+    try {
+      let response;
+      switch (action) {
+        case 'block':
+          // 유저 계정 정지 API 호출
+          response = await axios.put(
+            `${SURL}/admin/users/${userid}/suspend`,
+            {},
+            { withCredentials: false }
+          );
+          setMessage('유저가 정지되었습니다.');
+          break;
+        case 'withdraw':
+          alert('유저 탈퇴 처리');
+          break;
+        case 'delete':
+          // 상품 삭제 API 호출
+          response = await axios.delete(`${SURL}/admin/products/${productid}`, {
+            withCredentials: false,
+          });
+          setMessage('상품이 삭제되었습니다.');
+          // 삭제 후 /admin/product-list 페이지로 이동
+          window.location.href = '/admin/product-list';
+          break;
+        default:
+          break;
+      }
+      // API 호출 후 성공 메시지 처리
+      if (response && response.data) {
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.error('API 요청 실패:', error);
+      setMessage('요청 처리에 실패했습니다.');
     }
   };
 
   if (loading) return <Container>로딩 중...</Container>;
   if (error) return <Container>{error}</Container>;
+
   return (
     <Container>
       <Content>
@@ -73,16 +102,17 @@ function UserProduct() {
               상품 삭제
             </ActionButton>
           </ButtonContainer>
+          {message && <Message>{message}</Message>}
         </Details>
       </Content>
     </Container>
   );
 }
+
 const Container = styled.div`
   width: 1500px;
   margin-top: 20px;
   padding: 50px;
-  margin-top: 0;
   display: flex;
   flex-direction: column;
 `;
@@ -141,7 +171,7 @@ const Description = styled.p`
 
 const ButtonContainer = styled.div`
   display: flex;
-  flex-direction: row; /* 가로로 버튼을 배치 */
+  flex-direction: row;
   align-self: flex-end;
   gap: 15px;
   margin-top: 20px;
@@ -150,14 +180,22 @@ const ButtonContainer = styled.div`
 const ActionButton = styled.div`
   padding: 10px 12px;
   background-color: #f4f4f4;
-
   border-radius: 5px;
   cursor: pointer;
   font-size: 17px;
-
   &:hover {
     background-color: #e0e0e0;
   }
+`;
+
+const Message = styled.div`
+  margin-top: 20px;
+  padding: 10px;
+  color: #333;
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
 `;
 
 export default UserProduct;

@@ -62,7 +62,7 @@ function App() {
             <Route path="/admin/sales-volume" element={<SalesVolume />} />
             <Route path="/admin/user-list" element={<UserList />} />
             <Route
-              path="/admin/user-product/:productid"
+              path="/admin/user-product/:userid/:productid"
               element={<UserProduct />}
             />
             <Route
