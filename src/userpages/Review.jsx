@@ -48,7 +48,13 @@ function Review({ productid }) {
           params: { keyword },
         }
       );
-      setReviews(response.data);
+
+      // 특정 productId에 해당하는 리뷰만 필터링
+      const filteredReviews = response.data.filter(
+        (review) => review.productId === Number(productid)
+      );
+
+      setReviews(filteredReviews); // 필터링된 리뷰를 상태에 설정
     } catch (error) {
       console.error('리뷰 검색 중 오류 발생:', error);
     }
