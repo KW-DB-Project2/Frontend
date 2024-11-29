@@ -1,17 +1,31 @@
 import React from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const reviews = [
-  { id: 1, title: '후기 1', content: '이 상품 너무 좋아요!' },
-  { id: 2, title: '후기 2', content: '아주 만족스럽습니다.' },
-  { id: 3, title: '후기 3', content: '가격 대비 품질이 좋습니다.' },
-  { id: 4, title: '후기 4', content: '정말 추천해요!' },
-  { id: 5, title: '후기 5', content: '생각보다 더 좋네요.' },
-];
+// 환경 변수에서 서버 URL 가져오기
+const SURL = import.meta.env.VITE_APP_URI; // 백엔드 URL
 
 function ReviewReports() {
   const navigate = useNavigate();
+
+  // 리뷰 목록 상태
+  const [reviews, setReviews] = React.useState([]);
+
+  // 컴포넌트가 마운트될 때 리뷰 데이터 로드
+  React.useEffect(() => {
+    // 백엔드에서 리뷰 데이터 가져오기
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get(`${SURL}/admin/reviews`);
+        setReviews(response.data); // 리뷰 목록 상태에 저장
+      } catch (error) {
+        console.error('리뷰 데이터를 불러오는 데 실패했습니다:', error);
+      }
+    };
+
+    fetchReviews(); // 리뷰 데이터 가져오기
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   // Product 신고 목록 페이지로 이동하는 함수
   const navigateToProductReport = () => {
@@ -19,8 +33,8 @@ function ReviewReports() {
   };
 
   // 리뷰 항목 클릭 시 상세 페이지로 이동하는 함수
-  const navigateToReviewDetail = (userid, reviewid) => {
-    navigate(`/admin/user-review/${userid}/${reviewid}`); // 클릭된 리뷰의 id를 URL에 전달
+  const navigateToReviewDetail = (reviewid) => {
+    navigate(`/admin/user-review/${reviewid}`); // 클릭된 리뷰의 id를 URL에 전달
   };
 
   return (
@@ -35,17 +49,19 @@ function ReviewReports() {
 
       {/* 리뷰 리스트 출력 */}
       <ReviewList>
-        {reviews.map((review) => (
-          <ReviewItem
-            key={review.id}
-            onClick={() =>
-              navigateToReviewDetail(review.userId, review.reviewId)
-            }
-          >
-            <ReviewTitle>{review.title}</ReviewTitle>
-            <ReviewContent>{review.content}</ReviewContent>
-          </ReviewItem>
-        ))}
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <ReviewItem
+              key={review.reviewId} // reviewId를 key로 사용
+              onClick={() => navigateToReviewDetail(review.reviewId)} // 리뷰 클릭 시 상세 페이지로 이동
+            >
+              <ReviewTitle>{review.reviewTitle}</ReviewTitle>
+              <ReviewContent>{review.reviewContent}</ReviewContent>
+            </ReviewItem>
+          ))
+        ) : (
+          <div>리뷰가 없습니다.</div>
+        )}
       </ReviewList>
     </Container>
   );
