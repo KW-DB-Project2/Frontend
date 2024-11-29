@@ -21,14 +21,14 @@ function Review({ productid }) {
     const fetchProductReviews = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_URI}/reviews/product/${productid}`,
+          `${import.meta.env.VITE_APP_URI}/reviews/${productid}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setReviews(response.data); // 실제 리뷰 데이터 사용
+        setReviews(response.data);
       } catch (error) {
         console.error('리뷰를 가져오는 중 오류 발생:', error);
         setReviews([]); // 에러 발생 시 리뷰 없다고 설정
