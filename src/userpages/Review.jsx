@@ -11,7 +11,7 @@ import { AuthContext } from '../context/AuthContext';
 function Review({ productid }) {
   const [reviews, setReviews] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const { token, userId } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
+  const { token, user } = useContext(AuthContext); // AuthContext에서 사용자 정보 가져오기
   const navigate = useNavigate(); // 네비게이션 훅
 
   // 상품 리뷰를 가져오는 API 호출
@@ -79,7 +79,7 @@ function Review({ productid }) {
       const response = await axios.post(
         `${import.meta.env.VITE_APP_URI}/report/review`,
         {
-          userId, // AuthContext에서 가져온 userId
+          userId: user.id, // AuthContext에서 가져온 userId
           productId: productid, // 현재 상품의 productid
           reviewReportContent: reviewContent, // 신고 내용
         },
@@ -96,24 +96,46 @@ function Review({ productid }) {
     }
   };
 
-  // 신고 버튼 클릭 시 호출
+  // 신고 버튼 클릭 시 모달 열기
   const handleReportClick = (reviewId) => {
-    const reportContent = prompt('신고 내용을 입력하세요'); // 신고 내용 입력받기
-    if (reportContent) {
-      reportReview(reviewId, reportContent);
-    }
+    setSelectedReviewId(reviewId);
+    setReportContent('');
+    setIsModalOpen(true);
   };
 
   return (
     <BoardSection>
+      {/* 모달 */}
+      {isModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <Title>리뷰 신고</Title>
+              <CloseButton onClick={() => setIsModalOpen(false)}>×</CloseButton>
+            </ModalHeader>
+            <Textarea
+              placeholder="신고 내용을 입력하세요."
+              value={reportContent}
+              onChange={(e) => setReportContent(e.target.value)}
+            />
+            <ButtonContainer>
+              <SubmitButton onClick={reportReview}>제출</SubmitButton>
+              <CancelButton onClick={() => setIsModalOpen(false)}>
+                취소
+              </CancelButton>
+            </ButtonContainer>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+
+      {/* 리뷰 목록 */}
       <BoardTitle>
         Review
-        {/* 리뷰 검색 */}
         <SearchContainer>
           <SearchInput
             type="text"
             value={searchKeyword}
-            onChange={handleSearchChange}
+            onChange={(e) => setSearchKeyword(e.target.value)}
             placeholder="리뷰 검색어를 입력하세요..."
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -126,7 +148,6 @@ function Review({ productid }) {
           </SearchButton>
         </SearchContainer>
         <RightAlign>
-          {/* 글쓰기 버튼 */}
           <WriteButton onClick={() => navigate(`/write-review/${productid}`)}>
             글쓰기
           </WriteButton>
@@ -141,25 +162,15 @@ function Review({ productid }) {
                 {review.username}
               </BoardUser>
               <ButtonContainer>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    width: '100%',
-                  }}
+                <EditButton onClick={() => handleEditClick(review.reviewId)}>
+                  게시글 수정/삭제
+                </EditButton>
+                <ReportButton
+                  onClick={() => handleReportClick(review.reviewId)}
                 >
-                  {/* 수정/삭제 버튼 */}
-                  <EditButton onClick={() => handleEditClick(review.reviewId)}>
-                    게시글 수정/삭제
-                  </EditButton>
-                  {/* 신고하기 버튼 */}
-                  <ReportButton
-                    onClick={() => handleReportClick(review.reviewId)}
-                  >
-                    <FaExclamationTriangle size={17} color="red" />
-                    신고하기
-                  </ReportButton>
-                </div>
+                  <FaExclamationTriangle size={17} color="red" />
+                  신고하기
+                </ReportButton>
               </ButtonContainer>
             </BoardContent>
             <BottomBar />
@@ -323,4 +334,80 @@ const EditButton = styled.button`
   border: none;
   border-radius: 4px;
   cursor: pointer;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: #fff;
+  border-radius: 8px;
+  width: 400px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+const Title = styled.h3`
+  font-size: 20px;
+  color: #333;
+`;
+
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+`;
+
+const Textarea = styled.textarea`
+  width: 100%;
+  height: 100px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  resize: none;
+`;
+
+const SubmitButton = styled.button`
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #555;
+  }
+`;
+
+const CancelButton = styled.button`
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
 `;

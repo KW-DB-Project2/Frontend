@@ -49,7 +49,7 @@ function Product() {
 
     try {
       const reportData = {
-        userId: user.userId,
+        userId: user.id,
         productId: parseInt(productid),
         productReportContent: reportContent,
       };
