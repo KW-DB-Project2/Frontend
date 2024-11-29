@@ -66,6 +66,7 @@ function Product() {
 
       if (response.data) {
         alert('상품 신고가 접수되었습니다.');
+        setIsModalOpen(false);
       }
     } catch (error) {
       console.error('상품 신고 중 오류 발생:', error);

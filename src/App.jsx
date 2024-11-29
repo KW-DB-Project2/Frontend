@@ -82,7 +82,7 @@ function App() {
               element={<WriteReview />}
             />
             <Route
-              path="/write-comment/:productid/:commentid"
+              path="/write-comment/:productid/:reviewid"
               element={<WriteComment />}
             />
             <Route

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import { FaExclamationTriangle, FaSearch, FaUserCircle } from 'react-icons/fa';
@@ -206,6 +206,11 @@ function Review({ productid }) {
             <BoardTt>{review.reviewTitle}</BoardTt>
             <BoardText>{review.reviewContent}</BoardText>
 
+            {/* 댓글 작성 버튼 */}
+            <Link to={`/write-comment/${review.productId}/${review.reviewId}`}>
+              <CommentWriteButton>댓글 작성</CommentWriteButton>
+            </Link>
+
             {/* 댓글 목록 */}
             <CommentList>
               {commentsByReview[review.reviewId]?.map((comment) => (
@@ -214,6 +219,12 @@ function Review({ productid }) {
                     <span>ㄴ{comment.username}</span>
                   </CommentHeader>
                   <CommentContent>{comment.commentContent}</CommentContent>
+                  {/* 수정 버튼 추가 */}
+                  <Link
+                    to={`/write-comment/${review.productId}/${review.reviewId}/${comment.commentId}`}
+                  >
+                    <EditButton>댓글 수정</EditButton>
+                  </Link>
                 </CommentItem>
               ))}
             </CommentList>
@@ -250,6 +261,21 @@ const CommentContent = styled.p`
   font-size: 14px;
   color: #333;
   margin-top: 5px;
+`;
+
+const CommentWriteButton = styled.button`
+  color: #333;
+  border: 1px solid #333;
+  padding: 10px 30px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-top: 20px;
+  align-self: flex-start;
+  &:hover {
+    border: 1px solid #333;
+    color: #aaa;
+  }
 `;
 
 const ReportButton = styled.div`
