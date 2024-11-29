@@ -56,11 +56,6 @@ function Review({ productid }) {
     }
   };
 
-  // 검색 키워드 입력 시 업데이트
-  const handleSearchChange = (e) => {
-    setSearchKeyword(e.target.value);
-  };
-
   // 검색 버튼 클릭 시 호출
   const handleSearchClick = () => {
     if (searchKeyword.trim() !== '') {
@@ -80,7 +75,7 @@ function Review({ productid }) {
         `${import.meta.env.VITE_APP_URI}/report/review`,
         {
           userId: user.id, // AuthContext에서 가져온 userId
-          productId: parseInt(productid), // 현재 상품의 productid
+          productId: productid, // 현재 상품의 productid
           reviewReportContent: reviewContent, // 신고 내용
         },
         {

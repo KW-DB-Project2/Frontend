@@ -1,16 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import axios from 'axios';
 
 function UserProduct() {
-  // 더미 데이터
-  const product = {
-    productTitle: '멋진 상품',
-    productImg: 'https://via.placeholder.com/500x500',
-    productPrice: 15000,
-    productContent: '이 상품은 정말 멋진 상품입니다. 꼭 가져가세요!',
-  };
+  const { productid } = useParams(); // URL에서 productid 파라미터 추출
+  const [product, setProduct] = useState(null); // 상품 데이터 상태
+  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [error, setError] = useState(null); // 에러 상태
 
-  // 버튼 클릭 시 처리할 함수
+  useEffect(() => {
+    // API 호출
+    const fetchProduct = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_URI}/admin/user-product/${productid}`
+        );
+        setProduct(response.data);
+      } catch (err) {
+        console.error(err);
+        setError('상품 정보를 불러오는 중 문제가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productid]);
+
   const handleActionClick = (action) => {
     switch (action) {
       case 'block':
@@ -27,11 +44,13 @@ function UserProduct() {
     }
   };
 
+  if (loading) return <Container>로딩 중...</Container>;
+  if (error) return <Container>{error}</Container>;
   return (
     <Container>
       <Content>
         <Image
-          src={product.productImg}
+          src={product.productImg || 'https://via.placeholder.com/500x500'}
           alt={product.productTitle || '상품 이미지'}
         />
         <Details>
@@ -59,7 +78,6 @@ function UserProduct() {
     </Container>
   );
 }
-
 const Container = styled.div`
   width: 1500px;
   margin-top: 20px;

@@ -94,7 +94,13 @@ function Product() {
           <ProductName>{product.productTitle}</ProductName>
           <PriceContainer>
             <Price>{product.productPrice.toLocaleString()}원</Price>
-            <ReportButton onClick={() => setIsModalOpen(true)}>
+            <ReportButton
+              onClick={() => {
+                console.log('신고하기 버튼 클릭');
+                setIsModalOpen(true);
+                console.log('isModalOpen:', isModalOpen);
+              }}
+            >
               <FaExclamationTriangle size={17} color="red" />
               신고하기
             </ReportButton>
@@ -386,11 +392,4 @@ const CancelButton = styled.button`
   &:hover {
     background-color: #f5f5f5;
   }
-`;
-
-const ErrorMessage = styled.p`
-  color: red;
-  font-size: 14px;
-  margin-top: -10px;
-  text-align: center;
 `;
