@@ -80,7 +80,7 @@ function Review({ productid }) {
         `${import.meta.env.VITE_APP_URI}/report/review`,
         {
           userId: user.id, // AuthContext에서 가져온 userId
-          productId: productid, // 현재 상품의 productid
+          productId: parseInt(productid), // 현재 상품의 productid
           reviewReportContent: reviewContent, // 신고 내용
         },
         {

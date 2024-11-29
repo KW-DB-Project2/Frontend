@@ -358,13 +358,6 @@ const Textarea = styled.textarea`
   }
 `;
 
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  gap: 10px;
-`;
-
 const SubmitButton = styled.button`
   padding: 12px;
   background-color: #333;
