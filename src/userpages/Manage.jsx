@@ -228,7 +228,7 @@ const Container = styled.div`
   padding: 20px;
   margin-top: 0;
   position: fixed; /* 화면에 고정 */
-  top: 23.8%;
+  top: 21.8%;
 `;
 
 const ButtonContainer = styled.div`

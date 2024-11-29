@@ -52,7 +52,7 @@ function ProductReports() {
             <ProductItem
               key={report.productReportId}
               onClick={() =>
-                navigateToProductDetail(report.userId, report.productId)
+                navigateToProductDetail(report.reportedUserId, report.productId)
               }
             >
               <ProductName>{report.productId}</ProductName>

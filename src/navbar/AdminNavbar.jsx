@@ -1,49 +1,42 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 function AdminNavbar() {
-  // 선택된 버튼 상태 관리
-  const [activeItem, setActiveItem] = useState('/admin/Product-List');
+  const location = useLocation(); // 현재 경로를 가져옴
 
   return (
     <NavbarContainer>
       <MarketName to="/">
         Market <AdminText>관리자</AdminText>
       </MarketName>
-
       <NavbarItem
         to="/admin/Product-List"
-        active={activeItem === '/admin/Product-List'}
-        onClick={() => setActiveItem('/admin/Product-List')}
+        active={location.pathname === '/admin/Product-List'}
       >
         등록된 상품
       </NavbarItem>
       <NavbarItem
         to="/admin/review-list"
-        active={activeItem === '/admin/review-list'}
-        onClick={() => setActiveItem('/admin/review-list')}
+        active={location.pathname === '/admin/review-list'}
       >
         후기 게시판
       </NavbarItem>
       <NavbarItem
         to="/admin/product-reports"
-        active={activeItem === '/admin/product-reports'}
-        onClick={() => setActiveItem('/admin/product-reports')}
+        active={location.pathname === '/admin/product-reports'}
       >
         신고 목록
       </NavbarItem>
       <NavbarItem
         to="/admin/user-list"
-        active={activeItem === '/admin/user-list'}
-        onClick={() => setActiveItem('/admin/user-list')}
+        active={location.pathname === '/admin/user-list'}
       >
         회원 목록
       </NavbarItem>
       <NavbarItem
         to="/admin/sales-volume"
-        active={activeItem === '/admin/sales-volume'}
-        onClick={() => setActiveItem('/admin/sales-volume')}
+        active={location.pathname === '/admin/sales-volume'}
       >
         월별 거래량
       </NavbarItem>
