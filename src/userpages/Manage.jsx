@@ -42,7 +42,7 @@ function Manage() {
   }, [token]); // token이 변경될 때마다 실행
 
   const handleDelete = async (productId) => {
-    if (window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
+    if (window.confirm('정말 이 상품을 삭제하시겠습니까?')) {
       try {
         await axios.delete(
           `${import.meta.env.VITE_APP_URI}/product/${productId}`,
@@ -232,7 +232,7 @@ const Container = styled.div`
   padding: 20px;
   margin-top: 0;
   position: fixed; /* 화면에 고정 */
-  top: 21.8%;
+  top: 20.8%;
 `;
 
 const ButtonContainer = styled.div`
