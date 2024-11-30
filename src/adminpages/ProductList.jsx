@@ -87,7 +87,7 @@ const Container = styled.div`
 const Title = styled.h1`
   font-size: 27px;
   color: #333;
-  font-weight: 500;
+  font-weight: 600;
 `;
 
 const ProductList = styled.div`

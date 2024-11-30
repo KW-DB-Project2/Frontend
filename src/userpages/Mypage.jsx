@@ -52,9 +52,13 @@ function Mypage() {
       {
         label: '월별 판매량 (건수)',
         data: countData,
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1,
+        fill: false,
+        borderColor: '#1ABC9C', // 심플한 민트
+        tension: 0.4,
+        borderWidth: 2,
+        pointRadius: 4,
+        pointBackgroundColor: '#1ABC9C', // 심플한 민트
+        pointBorderWidth: 2,
       },
     ],
   };
@@ -63,13 +67,15 @@ function Mypage() {
     labels,
     datasets: [
       {
-        label: '월별 판매 금액 (₩)',
+        label: '월별 총판매량 (₩)',
         data: totalAmountData,
         fill: false,
-        borderColor: '#FFA500',
-        backgroundColor: 'rgba(255, 165, 0, 0.2)',
+        borderColor: '#2980B9', // 클래식한 블루
         tension: 0.4,
-        borderWidth: 3,
+        borderWidth: 2,
+        pointRadius: 4,
+        pointBackgroundColor: '#2980B9', // 클래식한 블루
+        pointBorderWidth: 2,
       },
     ],
   };
@@ -263,7 +269,7 @@ const LineChartWrapper = styled.div`
 `;
 
 const Container = styled.div`
-  padding: 20px;
+  padding: 100px 20px 20px 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

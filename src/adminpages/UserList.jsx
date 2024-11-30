@@ -71,7 +71,7 @@ function UserList() {
   return (
     <Container>
       <SearchBar>
-        <Title>유저 목록</Title>
+        <Title>👥 유저 목록</Title>
         <SearchInput
           placeholder="유저 검색"
           value={searchTerm}
@@ -123,7 +123,7 @@ const Container = styled.div`
 const Title = styled.h1`
   font-size: 24px;
   color: #333;
-  font-weight: 500;
+  font-weight: 600;
   margin-right: 30px;
 `;
 

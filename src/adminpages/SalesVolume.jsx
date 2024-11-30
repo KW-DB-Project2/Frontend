@@ -27,9 +27,9 @@ ChartJS.register(
 function SalesVolume() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const SURL = import.meta.env.VITE_APP_URI;
 
   useEffect(() => {
+    // 실제 API 호출을 주석 처리하고, 더미 데이터로 대체
     const fetchMonthlyData = async () => {
       try {
         const response = await axios.get(`${SURL}/admin/transactions/monthly`);
@@ -58,14 +58,14 @@ function SalesVolume() {
     labels: months,
     datasets: [
       {
-        label: '월별 판매량 (카운트)',
+        label: '월별 판매량 (건수)',
         data: counts,
         fill: false,
-        borderColor: '#4CAF50',
+        borderColor: '#1ABC9C', // 심플한 민트
         tension: 0.4,
-        borderWidth: 3,
-        pointRadius: 5,
-        pointBackgroundColor: '#4CAF50',
+        borderWidth: 2,
+        pointRadius: 4,
+        pointBackgroundColor: '#1ABC9C', // 심플한 민트
         pointBorderWidth: 2,
       },
     ],
@@ -76,14 +76,14 @@ function SalesVolume() {
     labels: months,
     datasets: [
       {
-        label: '월별 총판매량 (금액)',
+        label: '월별 총판매량 (₩)',
         data: totalAmounts,
         fill: false,
-        borderColor: '#FFA500',
+        borderColor: '#2980B9', // 클래식한 블루
         tension: 0.4,
-        borderWidth: 3,
-        pointRadius: 5,
-        pointBackgroundColor: '#FFA500',
+        borderWidth: 2,
+        pointRadius: 4,
+        pointBackgroundColor: '#2980B9', // 클래식한 블루
         pointBorderWidth: 2,
       },
     ],
@@ -136,6 +136,8 @@ const Container = styled.div`
 `;
 
 const PageTitle = styled.div`
+  margin-bottom: 50px;
+  width: 300px;
   margin-top: 10px;
   font-size: 20px;
   font-weight: 600;

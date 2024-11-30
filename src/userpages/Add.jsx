@@ -178,7 +178,7 @@ function Add() {
 export default Add;
 
 const Container = styled.div`
-  padding: 20px;
+  padding: 40px 20px 20px 20px;
   margin-top: 0;
 `;
 
@@ -338,14 +338,15 @@ const Register = styled.div`
 
 const RegisterButton = styled.button`
   font-size: 18px;
-  padding: 15px 30px;
+  padding: 15px 50px;
   color: white;
-  background-color: red;
+  background-color: #f44336;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-
+  margin-bottom: 60px;
+  margin-right: 45px;
   &:hover {
-    background-color: darkred;
+    opacity: 0.8;
   }
 `;

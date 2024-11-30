@@ -7,6 +7,7 @@ function ReviewList() {
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
   const SURL = import.meta.env.VITE_APP_URI;
+
   // 리뷰 목록 조회
   useEffect(() => {
     const fetchReviews = async () => {
@@ -47,14 +48,16 @@ function ReviewList() {
 
   return (
     <Container>
-      <Title>Review</Title>
+      <Header>
+        <Title>📋 Review 신고 목록</Title>
+      </Header>
       <ReviewTable>
         {reviews.map((review) => (
           <ReviewRow key={review.reviewId}>
-            <ReviewProfile>
+            <ReviewContentContainer>
               <ReviewTitle>{review.reviewTitle}</ReviewTitle>
-            </ReviewProfile>
-            <ReviewContent>{review.reviewContent}</ReviewContent>
+              <ReviewContent>{review.reviewContent}</ReviewContent>
+            </ReviewContentContainer>
             <ActionButton onClick={() => handleDeleteReview(review.reviewId)}>
               삭제
             </ActionButton>
@@ -72,43 +75,54 @@ const Container = styled.div`
   padding: 20px 40px;
 `;
 
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+`;
+
 const Title = styled.h1`
   font-size: 24px;
   color: #333;
-  font-weight: 500;
+  padding-right: 10px;
 `;
 
 const ReviewTable = styled.div`
   display: grid;
-  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(1500px, 1fr));
   gap: 20px;
-  margin-top: 20px;
 `;
 
 const ReviewRow = styled.div`
   display: flex;
-  justify-content: space-between; /* 양쪽 끝에 배치 */
+  justify-content: space-between;
   align-items: flex-start;
-  border: 1px solid #ccc;
   padding: 15px;
-  border-radius: 5px;
   background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 `;
 
-const ReviewProfile = styled.div`
+const ReviewContentContainer = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
 `;
 
-const ReviewTitle = styled.div`
+const ReviewTitle = styled.h3`
   font-size: 18px;
   font-weight: bold;
+  color: #333;
 `;
 
 const ReviewContent = styled.p`
   font-size: 14px;
   color: #555;
-  margin-bottom: 15px;
+  line-height: 1.5;
+  margin: 10px 0;
 `;
 
 const ActionButton = styled.button`
@@ -117,7 +131,8 @@ const ActionButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 17px;
+  font-size: 14px;
+  color: #333;
 
   &:hover {
     background-color: #e0e0e0;

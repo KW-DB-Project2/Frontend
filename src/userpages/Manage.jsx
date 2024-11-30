@@ -232,7 +232,7 @@ const Container = styled.div`
   padding: 20px;
   margin-top: 0;
   position: fixed; /* 화면에 고정 */
-  top: 20.8%;
+  top: 20%;
 `;
 
 const ButtonContainer = styled.div`

@@ -95,10 +95,15 @@ function Home() {
         closeModal={() => setIsModalOpen(false)}
       />
       <Title>상품 리스트</Title>
-      <SortButtons>
-        <button onClick={() => setSortOrder('asc')}>오름차순</button>
-        <button onClick={() => setSortOrder('desc')}>내림차순</button>
-      </SortButtons>
+      {/* 정렬 드롭다운 추가 */}
+      <SortSelect
+        value={sortOrder} // 현재 정렬 순서에 맞게 선택된 값 표시
+        onChange={(e) => setSortOrder(e.target.value)} // 정렬 상태 업데이트
+      >
+        <option value="desc">내림차순</option>
+        <option value="asc">오름차순</option>
+      </SortSelect>
+      <span style={{ color: '#ccc' }}> * 5개만 정렬 *</span>
 
       <ProductList>
         {products.map((product) => (
@@ -261,17 +266,18 @@ const LoadingContainer = styled.div`
   }
 `;
 
-const SortButtons = styled.button`
-  color: #ddd;
+const SortSelect = styled.select`
+  color: #333;
   background-color: white;
-  padding: 10px;
-  cursor: pointer;
+  border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
-  margin-top: 20px;
+  margin-top: 10px;
+  padding: 5px 10px;
   align-self: flex-start;
+  cursor: pointer;
+
   &:hover {
-    border: none;
-    color: #aaa;
+    border-color: #666;
   }
 `;
