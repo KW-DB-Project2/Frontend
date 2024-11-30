@@ -200,12 +200,14 @@ const ProductTitle = styled.h3`
   font-weight: 400;
   margin: 0px 20px;
 `;
+
 const Probottom = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center; /* 세로 정렬을 가운데로 맞춤 */
   margin: 0px 20px;
 `;
+
 const ProductPrice = styled.p`
   font-size: 25px;
   color: #333;
@@ -248,5 +250,20 @@ const LoadingContainer = styled.div`
     100% {
       transform: rotate(360deg);
     }
+  }
+`;
+
+const SortButtons = styled.button`
+  color: #333;
+  border: 1px solid #333;
+  padding: 10px 30px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-top: 20px;
+  align-self: flex-start;
+  &:hover {
+    border: 1px solid #333;
+    color: #aaa;
   }
 `;

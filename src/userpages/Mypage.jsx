@@ -52,10 +52,9 @@ function Mypage() {
       {
         label: '월별 판매량 (건수)',
         data: countData,
-        backgroundColor: 'rgba(54, 162, 235, 0.8)', // 청록색으로 수정
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
         borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 2,
-        hoverBackgroundColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1,
       },
     ],
   };
@@ -66,10 +65,10 @@ function Mypage() {
       {
         label: '월별 판매 금액 (₩)',
         data: totalAmountData,
-        fill: true,
-        borderColor: '#FF6384', // 밝은 분홍색으로 수정
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        tension: 0.3,
+        fill: false,
+        borderColor: '#FFA500',
+        backgroundColor: 'rgba(255, 165, 0, 0.2)',
+        tension: 0.4,
         borderWidth: 3,
       },
     ],
@@ -207,8 +206,12 @@ function Mypage() {
       <Bottombar />
       <FooterLabel>판매 수익 조회</FooterLabel>
       <ChartSection>
-        <Bar data={countChartData} options={options} />
-        <Line data={totalAmountChartData} options={options} />
+        <BarChartWrapper>
+          <Bar data={countChartData} options={options} />
+        </BarChartWrapper>
+        <LineChartWrapper>
+          <Line data={totalAmountChartData} options={options} />
+        </LineChartWrapper>
       </ChartSection>
     </Container>
   );
@@ -241,10 +244,22 @@ export default Mypage;
 
 const ChartSection = styled.div`
   display: flex;
-  justify-content: space-between;
-  gap: 40px;
+  flex-direction: row; /* 가로로 나열 */
+  gap: 30px;
   width: 100%;
-  margin-top: 30px;
+  margin-top: 20px;
+`;
+
+const BarChartWrapper = styled.div`
+  flex: 1;
+  max-width: 50%; /* 각 그래프의 최대 너비를 50%로 설정 */
+  height: 400px; /* 고정 높이 */
+`;
+
+const LineChartWrapper = styled.div`
+  flex: 1;
+  max-width: 50%;
+  height: 400px; /* 고정 높이 */
 `;
 
 const Container = styled.div`
@@ -259,7 +274,7 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: row;
   gap: 30px;
-  width: 100%;
+  width: 1500px; /* 더 넓게 */
 `;
 
 const ProfileCard = styled.div`
@@ -302,7 +317,7 @@ const ManageButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #ccc;
+    background-color: #ddd;
   }
 `;
 
@@ -314,62 +329,72 @@ const AccountSection = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-const InfoTitle = styled.h3`
-  font-size: 20px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 15px;
+const InfoTitle = styled.div`
+  font-size: 18px;
+  font-weight: 600;
+  color: #444;
+  margin: 20px 0px;
 `;
 
 const Row = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  justify-content: space-between;
+  margin-bottom: 30px;
 `;
 
-const Label = styled.label`
-  font-size: 16px;
+const Label = styled.span`
+  font-size: 17px;
+  font-weight: 500;
+  color: #555;
+  width: 80px;
+`;
+
+const Value = styled.span`
+  font-size: 17px;
+  color: #333;
   flex: 1;
 `;
 
-const Value = styled.div`
-  font-size: 16px;
-  flex: 2;
-`;
-
 const Input = styled.input`
-  font-size: 16px;
-  flex: 2;
+  flex: 1;
   padding: 5px;
+  font-size: 16px;
+  border: 1px solid #f0f0f0;
   border-radius: 5px;
-  border: 1px solid #ddd;
+  margin-right: 50px;
+  transition: width 0.3s ease;
+  color: #333;
 `;
 
-const EditButton = styled.button`
-  background-color: #4caf50;
+const EditButton = styled.div`
+  padding: 5px 10px;
+  font-size: 14px;
   color: white;
+  background-color: #ccc;
   border: none;
   border-radius: 5px;
-  padding: 5px 10px;
   cursor: pointer;
-
   &:hover {
-    background-color: #45a049;
+    background-color: #ccc;
   }
 `;
 
 const Bottombar = styled.div`
-  width: 100%;
-  padding: 10px;
-  background-color: #4caf50;
-  text-align: center;
-  color: white;
-  font-size: 16px;
+  width: 1500px;
+  height: 2px;
+  background-color: #f0f0f0;
+  margin-top: 20px;
 `;
 
-const FooterLabel = styled.h3`
+const FooterLabel = styled.div`
+  margin-top: 10px;
   font-size: 20px;
-  font-weight: bold;
+  font-weight: 600;
   color: #333;
-  margin: 20px 0;
+  border: 2px solid #f0f0f0;
+  padding: 5px 20px;
+  border-radius: 5px;
+  text-align: center;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
 `;
