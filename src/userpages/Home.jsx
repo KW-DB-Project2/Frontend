@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'; // axios import
 import { FiLoader } from 'react-icons/fi'; // 로딩 아이콘 import
+import { AuthContext } from '../context/AuthContext';
+import LoginModal from '../modal/Login'; // 로그인 모달 import
+
 function Home() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const SURL = import.meta.env.VITE_APP_URI;
+  const { token } = useContext(AuthContext);
+  const [isModalOpen, setIsModalOpen] = useState(false); // 로그인 모달 상태
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -38,13 +44,31 @@ function Home() {
     ); // 로딩 중일 때 아이콘 표시
   }
 
+  // 상품 클릭 시 token이 없으면 로그인 모달을 연다
+  const handleProductClick = (e, productId) => {
+    if (!token) {
+      e.preventDefault(); // 클릭 이벤트 취소
+      setIsModalOpen(true); // 로그인 모달 띄우기
+    } else {
+      navigate(`/product/${productId}`); // 로그인된 상태에서 상품 상세 페이지로 이동
+    }
+  };
+
   return (
     <Container>
+      {/* 로그인 모달 */}
+      <LoginModal
+        showModal={isModalOpen}
+        closeModal={() => setIsModalOpen(false)}
+      />
       <Title>상품 리스트</Title>
       <ProductList>
         {products.map((product) => (
           <ProductCard key={product.productId}>
-            <StyledLink to={`/product/${product.productId}`}>
+            <StyledLink
+              to={`/product/${product.productId}`}
+              onClick={(e) => handleProductClick(e, product.productId)} // 상품 클릭 시 로그인 확인
+            >
               <ProductImage
                 src={
                   product.productImg
