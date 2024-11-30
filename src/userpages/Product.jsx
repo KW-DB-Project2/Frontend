@@ -83,6 +83,34 @@ function Product() {
     );
   }
 
+  const handleBuyProduct = async (price) => {
+    try {
+      const transactionData = {
+        userId: user.id,
+        productId: productid,
+        transactionAmount: price,
+      };
+
+      const response = await axios.put(
+        `${import.meta.env.VITE_APP_URI}/product/buy/${productid}`,
+        transactionData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        alert('상품 구매가 완료되었습니다.');
+        navigate('/'); // 구매 완료 후 홈으로 이동 (예시)
+      }
+    } catch (error) {
+      console.error('상품 구매 중 오류 발생:', error);
+      alert('상품 구매에 실패했습니다.');
+    }
+  };
+
   return (
     <Container>
       <Content>
@@ -119,7 +147,9 @@ function Product() {
             <QnAButton onClick={() => navigate(`/qna/${productid}`)}>
               문의하기
             </QnAButton>
-            <BuyButton>구매하기</BuyButton>
+            <BuyButton onClick={() => handleBuyProduct(product.productPrice)}>
+              구매하기
+            </BuyButton>
           </ButtonContainer>
         </Details>
       </Content>

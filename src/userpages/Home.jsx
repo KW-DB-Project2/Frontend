@@ -17,7 +17,7 @@ function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${SURL}/product`, {
+        const response = await axios.get(`${SURL}/product/mypage`, {
           withCredentials: false, // 쿠키를 포함시키지 않음
           headers: {
             // 불필요한 헤더를 포함시키지 않도록 주의
@@ -64,19 +64,27 @@ function Home() {
       <Title>상품 리스트</Title>
       <ProductList>
         {products.map((product) => (
-          <ProductCard key={product.productId}>
+          <ProductCard
+            key={product.productId}
+            status={product.productStatus} // 상태값 전달
+          >
             <StyledLink
               to={`/product/${product.productId}`}
-              onClick={(e) => handleProductClick(e, product.productId)} // 상품 클릭 시 로그인 확인
+              onClick={(e) => handleProductClick(e, product.productId)}
             >
-              <ProductImage
-                src={
-                  product.productImg
-                    ? `data:image/jpeg;base64,${product.productImg}` // base64 이미지 데이터 처리
-                    : 'https://via.placeholder.com/300x300?text=No+Image'
-                }
-                alt={product.productTitle}
-              />
+              <ProductImageWrapper>
+                <ProductImage
+                  src={
+                    product.productImg
+                      ? `data:image/jpeg;base64,${product.productImg}`
+                      : 'https://via.placeholder.com/300x300?text=No+Image'
+                  }
+                  alt={product.productTitle}
+                />
+                {product.productStatus === 0 && (
+                  <SoldOutOverlay>판매 완료</SoldOutOverlay> // 상태가 0일 때 "판매 완료" 표시
+                )}
+              </ProductImageWrapper>
               <ProductInfo>
                 <ProductTitle>{product.productTitle}</ProductTitle>
                 <Probottom>
@@ -123,6 +131,33 @@ const ProductCard = styled.div`
   text-align: left;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  opacity: ${(props) =>
+    props.status === 0 ? 0.5 : 1}; // 상태에 따라 흐림 효과
+  pointer-events: ${(props) =>
+    props.status === 0 ? 'none' : 'auto'}; // 상태가 0이면 클릭 비활성화
+  position: relative; // 오버레이 위치를 위해 상대적 배치
+`;
+
+const ProductImageWrapper = styled.div`
+  position: relative;
+`;
+
+const SoldOutOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); // 반투명 검정 배경
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  text-align: center;
+  z-index: 1; // 이미지 위에 표시되도록 설정
 `;
 
 const ProductImage = styled.img`
