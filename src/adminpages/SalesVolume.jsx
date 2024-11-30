@@ -27,7 +27,7 @@ ChartJS.register(
 function SalesVolume() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const SURL = import.meta.env.VITE_APP_URI;
   useEffect(() => {
     // 실제 API 호출을 주석 처리하고, 더미 데이터로 대체
     const fetchMonthlyData = async () => {

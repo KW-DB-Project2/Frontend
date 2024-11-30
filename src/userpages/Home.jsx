@@ -18,12 +18,23 @@ function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${SURL}/product/order`, {
-          params: {
-            descOrAsc: sortOrder, // 정렬 순서 파라미터
-          },
-          withCredentials: false,
-        });
+        let response;
+        // '전체'일 경우와 'desc'/'asc' 값에 따라 분기 처리
+        if (sortOrder === '전체') {
+          response = await axios.get(`${SURL}/product/mypage`, {
+            withCredentials: false, // 쿠키를 포함시키지 않음
+            headers: {
+              Authorization: '', // 불필요한 헤더를 포함시키지 않도록 주의
+            },
+          });
+        } else {
+          response = await axios.get(`${SURL}/product/order`, {
+            params: {
+              descOrAsc: sortOrder, // 정렬 순서 파라미터
+            },
+            withCredentials: false,
+          });
+        }
         // 첫 번째 useEffect에서 상품 데이터 받아올 때
         const sortedProducts = response.data.sort((a, b) => {
           // 판매 중인 상품이 먼저 오도록 정렬
@@ -40,33 +51,6 @@ function Home() {
 
     fetchProducts();
   }, [sortOrder]); // sortOrder가 변경될 때마다 상품을 새로 fetch
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get(`${SURL}/product/mypage`, {
-          withCredentials: false, // 쿠키를 포함시키지 않음
-          headers: {
-            // 불필요한 헤더를 포함시키지 않도록 주의
-            Authorization: '', // Authorization 헤더가 필요 없다면 삭제
-          },
-        });
-        // 첫 번째 useEffect에서 상품 데이터 받아올 때
-        const sortedProducts = response.data.sort((a, b) => {
-          // 판매 중인 상품이 먼저 오도록 정렬
-          return b.productStatus - a.productStatus;
-        });
-
-        setProducts(sortedProducts);
-      } catch (error) {
-        console.error('상품 조회 실패:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
 
   if (loading) {
     return (
@@ -100,6 +84,7 @@ function Home() {
         value={sortOrder} // 현재 정렬 순서에 맞게 선택된 값 표시
         onChange={(e) => setSortOrder(e.target.value)} // 정렬 상태 업데이트
       >
+        <option value="전체">전체</option>
         <option value="desc">내림차순</option>
         <option value="asc">오름차순</option>
       </SortSelect>
@@ -148,6 +133,7 @@ function Home() {
     </Container>
   );
 }
+
 export default Home;
 
 const Container = styled.div`
