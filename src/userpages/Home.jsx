@@ -24,7 +24,13 @@ function Home() {
           },
           withCredentials: false,
         });
-        setProducts(response.data);
+        // 첫 번째 useEffect에서 상품 데이터 받아올 때
+        const sortedProducts = response.data.sort((a, b) => {
+          // 판매 중인 상품이 먼저 오도록 정렬
+          return b.productStatus - a.productStatus;
+        });
+
+        setProducts(sortedProducts);
       } catch (error) {
         console.error('상품 조회 실패:', error);
       } finally {
