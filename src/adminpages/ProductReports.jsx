@@ -7,7 +7,7 @@ function ProductReports() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true); // 로딩 상태
   const navigate = useNavigate();
-
+  const SURL = import.meta.env.VITE_APP_URI;
   // Review 신고 목록으로 이동
   const navigateToUserReport = () => {
     navigate('/admin/review-reports');
