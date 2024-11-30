@@ -157,8 +157,8 @@ const ProductCard = styled.div`
   text-align: left;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  opacity: ${(props) => (props.status === 0 ? '0.5' : '1')};
-  pointer-events: ${(props) => (props.status === 0 ? 'none' : 'auto')};
+  opacity: ${(props) => (props.status ? '1' : '0.5')};
+  pointer-events: ${(props) => (props.status ? 'auto' : 'none')};
   position: relative;
 `;
 
@@ -172,7 +172,6 @@ const SoldOutOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); // 반투명 검정 배경
   color: white;
   font-size: 24px;
   font-weight: bold;
@@ -182,7 +181,6 @@ const SoldOutOverlay = styled.div`
   border-radius: 5px;
   text-align: center;
   z-index: 1; // 이미지 위에 표시되도록 설정
-  backdrop-filter: blur(5px); // 배경 흐림 효과
 `;
 
 const ProductImage = styled.img`
