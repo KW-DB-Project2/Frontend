@@ -45,7 +45,13 @@ function Home() {
             Authorization: '', // Authorization 헤더가 필요 없다면 삭제
           },
         });
-        setProducts(response.data); // 받아온 데이터를 상태에 저장
+        // 첫 번째 useEffect에서 상품 데이터 받아올 때
+        const sortedProducts = response.data.sort((a, b) => {
+          // 판매 중인 상품이 먼저 오도록 정렬
+          return b.productStatus - a.productStatus;
+        });
+
+        setProducts(sortedProducts);
       } catch (error) {
         console.error('상품 조회 실패:', error);
       } finally {
@@ -107,7 +113,7 @@ function Home() {
                   }
                   alt={product.productTitle}
                 />
-                {product.productStatus === 0 && (
+                {!product.productStatus && (
                   <SoldOutOverlay>판매 완료</SoldOutOverlay> // 상태가 0일 때 "판매 완료" 표시
                 )}
               </ProductImageWrapper>
@@ -158,7 +164,6 @@ const ProductCard = styled.div`
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   opacity: ${(props) => (props.status ? '1' : '0.5')};
-  pointer-events: ${(props) => (props.status ? 'auto' : 'none')};
   position: relative;
 `;
 
@@ -260,6 +265,7 @@ const SortButtons = styled.button`
   margin-top: 20px;
   align-self: flex-start;
   &:hover {
+    border: none;
     color: #aaa;
   }
 `;
