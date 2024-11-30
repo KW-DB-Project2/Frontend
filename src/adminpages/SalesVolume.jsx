@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Line, Radar } from 'react-chartjs-2'; // Radar 차트 추가
+import { Line } from 'react-chartjs-2';
+import axios from 'axios';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
-  RadialLinearScale, // Radar 차트를 위한 구성 요소
   Title as ChartTitle,
   Tooltip,
   Legend,
@@ -19,41 +19,72 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
-  RadialLinearScale, // Radar 구성 요소 등록
   ChartTitle,
   Tooltip,
   Legend
 );
 
 function SalesVolume() {
-  // 첫 번째 그래프: 월별 거래량
-  const volumeData = {
-    labels: ['2024.09', '2024.10', '2024.11', '2024.12', '2025.01', '2025.02'],
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const SURL = import.meta.env.VITE_APP_URI;
+
+  useEffect(() => {
+    const fetchMonthlyData = async () => {
+      try {
+        const response = await axios.get(`${SURL}/admin/transactions/monthly`);
+        setMonthlyData(response.data); // API에서 데이터를 가져와 상태에 저장
+      } catch (error) {
+        console.error('월별 데이터 조회 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMonthlyData();
+  }, []);
+
+  if (loading) {
+    return <p>로딩 중...</p>;
+  }
+
+  // 데이터 변환
+  const months = monthlyData.map((data) => `${data.month}월`);
+  const counts = monthlyData.map((data) => data.count);
+  const totalAmounts = monthlyData.map((data) => data.totalAmount);
+
+  // 월별 판매량 (카운트) 차트 데이터
+  const countData = {
+    labels: months,
     datasets: [
       {
-        label: '월별 거래량',
-        data: [12000, 15000, 20000, 18000, 22000, 17000],
+        label: '월별 판매량 (카운트)',
+        data: counts,
         fill: false,
-        borderColor: '#FFA500',
+        borderColor: '#4CAF50',
         tension: 0.4,
         borderWidth: 3,
-        pointRadius: 7,
-        pointBackgroundColor: '#FFA500',
+        pointRadius: 5,
+        pointBackgroundColor: '#4CAF50',
         pointBorderWidth: 2,
       },
     ],
   };
 
-  // 두 번째 그래프: 레이더 차트 데이터
-  const radarData = {
-    labels: ['2024.09', '2024.10', '2024.11', '2024.12', '2025.01', '2025.02'],
+  // 월별 총판매량 (금액) 차트 데이터
+  const totalAmountData = {
+    labels: months,
     datasets: [
       {
-        label: '거래량 분포',
-        data: [12000, 15000, 20000, 18000, 22000, 17000],
-        backgroundColor: 'rgba(75, 192, 192, 0.2)', // 반투명한 채우기 색상
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 2,
+        label: '월별 총판매량 (금액)',
+        data: totalAmounts,
+        fill: false,
+        borderColor: '#FFA500',
+        tension: 0.4,
+        borderWidth: 3,
+        pointRadius: 5,
+        pointBackgroundColor: '#FFA500',
+        pointBorderWidth: 2,
       },
     ],
   };
@@ -64,7 +95,7 @@ function SalesVolume() {
       y: {
         beginAtZero: true,
         ticks: {
-          stepSize: 5000,
+          stepSize: 10000, // Y축 간격 설정
         },
       },
     },
@@ -79,13 +110,13 @@ function SalesVolume() {
 
   return (
     <Container>
-      <PageTitle>월별 거래량</PageTitle>
+      <PageTitle>월별 판매량 (카운트)</PageTitle>
       <ChartWrapper>
-        <Line data={volumeData} options={options} />
+        <Line data={countData} options={options} />
       </ChartWrapper>
-      <PageTitle>거래량 분포</PageTitle>
+      <PageTitle>월별 총판매량 (금액)</PageTitle>
       <ChartWrapper>
-        <Radar data={radarData} />
+        <Line data={totalAmountData} options={options} />
       </ChartWrapper>
     </Container>
   );

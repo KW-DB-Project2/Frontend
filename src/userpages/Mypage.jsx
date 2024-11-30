@@ -2,14 +2,35 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
-
-/* 토큰 Context */
+import { Bar, Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  Title as ChartTitle,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import { AuthContext } from '../context/AuthContext';
 
+// Chart.js 구성 요소 등록
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  ChartTitle,
+  Tooltip,
+  Legend
+);
+
 function Mypage() {
-  const { token } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const navigate = useNavigate();
   const SURL = import.meta.env.VITE_APP_URI;
+  const [transactionData, setTransactionData] = useState([]);
   const [userInfo, setUserInfo] = useState({
     name: '',
     email: '',
@@ -20,6 +41,71 @@ function Mypage() {
     email: false,
     phoneNumber: false,
   });
+
+  const labels = transactionData.map((item) => `2024.${item.month}`);
+  const countData = transactionData.map((item) => item.count);
+  const totalAmountData = transactionData.map((item) => item.totalAmount);
+
+  const countChartData = {
+    labels,
+    datasets: [
+      {
+        label: '월별 판매량 (건수)',
+        data: countData,
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const totalAmountChartData = {
+    labels,
+    datasets: [
+      {
+        label: '월별 판매 금액 (₩)',
+        data: totalAmountData,
+        fill: false,
+        borderColor: '#FFA500',
+        backgroundColor: 'rgba(255, 165, 0, 0.2)',
+        tension: 0.4,
+        borderWidth: 3,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (tooltipItem) => `₩${tooltipItem.raw.toLocaleString()}`,
+        },
+      },
+    },
+  };
+
+  useEffect(() => {
+    // 사용자별 월별 transaction 데이터 가져오기
+    const fetchTransactionData = async () => {
+      try {
+        const response = await axios.get(
+          `${SURL}/transactions/monthly/${user.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setTransactionData(response.data);
+      } catch (error) {
+        console.error('트랜잭션 데이터를 가져오는 중 오류 발생:', error);
+        alert('트랜잭션 데이터를 불러오지 못했습니다.');
+      }
+    };
+
+    fetchTransactionData();
+  }, [token]);
 
   useEffect(() => {
     // 사용자 정보 가져오기
@@ -119,6 +205,10 @@ function Mypage() {
       </ContentWrapper>
       <Bottombar />
       <FooterLabel>판매 수익 조회</FooterLabel>
+      <ChartSection>
+        <Bar data={countChartData} options={options} />
+        <Line data={totalAmountChartData} options={options} />
+      </ChartSection>
     </Container>
   );
 }
@@ -147,6 +237,14 @@ function EditableRow({
 }
 
 export default Mypage;
+
+const ChartSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+  margin-top: 20px;
+`;
 
 const Container = styled.div`
   padding: 20px;
