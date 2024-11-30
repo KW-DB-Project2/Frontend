@@ -40,6 +40,34 @@ function UserList() {
       });
   };
 
+  // 유저 탈퇴 함수
+  const deleteUser = (userId) => {
+    axios
+      .delete(`${SURL}/admin/delete/${userId}`) // 유저 탈퇴 API 요청
+      .then((response) => {
+        alert('유저가 탈퇴되었습니다.');
+        // 탈퇴 후 유저 목록 상태 업데이트
+        setUsers(users.filter((user) => user.id !== userId));
+      })
+      .catch((error) => {
+        console.error('유저 탈퇴에 실패했습니다:', error);
+        alert('유저 탈퇴에 실패했습니다.');
+      });
+  };
+
+  // 유저 등급 변경 함수
+  const changeUserRank = (userId) => {
+    axios
+      .put(`${SURL}/admin/users/${userId}/rank/change`) // 유저 등급 변경 API 요청
+      .then((response) => {
+        alert('유저 등급이 변경되었습니다.');
+      })
+      .catch((error) => {
+        console.error('유저 등급 변경에 실패했습니다:', error);
+        alert('유저 등급 변경에 실패했습니다.');
+      });
+  };
+
   return (
     <Container>
       <SearchBar>
@@ -60,14 +88,23 @@ function UserList() {
               <ProfileIcon>
                 <FaUserCircle size={50} color="#ccc" />
               </ProfileIcon>
-              <UserName>{user.username}</UserName>
+              <UserInfo>
+                <UserName>{user.username}</UserName>
+                <UserRole>
+                  {user.role === 'USER' ? '사용자' : '관리자'}
+                </UserRole>
+              </UserInfo>
             </UserProfile>
             <ActionButtons>
               <ActionButton onClick={() => suspendUser(user.id)}>
                 유저 정지
               </ActionButton>
-              <ActionButton>유저 탈퇴</ActionButton>
-              <ActionButton>등급 변경</ActionButton>
+              <ActionButton onClick={() => deleteUser(user.id)}>
+                유저 탈퇴
+              </ActionButton>
+              <ActionButton onClick={() => changeUserRank(user.id)}>
+                등급 변경
+              </ActionButton>
             </ActionButtons>
           </UserRow>
         ))}
@@ -144,6 +181,18 @@ const ProfileIcon = styled.div`
   align-items: center;
   border-radius: 50%;
   background-color: #f0f0f0;
+`;
+
+const UserInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const UserRole = styled.div`
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+  font-weight: normal;
 `;
 
 const UserName = styled.div`

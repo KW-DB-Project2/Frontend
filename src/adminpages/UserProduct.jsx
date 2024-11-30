@@ -47,7 +47,10 @@ function UserProduct() {
           alret('유저가 정지되었습니다.');
           break;
         case 'withdraw':
-          alert('유저 탈퇴 처리');
+          response = await axios.delete(`${SURL}/admin/delete/${userid}`, {
+            withCredentials: false,
+          });
+          alert('유저가 탈퇴 처리 되었습니다.');
           break;
         case 'delete':
           // 상품 삭제 API 호출
