@@ -12,24 +12,24 @@ function UserReview() {
   // 리뷰에 대한 상태를 정의 (백엔드에서 받아올 데이터)
   const [review, setReview] = React.useState(null);
 
-  // 컴포넌트가 마운트될 때 리뷰 데이터를 받아옴
   React.useEffect(() => {
-    // 리뷰 정보를 받아오는 API 호출
-    const fetchReview = async () => {
+    const fetchReviews = async () => {
       try {
-        const response = await axios.get(`${SURL}/admin/reviews`);
-        // 리뷰 데이터에서 reviewId에 맞는 것만 필터링
-        const filteredReview = response.data.find(
-          (r) => r.reviewId === parseInt(reviewid)
-        );
-        setReview(filteredReview); // 필터링된 리뷰를 상태에 저장
+        const response = await axios.get(`${SURL}/admin/reports`);
+
+        // 중첩 배열 평탄화 후 reviewReportId가 있는 항목만 필터링
+        const filteredReviews = response.data
+          .flat() // 중첩 배열을 1차원 배열로 변환
+          .filter((item) => item.reviewReportId && item.reviewId === reviewid); // reviewReportId가 있고, reviewid와 일치하는 항목 필터링
+
+        setReviews(filteredReviews); // 상태 업데이트
       } catch (error) {
         console.error('리뷰 데이터를 불러오는 데 실패했습니다:', error);
       }
     };
 
-    fetchReview();
-  }, [reviewid]); // reviewid가 변경될 때마다 데이터를 다시 가져옴
+    fetchReviews(); // 리뷰 데이터 가져오기
+  }, [reviewid]); // reviewid가 변경될 때마다 실행
 
   // 버튼 클릭 시 처리할 함수
   const handleActionClick = async () => {
