@@ -40,7 +40,7 @@ function WriteComment({ initialContent = '' }) {
         try {
           // API 호출
           const response = await axios.get(
-            `${SURL}/comment/detail/${commentid}`,
+            `${SURL}/comments/detail/${commentid}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
