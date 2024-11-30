@@ -131,11 +131,9 @@ const ProductCard = styled.div`
   text-align: left;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  opacity: ${(props) =>
-    props.status === 0 ? 0.5 : 1}; // 상태에 따라 흐림 효과
-  pointer-events: ${(props) =>
-    props.status === 0 ? 'none' : 'auto'}; // 상태가 0이면 클릭 비활성화
-  position: relative; // 오버레이 위치를 위해 상대적 배치
+  opacity: ${(props) => (props.status === 0 ? '0.5' : '1')};
+  pointer-events: ${(props) => (props.status === 0 ? 'none' : 'auto')};
+  position: relative;
 `;
 
 const ProductImageWrapper = styled.div`

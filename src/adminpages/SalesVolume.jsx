@@ -101,44 +101,63 @@ function SalesVolume() {
     },
     plugins: {
       tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.7)', // 툴팁 배경 색상
+        titleColor: '#fff', // 툴팁 제목 색상
+        bodyColor: '#fff', // 툴팁 본문 색상
         callbacks: {
           label: (tooltipItem) => `값: ${tooltipItem.raw.toLocaleString()}`,
         },
       },
     },
+    animation: {
+      duration: 1500, // 애니메이션 지속 시간
+      easing: 'easeOutQuart', // 애니메이션의 easing 함수
+    },
   };
 
   return (
     <Container>
-      <PageTitle>월별 판매량 (카운트)</PageTitle>
-      <ChartWrapper>
-        <Line data={countData} options={options} />
-      </ChartWrapper>
-      <PageTitle>월별 총판매량 (금액)</PageTitle>
-      <ChartWrapper>
-        <Line data={totalAmountData} options={options} />
-      </ChartWrapper>
+      <PageTitle>월별 판매량</PageTitle>
+      <ChartsWrapper>
+        <ChartWrapper>
+          <Line data={countData} options={options} />
+        </ChartWrapper>
+        <ChartWrapper>
+          <Line data={totalAmountData} options={options} />
+        </ChartWrapper>
+      </ChartsWrapper>
     </Container>
   );
 }
 
 const Container = styled.div`
-  width: 1500px;
+  width: 100%;
   margin: 0 auto;
   padding: 30px;
 `;
 
-const PageTitle = styled.p`
+const PageTitle = styled.div`
+  margin-top: 10px;
   font-size: 20px;
   font-weight: 600;
   color: #333;
-  margin: 20px 0;
+  border: 2px solid #f0f0f0;
+  padding: 5px 20px;
+  border-radius: 5px;
   text-align: center;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
+`;
+
+const ChartsWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 30px;
 `;
 
 const ChartWrapper = styled.div`
-  width: 100%;
-  height: 500px;
+  width: 48%; // 차트 크기 조정
+  height: 400px; // 차트 높이 조정
 `;
 
 export default SalesVolume;
