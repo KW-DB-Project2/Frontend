@@ -104,7 +104,7 @@ function Review({ productid }) {
   const fetchComments = async (reviewId) => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_APP_URI}/comment/${reviewId}`,
+        `${import.meta.env.VITE_APP_URI}/comments/${reviewId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
