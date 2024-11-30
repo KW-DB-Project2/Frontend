@@ -16,7 +16,7 @@ function UserReview() {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(`${SURL}/admin/reports`);
-
+        console.log(reviewid);
         // 중첩 배열 평탄화 후 reviewReportId가 있는 항목만 필터링
         const filteredReviews = response.data
           .flatMap((item) => item) // 중첩된 배열을 평탄화
