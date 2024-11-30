@@ -108,12 +108,15 @@ const ProductList = styled.div`
 
 const ProductItem = styled.div`
   display: flex; /* 자식 요소들을 가로로 배치 */
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: space-between; /* 필요 시 양 끝 정렬 */
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
   gap: 20px; /* 자식 요소 간의 간격 설정 */
+
   &:hover {
     background-color: #f4f4f4;
   }
@@ -122,9 +125,15 @@ const ProductItem = styled.div`
 const ProductName = styled.h3`
   font-size: 18px;
   font-weight: bold;
+  margin: 0; /* 기본 마진 제거 */
+  display: flex;
+  align-items: center; /* 텍스트 세로 중앙 정렬 */
 `;
 
 const ProductDescription = styled.p`
   font-size: 14px;
   color: #555;
+  margin: 0; /* 기본 마진 제거 */
+  display: flex;
+  align-items: center; /* 텍스트 세로 중앙 정렬 */
 `;

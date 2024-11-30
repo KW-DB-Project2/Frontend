@@ -12,16 +12,17 @@ function ReviewReports() {
   // 리뷰 신고 목록 상태
   const [reviews, setReviews] = React.useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(`${SURL}/admin/reports`);
 
-        // 리뷰 신고만 필터링
-        const filteredReviews = response.data.filter(
-          (item) => item.reviewReportId
-        );
-        setReviews(filteredReviews);
+        // 중첩 배열 평탄화 후 reviewReportId가 있는 항목만 필터링
+        const filteredReviews = response.data
+          .flat() // 중첩 배열을 1차원 배열로 변환
+          .filter((item) => item.reviewReportId); // reviewReportId 필터링
+
+        setReviews(filteredReviews); // 상태 업데이트
       } catch (error) {
         console.error('리뷰 데이터를 불러오는 데 실패했습니다:', error);
       }
@@ -108,6 +109,8 @@ const ReviewList = styled.div`
 
 const ReviewItem = styled.div`
   display: flex; /* 자식 요소들을 가로로 배치 */
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: space-between; /* 필요 시 양 끝 정렬 */
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
@@ -124,10 +127,14 @@ const ReviewTitle = styled.h3`
   font-size: 18px;
   font-weight: bold;
   margin: 0; /* 기본 마진 제거 */
+  display: flex; /* 필요 시 내용 정렬 */
+  align-items: center; /* 텍스트 세로 중앙 정렬 */
 `;
 
 const ReviewContent = styled.p`
   font-size: 14px;
   color: #555;
   margin: 0; /* 기본 마진 제거 */
+  display: flex; /* 필요 시 내용 정렬 */
+  align-items: center; /* 텍스트 세로 중앙 정렬 */
 `;
