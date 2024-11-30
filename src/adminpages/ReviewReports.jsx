@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { useNavigate, useEffect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // 환경 변수에서 서버 URL 가져오기
 const SURL = import.meta.env.VITE_APP_URI; // 백엔드 URL

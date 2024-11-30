@@ -248,6 +248,7 @@ const CommentItem = styled.li`
   padding: 10px;
   background-color: #f9f9f9;
   border-radius: 5px;
+  color: #333;
 `;
 
 const CommentHeader = styled.div`
