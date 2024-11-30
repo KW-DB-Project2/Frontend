@@ -20,9 +20,7 @@ function UserReview() {
         // 중첩 배열 평탄화 후 reviewReportId가 있는 항목만 필터링
         const filteredReviews = response.data
           .flat() // 중첩 배열을 1차원 배열로 변환
-          .filter(
-            (item) => item.reviewReportId && item.reviewId === Number(reviewid)
-          ); // reviewReportId가 있고, reviewid와 일치하는 항목 필터링
+          .filter((item) => item.reviewId === Number(reviewid)); // reviewid와 일치하는 항목 필터링
         console.log(filteredReviews);
         setReview(filteredReviews); // 상태 업데이트
       } catch (error) {
