@@ -45,7 +45,7 @@ function UserList() {
     axios
       .delete(`${SURL}/admin/delete/${userId}`) // 유저 탈퇴 API 요청
       .then((response) => {
-        alert('유저가 탈퇴되었습니다.');
+        alert('유저가 탈퇴 처리되었습니다.');
         // 탈퇴 후 유저 목록 상태 업데이트
         setUsers(users.filter((user) => user.id !== userId));
       })
