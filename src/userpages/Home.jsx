@@ -13,7 +13,7 @@ function Home() {
   const SURL = import.meta.env.VITE_APP_URI;
   const { token } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState(false); // 로그인 모달 상태
-  const [sortOrder, setSortOrder] = useState('desc'); // 정렬 상태
+  const [sortOrder, setSortOrder] = useState('전체'); // 정렬 상태
 
   useEffect(() => {
     const fetchProducts = async () => {
