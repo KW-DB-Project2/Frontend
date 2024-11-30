@@ -22,7 +22,7 @@ function UserReview() {
           .flat() // 중첩 배열을 1차원 배열로 변환
           .filter((item) => item.reviewReportId && item.reviewId === reviewid); // reviewReportId가 있고, reviewid와 일치하는 항목 필터링
 
-        setReviews(filteredReviews); // 상태 업데이트
+        setReview(filteredReviews); // 상태 업데이트
       } catch (error) {
         console.error('리뷰 데이터를 불러오는 데 실패했습니다:', error);
       }
