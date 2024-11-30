@@ -131,9 +131,8 @@ function SalesVolume() {
 }
 
 const Container = styled.div`
-  width: 100%;
-  margin: 0 auto;
-  padding: 30px;
+  width: 1500px;
+  padding: 20px 40px;
 `;
 
 const PageTitle = styled.div`

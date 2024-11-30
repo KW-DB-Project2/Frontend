@@ -52,9 +52,10 @@ function Mypage() {
       {
         label: '월별 판매량 (건수)',
         data: countData,
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        backgroundColor: 'rgba(54, 162, 235, 0.8)', // 청록색으로 수정
         borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1,
+        borderWidth: 2,
+        hoverBackgroundColor: 'rgba(54, 162, 235, 1)',
       },
     ],
   };
@@ -65,10 +66,10 @@ function Mypage() {
       {
         label: '월별 판매 금액 (₩)',
         data: totalAmountData,
-        fill: false,
-        borderColor: '#FFA500',
-        backgroundColor: 'rgba(255, 165, 0, 0.2)',
-        tension: 0.4,
+        fill: true,
+        borderColor: '#FF6384', // 밝은 분홍색으로 수정
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        tension: 0.3,
         borderWidth: 3,
       },
     ],
@@ -240,10 +241,10 @@ export default Mypage;
 
 const ChartSection = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 30px;
+  justify-content: space-between;
+  gap: 40px;
   width: 100%;
-  margin-top: 20px;
+  margin-top: 30px;
 `;
 
 const Container = styled.div`
@@ -258,7 +259,7 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: row;
   gap: 30px;
-  width: 1500px; /* 더 넓게 */
+  width: 100%;
 `;
 
 const ProfileCard = styled.div`
@@ -301,7 +302,7 @@ const ManageButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #ddd;
+    background-color: #ccc;
   }
 `;
 
@@ -313,72 +314,62 @@ const AccountSection = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-const InfoTitle = styled.div`
-  font-size: 18px;
-  font-weight: 600;
-  color: #444;
-  margin: 20px 0px;
+const InfoTitle = styled.h3`
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
 `;
 
 const Row = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 `;
 
-const Label = styled.span`
-  font-size: 17px;
-  font-weight: 500;
-  color: #555;
-  width: 80px;
-`;
-
-const Value = styled.span`
-  font-size: 17px;
-  color: #333;
+const Label = styled.label`
+  font-size: 16px;
   flex: 1;
+`;
+
+const Value = styled.div`
+  font-size: 16px;
+  flex: 2;
 `;
 
 const Input = styled.input`
-  flex: 1;
-  padding: 5px;
   font-size: 16px;
-  border: 1px solid #f0f0f0;
+  flex: 2;
+  padding: 5px;
   border-radius: 5px;
-  margin-right: 50px;
-  transition: width 0.3s ease;
-  color: #333;
+  border: 1px solid #ddd;
 `;
 
-const EditButton = styled.div`
-  padding: 5px 10px;
-  font-size: 14px;
+const EditButton = styled.button`
+  background-color: #4caf50;
   color: white;
-  background-color: #ccc;
   border: none;
   border-radius: 5px;
+  padding: 5px 10px;
   cursor: pointer;
+
   &:hover {
-    background-color: #ccc;
+    background-color: #45a049;
   }
 `;
 
 const Bottombar = styled.div`
-  width: 1500px;
-  height: 2px;
-  background-color: #f0f0f0;
-  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background-color: #4caf50;
+  text-align: center;
+  color: white;
+  font-size: 16px;
 `;
 
-const FooterLabel = styled.div`
-  margin-top: 10px;
+const FooterLabel = styled.h3`
   font-size: 20px;
-  font-weight: 600;
+  font-weight: bold;
   color: #333;
-  border: 2px solid #f0f0f0;
-  padding: 5px 20px;
-  border-radius: 5px;
-  text-align: center;
-  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
 `;

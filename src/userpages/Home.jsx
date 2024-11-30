@@ -13,6 +13,27 @@ function Home() {
   const SURL = import.meta.env.VITE_APP_URI;
   const { token } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState(false); // 로그인 모달 상태
+  const [sortOrder, setSortOrder] = useState('desc'); // 정렬 상태
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${SURL}/product/order`, {
+          params: {
+            descOrAsc: sortOrder, // 정렬 순서 파라미터
+          },
+          withCredentials: false,
+        });
+        setProducts(response.data);
+      } catch (error) {
+        console.error('상품 조회 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [sortOrder]); // sortOrder가 변경될 때마다 상품을 새로 fetch
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -62,6 +83,11 @@ function Home() {
         closeModal={() => setIsModalOpen(false)}
       />
       <Title>상품 리스트</Title>
+      <SortButtons>
+        <button onClick={() => setSortOrder('asc')}>오름차순</button>
+        <button onClick={() => setSortOrder('desc')}>내림차순</button>
+      </SortButtons>
+
       <ProductList>
         {products.map((product) => (
           <ProductCard
@@ -156,6 +182,7 @@ const SoldOutOverlay = styled.div`
   border-radius: 5px;
   text-align: center;
   z-index: 1; // 이미지 위에 표시되도록 설정
+  backdrop-filter: blur(5px); // 배경 흐림 효과
 `;
 
 const ProductImage = styled.img`
