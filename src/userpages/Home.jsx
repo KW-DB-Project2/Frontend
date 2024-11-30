@@ -223,7 +223,6 @@ const ProductTime = styled.p`
 const StyledLink = styled(Link)`
   text-decoration: none;
   color: inherit;
-
   &:hover {
     color: #333;
   }
@@ -254,16 +253,15 @@ const LoadingContainer = styled.div`
 `;
 
 const SortButtons = styled.button`
-  color: #333;
-  border: 1px solid #333;
-  padding: 10px 30px;
+  color: #ddd;
+  background-color: white;
+  padding: 10px;
   cursor: pointer;
   border-radius: 5px;
   font-size: 14px;
   margin-top: 20px;
   align-self: flex-start;
   &:hover {
-    border: 1px solid #333;
     color: #aaa;
   }
 `;
