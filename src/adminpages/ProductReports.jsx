@@ -24,10 +24,11 @@ function ProductReports() {
     const fetchProductReports = async () => {
       try {
         const response = await axios.get(`${SURL}/admin/reports`);
-        // 중첩 배열을 펼친 후 필터링
-        const productReports = response.data
-          .flat() // 중첩 배열을 1차원으로 펼침
-          .filter((report) => report.productReportId); // productReportId가 있는 항목만 필터링
+        // productReportId가 있는 항목만 필터링
+        const productReports = response.data.filter(
+          (report) => report.productReportId
+        );
+        console.log(productReports);
         setReports(productReports); // 필터링된 데이터로 상태 업데이트
       } catch (error) {
         console.error('상품 신고 목록을 가져오는 데 실패했습니다:', error);
