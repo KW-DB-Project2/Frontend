@@ -17,14 +17,12 @@ function UserReview() {
       try {
         const response = await axios.get(`${SURL}/admin/reviews`);
         console.log(reviewid);
-        const flatData = response.data.flatMap((item) => item);
-        console.log('평탄화된 데이터:', flatData);
         // 중첩 배열 평탄화 후 리뷰 데이터 필터링
         const filteredReviews = response.data.filter(
           (item) => item.reviewId === Number(reviewid) // 조건에 맞는 데이터 필터링
         );
-        console.log(filteredReviews);
-        setReview(filteredReviews); // 상태 업데이트
+        console.log(filteredReviews[0]);
+        setReview(filteredReviews[0]); // 상태 업데이트
       } catch (error) {
         console.error('리뷰 데이터를 불러오는 데 실패했습니다:', error);
       }
@@ -56,7 +54,7 @@ function UserReview() {
         <Details>
           <ReviewTitle>{review.reviewTitle}</ReviewTitle>
           <AuthorAndDate>
-            <Date>{review.updateTime}</Date>
+            <Date>{review.createTime}</Date>
           </AuthorAndDate>
           <BottomBar />
           <div style={{ fontSize: '19px' }}>리뷰 내용</div>
