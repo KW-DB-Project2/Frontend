@@ -41,7 +41,6 @@ function ReviewReports() {
 
   // 리뷰 항목 클릭 시 상세 페이지로 이동하는 함수
   const navigateToReviewDetail = (reviewid) => {
-    console.log(reviewid);
     navigate(`/admin/user-review/${reviewid}`);
   };
 
@@ -66,6 +65,7 @@ function ReviewReports() {
                 onClick={() => navigateToReviewDetail(review.reviewId)}
               >
                 <ReviewTitle>신고 내용: </ReviewTitle>
+                <ReviewContent>{review.reviewId}</ReviewContent>
                 <ReviewContent>{review.reviewReportContent}</ReviewContent>
               </ReviewCard>
             ))
