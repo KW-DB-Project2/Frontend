@@ -163,6 +163,7 @@ const ProductCard = styled.div`
   opacity: ${(props) =>
     props.status ? 1 : 0.5}; /* status가 false이면 흐리게 */
   position: relative;
+  transition: opacity 0.3s ease;
 `;
 
 const ProductImageWrapper = styled.div`

@@ -35,8 +35,12 @@ function Search() {
           params: { query }, // 쿼리 파라미터로 검색어를 전달
         })
         .then((response) => {
-          console.log(response.data);
-          setSearchResults(response.data); // 응답 데이터로 결과 업데이트
+          // 첫 번째 useEffect에서 상품 데이터 받아올 때
+          const sortedProducts = response.data.sort((a, b) => {
+            // 판매 중인 상품이 먼저 오도록 정렬
+            return b.productStatus - a.productStatus;
+          });
+          setSearchResults(sortedProducts); // 응답 데이터로 결과 업데이트
           setLoading(false);
         })
         .catch((error) => {
@@ -87,7 +91,11 @@ function Search() {
                     <ProductPrice>
                       {product.productPrice.toLocaleString()}원
                     </ProductPrice>
-                    <ProductTime>{product.productTime}</ProductTime>
+                    <ProductTime>
+                      {product.updateTime
+                        ? new Date(product.updateTime).toLocaleDateString()
+                        : new Date(product.createTime).toLocaleDateString()}
+                    </ProductTime>
                   </Probottom>
                 </ProductInfo>
               </StyledLink>
@@ -126,7 +134,7 @@ const ProductCard = styled.div`
   width: 300px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  text-align: center;
+  text-align: left;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
   opacity: ${(props) =>
