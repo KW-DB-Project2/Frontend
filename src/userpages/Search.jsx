@@ -35,6 +35,7 @@ function Search() {
           params: { query }, // 쿼리 파라미터로 검색어를 전달
         })
         .then((response) => {
+          console.log(response.data);
           setSearchResults(response.data); // 응답 데이터로 결과 업데이트
           setLoading(false);
         })
@@ -78,14 +79,16 @@ function Search() {
                   alt={product.productTitle}
                 />
                 <ProductInfo>
-                  <h3>{product.productTitle}</h3>
+                  <ProductTitle>{product.productTitle}</ProductTitle>
                   <Probottom>
-                    <ProductPrice>{product.productPrice}원</ProductPrice>
+                    <ProductPrice>
+                      {product.productPrice.toLocaleString()}원
+                    </ProductPrice>
                     <ProductTime>{product.productTime}</ProductTime>
                   </Probottom>
                 </ProductInfo>
               </StyledLink>
-              {!product.status && <StatusOverlay>판매 중지</StatusOverlay>}
+              {!product.status && <StatusOverlay>판매완료</StatusOverlay>}
             </ProductCard>
           ))}
         </ResultsList>
@@ -138,21 +141,30 @@ const ProductInfo = styled.div`
   padding: 15px;
 `;
 
+const ProductTitle = styled.h3`
+  font-size: 17px;
+  color: #333;
+  font-weight: 400;
+  margin: 0px 20px;
+`;
+
 const Probottom = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center; /* 세로 정렬을 가운데로 맞춤 */
+  margin: 0px 20px;
 `;
 
 const ProductPrice = styled.p`
-  font-size: 18px;
+  font-size: 25px;
   color: #333;
-  font-weight: 600;
+  font-weight: 500;
 `;
 
 const ProductTime = styled.p`
-  font-size: 12px;
-  color: #aaa;
+  font-size: 14px;
+  color: #ccc;
+  font-weight: 400;
 `;
 
 const NoResultsMessage = styled.p`
