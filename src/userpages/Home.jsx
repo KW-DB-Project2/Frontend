@@ -160,7 +160,8 @@ const ProductCard = styled.div`
   text-align: left;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  opacity: ${(props) => (props.status ? '1' : '0.5')};
+  opacity: ${(props) =>
+    props.status ? 1 : 0.5}; /* status가 false이면 흐리게 */
   position: relative;
 `;
 
