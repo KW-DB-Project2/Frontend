@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { FiLoader } from 'react-icons/fi'; // 로딩 아이콘 import
-import Modal from './Modal'; // 로그인 모달 컴포넌트 import
+import LoginModal from '../modal/Login'; // 로그인 모달 import
 
 function Search() {
   const [searchResults, setSearchResults] = useState([]);
@@ -60,7 +60,7 @@ function Search() {
 
   return (
     <SearchContainer>
-      {isModalOpen && <Modal closeModal={() => setIsModalOpen(false)} />}{' '}
+      {isModalOpen && <LoginModal closeModal={() => setIsModalOpen(false)} />}{' '}
       {/* 로그인 모달 */}
       <Title>검색 결과</Title>
       {loading ? (
@@ -160,7 +160,7 @@ const NoResultsMessage = styled.p`
   color: #666;
 `;
 
-const StyledLink = styled.a`
+const StyledLink = styled(Link)`
   text-decoration: none;
   color: inherit;
 
