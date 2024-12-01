@@ -147,7 +147,10 @@ function Product() {
             <QnAButton onClick={() => navigate(`/qna/${productid}`)}>
               문의하기
             </QnAButton>
-            <BuyButton onClick={() => handleBuyProduct(product.productPrice)}>
+            <BuyButton
+              onClick={() => handleBuyProduct(product.productPrice)}
+              disabled={!product.status}
+            >
               구매하기
             </BuyButton>
           </ButtonContainer>
@@ -286,6 +289,10 @@ const BuyButton = styled.button`
 
   &:hover {
     opacity: 0.9;
+  }
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
   }
 `;
 

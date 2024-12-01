@@ -17,6 +17,8 @@ function UserReview() {
       try {
         const response = await axios.get(`${SURL}/admin/reports`);
         console.log(reviewid);
+        const flatData = response.data.flatMap((item) => item);
+        console.log('평탄화된 데이터:', flatData);
         // 중첩 배열 평탄화 후 리뷰 데이터 필터링
         const filteredReviews = response.data
           .flat() // 중첩 배열을 1차원 배열로 평탄화
