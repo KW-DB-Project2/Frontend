@@ -1,14 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { useParams } from 'react-router-dom'; // URL에서 파라미터를 받아옴
+import { useParams, useNavigate } from 'react-router-dom'; // URL에서 파라미터를 받아옴
 
 const SURL = import.meta.env.VITE_APP_URI; // 환경 변수에서 백엔드 서버 URL 가져오기
 
 function UserReview() {
   // URL 파라미터에서 reviewId, userId, productId를 가져옴
   const { reviewid } = useParams();
-
+  const navigate = useNavigate();
   // 리뷰에 대한 상태를 정의 (백엔드에서 받아올 데이터)
   const [review, setReview] = React.useState(null);
 
@@ -37,6 +37,7 @@ function UserReview() {
     try {
       const response = await axios.delete(`${SURL}/admin/reviews/${reviewid}`);
       alert('리뷰가 성공적으로 삭제되었습니다.');
+      navigate('/admin/review-reports');
     } catch (error) {
       console.error('리뷰 삭제 처리 실패:', error);
       alert('리뷰 삭제 처리에 실패했습니다.');
