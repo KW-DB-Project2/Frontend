@@ -174,7 +174,7 @@ const SoldOutOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  color: white;
+  color: #333;
   font-size: 24px;
   font-weight: bold;
   display: flex;
@@ -182,7 +182,6 @@ const SoldOutOverlay = styled.div`
   align-items: center;
   border-radius: 5px;
   text-align: center;
-  z-index: 1; // 이미지 위에 표시되도록 설정
 `;
 
 const ProductImage = styled.img`

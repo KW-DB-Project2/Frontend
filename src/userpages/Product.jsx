@@ -21,7 +21,7 @@ function Product() {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_URI}/product`,
+          `${import.meta.env.VITE_APP_URI}/product/mypage`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

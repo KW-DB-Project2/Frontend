@@ -17,12 +17,12 @@ function UserReview() {
       try {
         const response = await axios.get(`${SURL}/admin/reports`);
         console.log(reviewid);
-        // 중첩 배열 평탄화 후 reviewReportId가 있는 항목만 필터링
+        // 중첩 배열 평탄화 후 리뷰 데이터 필터링
         const filteredReviews = response.data
-          .flatMap((item) => item) // 중첩된 배열을 평탄화
+          .flat() // 중첩 배열을 1차원 배열로 평탄화
           .filter(
-            (item) => item.reviewReportId && item.reviewId === Number(reviewid)
-          ); // reviewReportId가 있고, reviewid와 일치하는 항목 필터링
+            (item) => item.reviewReportId && item.reviewId === Number(reviewid) // 조건에 맞는 데이터 필터링
+          );
         console.log(filteredReviews);
         setReview(filteredReviews); // 상태 업데이트
       } catch (error) {
