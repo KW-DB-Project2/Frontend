@@ -149,7 +149,7 @@ function Product() {
             </QnAButton>
             <BuyButton
               onClick={() => handleBuyProduct(product.productPrice)}
-              disabled={!product.productstatus}
+              disabled={!product.productStatus}
             >
               구매하기
             </BuyButton>
