@@ -72,7 +72,7 @@ function Search() {
       ) : searchResults.length > 0 ? (
         <ResultsList>
           {searchResults.map((product) => (
-            <ProductCard key={product.productId} status={product.status}>
+            <ProductCard key={product.productId} status={product.productStatus}>
               <StyledLink onClick={() => handleProductClick(product.productId)}>
                 <ProductImage
                   src={`data:image/jpeg;base64,${product.productImg}`}
@@ -88,7 +88,9 @@ function Search() {
                   </Probottom>
                 </ProductInfo>
               </StyledLink>
-              {!product.status && <StatusOverlay>판매완료</StatusOverlay>}
+              {!product.productStatus && (
+                <StatusOverlay>판매완료</StatusOverlay>
+              )}
             </ProductCard>
           ))}
         </ResultsList>
