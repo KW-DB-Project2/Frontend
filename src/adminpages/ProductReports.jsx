@@ -62,7 +62,7 @@ function ProductReports() {
               >
                 <ProductName>📦 Product ID: {report.productId}</ProductName>
                 <ProductDescription>
-                  📢 신고 내용: {report.productReportContent}
+                  신고 내용: {report.productReportContent}
                 </ProductDescription>
               </ProductCard>
             ))

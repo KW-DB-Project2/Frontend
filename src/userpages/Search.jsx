@@ -73,7 +73,10 @@ function Search() {
         <ResultsList>
           {searchResults.map((product) => (
             <ProductCard key={product.productId} status={product.productStatus}>
-              <StyledLink onClick={() => handleProductClick(product.productId)}>
+              <StyledLink
+                to={`/product/${product.productId}`}
+                onClick={() => handleProductClick(product.productId)}
+              >
                 <ProductImage
                   src={`data:image/jpeg;base64,${product.productImg}`}
                   alt={product.productTitle}
