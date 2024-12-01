@@ -15,16 +15,14 @@ function UserReview() {
   React.useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(`${SURL}/admin/reports`);
+        const response = await axios.get(`${SURL}/admin/reviews`);
         console.log(reviewid);
         const flatData = response.data.flatMap((item) => item);
         console.log('평탄화된 데이터:', flatData);
         // 중첩 배열 평탄화 후 리뷰 데이터 필터링
-        const filteredReviews = response.data
-          .flat() // 중첩 배열을 1차원 배열로 평탄화
-          .filter(
-            (item) => item.reviewReportId && item.reviewId === Number(reviewid) // 조건에 맞는 데이터 필터링
-          );
+        const filteredReviews = response.data.filter(
+          (item) => item.reviewId === Number(reviewid) // 조건에 맞는 데이터 필터링
+        );
         console.log(filteredReviews);
         setReview(filteredReviews); // 상태 업데이트
       } catch (error) {
@@ -58,8 +56,7 @@ function UserReview() {
         <Details>
           <ReviewTitle>{review.reviewTitle}</ReviewTitle>
           <AuthorAndDate>
-            <Author>{review.reviewAuthor}</Author>
-            <Date>{review.createTime}</Date>
+            <Date>{review.updateTime}</Date>
           </AuthorAndDate>
           <BottomBar />
           <div style={{ fontSize: '19px' }}>리뷰 내용</div>
@@ -108,11 +105,6 @@ const AuthorAndDate = styled.div`
   justify-content: space-between;
   width: 100%;
   margin-bottom: 10px;
-`;
-
-const Author = styled.div`
-  color: #777;
-  font-size: 16px;
 `;
 
 const Date = styled.div`

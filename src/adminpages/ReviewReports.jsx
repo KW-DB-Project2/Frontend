@@ -65,7 +65,7 @@ function ReviewReports() {
                 onClick={() => navigateToReviewDetail(review.reviewId)}
               >
                 <ReviewTitle>신고 내용: </ReviewTitle>
-                <ReviewContent>{review.reviewId}</ReviewContent>
+
                 <ReviewContent>{review.reviewReportContent}</ReviewContent>
               </ReviewCard>
             ))
