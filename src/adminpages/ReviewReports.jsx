@@ -62,7 +62,7 @@ function ReviewReports() {
             reviews.map((review) => (
               <ReviewCard
                 key={review.reviewReportId}
-                onClick={() => navigateToReviewDetail(review.reviewReportId)}
+                onClick={() => navigateToReviewDetail(review.reviewId)}
               >
                 <ReviewTitle>신고 내용: </ReviewTitle>
                 <ReviewContent>{review.reviewReportContent}</ReviewContent>
