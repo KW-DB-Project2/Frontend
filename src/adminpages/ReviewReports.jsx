@@ -41,6 +41,7 @@ function ReviewReports() {
 
   // 리뷰 항목 클릭 시 상세 페이지로 이동하는 함수
   const navigateToReviewDetail = (reviewid) => {
+    console.log(reviewid);
     navigate(`/admin/user-review/${reviewid}`);
   };
 
