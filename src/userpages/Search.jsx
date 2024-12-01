@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { FiLoader } from 'react-icons/fi'; // 로딩 아이콘 import
+import Modal from './Modal'; // 로그인 모달 컴포넌트 import
 
 function Search() {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
   const location = useLocation();
+  const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅
+
+  // 토큰 확인 (토큰이 없으면 모달 띄우기)
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setIsModalOpen(true); // 모달 열기
+    }
+  }, []);
 
   // 쿼리 파라미터에서 'query' 값을 가져옵니다.
   const queryParams = new URLSearchParams(location.search);
@@ -37,8 +48,20 @@ function Search() {
     }
   }, [query]); // query가 변경될 때마다 검색을 다시 실행
 
+  // 상품 클릭 시 토큰 확인 후 처리
+  const handleProductClick = (productId) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate(`/product/${productId}`); // 토큰이 있으면 해당 상품 페이지로 이동
+    } else {
+      setIsModalOpen(true); // 토큰이 없으면 로그인 모달 띄우기
+    }
+  };
+
   return (
     <SearchContainer>
+      {isModalOpen && <Modal closeModal={() => setIsModalOpen(false)} />}{' '}
+      {/* 로그인 모달 */}
       <Title>검색 결과</Title>
       {loading ? (
         <LoadingContainer>
@@ -48,17 +71,21 @@ function Search() {
       ) : searchResults.length > 0 ? (
         <ResultsList>
           {searchResults.map((product) => (
-            <ProductCard key={product.productId}>
-              <StyledLink to={`/product/${product.productId}`}>
+            <ProductCard key={product.productId} status={product.status}>
+              <StyledLink onClick={() => handleProductClick(product.productId)}>
                 <ProductImage
-                  src={`data:image/jpeg;base64,${product.productImg}`} // 이미지 처리 방식
+                  src={`data:image/jpeg;base64,${product.productImg}`}
                   alt={product.productTitle}
                 />
                 <ProductInfo>
                   <h3>{product.productTitle}</h3>
-                  <p>{product.productPrice}원</p>
+                  <Probottom>
+                    <ProductPrice>{product.productPrice}원</ProductPrice>
+                    <ProductTime>{product.productTime}</ProductTime>
+                  </Probottom>
                 </ProductInfo>
               </StyledLink>
+              {!product.status && <StatusOverlay>판매 중지</StatusOverlay>}
             </ProductCard>
           ))}
         </ResultsList>
@@ -82,26 +109,50 @@ const Title = styled.h1`
 
 const ResultsList = styled.div`
   display: grid;
-  gap: 10px;
+  gap: 20px;
   margin-top: 20px;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 `;
 
 const ProductCard = styled.div`
   width: 300px;
   border: 1px solid #ccc;
-  text-align: center;
   border-radius: 5px;
+  text-align: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  opacity: ${(props) =>
+    props.status ? 1 : 0.5}; /* status가 false이면 흐리게 */
+  transition: opacity 0.3s ease;
 `;
 
 const ProductImage = styled.img`
   width: 100%;
-  height: auto;
+  height: 250px;
+  object-fit: cover;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 `;
 
 const ProductInfo = styled.div`
-  margin-top: 10px;
+  padding: 15px;
+`;
+
+const Probottom = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const ProductPrice = styled.p`
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+`;
+
+const ProductTime = styled.p`
+  font-size: 12px;
+  color: #aaa;
 `;
 
 const NoResultsMessage = styled.p`
@@ -109,7 +160,7 @@ const NoResultsMessage = styled.p`
   color: #666;
 `;
 
-const StyledLink = styled(Link)`
+const StyledLink = styled.a`
   text-decoration: none;
   color: inherit;
 
@@ -119,10 +170,10 @@ const StyledLink = styled(Link)`
 `;
 
 const LoadingContainer = styled.div`
-  position: fixed; /* 화면에 고정 */
-  top: 50%; /* 화면의 세로 중앙 */
-  left: 50%; /* 화면의 가로 중앙 */
-  transform: translate(-50%, -50%); /* 정확히 중앙에 맞추기 위해 이동 */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -140,6 +191,22 @@ const LoadingContainer = styled.div`
       transform: rotate(360deg);
     }
   }
+`;
+
+const StatusOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 5px;
 `;
 
 export default Search;
