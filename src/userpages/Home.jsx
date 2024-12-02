@@ -170,20 +170,20 @@ const ProductImageWrapper = styled.div`
   position: relative;
 `;
 
-const SoldOutOverlay = styled.div`
+const StatusOverlay = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   color: white;
-  font-size: 24px;
-  font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 18px;
+  font-weight: bold;
   border-radius: 5px;
-  text-align: center;
 `;
 
 const ProductImage = styled.img`
