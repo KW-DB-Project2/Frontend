@@ -67,10 +67,9 @@ function Search() {
   return (
     <SearchContainer>
       {/* 로그인 모달 */}
-      <LoginModal
-        showModal={isModalOpen}
-        closeModal={() => setIsModalOpen(false)}
-      />
+      {isModalOpen && (
+        <LoginModal showModal={isModalOpen} closeModal={closeModal} />
+      )}
       <Title>검색 결과</Title>
       {loading ? (
         <LoadingContainer>
