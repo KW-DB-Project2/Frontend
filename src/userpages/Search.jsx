@@ -13,14 +13,6 @@ function Search() {
   const location = useLocation();
   const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅
 
-  // 토큰 확인 (토큰이 없으면 모달 띄우기)
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setIsModalOpen(true); // 모달 열기
-    }
-  }, []);
-
   // 쿼리 파라미터에서 'query' 값을 가져옵니다.
   const queryParams = new URLSearchParams(location.search);
   const query = queryParams.get('query');
@@ -54,7 +46,7 @@ function Search() {
   }, [query]); // query가 변경될 때마다 검색을 다시 실행
 
   // 상품 클릭 시 토큰 확인 후 처리
-  const handleProductClick = (productId) => {
+  const handleProductClick = (e, productId) => {
     const token = localStorage.getItem('token');
     if (token) {
       navigate(`/product/${productId}`); // 토큰이 있으면 해당 상품 페이지로 이동
