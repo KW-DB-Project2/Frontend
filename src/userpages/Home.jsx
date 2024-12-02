@@ -170,7 +170,7 @@ const ProductImageWrapper = styled.div`
   position: relative;
 `;
 
-const StatusOverlay = styled.div`
+const SoldOutOverlay = styled.div`
   position: absolute;
   top: 0;
   left: 0;
