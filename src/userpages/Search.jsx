@@ -59,14 +59,18 @@ function Search() {
     if (token) {
       navigate(`/product/${productId}`); // 토큰이 있으면 해당 상품 페이지로 이동
     } else {
+      e.preventDefault(); // 클릭 이벤트 취소
       setIsModalOpen(true); // 토큰이 없으면 로그인 모달 띄우기
     }
   };
 
   return (
     <SearchContainer>
-      {isModalOpen && <LoginModal closeModal={() => setIsModalOpen(false)} />}{' '}
       {/* 로그인 모달 */}
+      <LoginModal
+        showModal={isModalOpen}
+        closeModal={() => setIsModalOpen(false)}
+      />
       <Title>검색 결과</Title>
       {loading ? (
         <LoadingContainer>
@@ -79,7 +83,7 @@ function Search() {
             <ProductCard key={product.productId} status={product.productStatus}>
               <StyledLink
                 to={`/product/${product.productId}`}
-                onClick={() => handleProductClick(product.productId)}
+                onClick={(e) => handleProductClick(e, product.productId)}
               >
                 <ProductImage
                   src={`data:image/jpeg;base64,${product.productImg}`}
