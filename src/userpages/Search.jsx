@@ -47,7 +47,6 @@ function Search() {
 
   // 상품 클릭 시 토큰 확인 후 처리
   const handleProductClick = (e, productId) => {
-    const token = localStorage.getItem('token');
     if (token) {
       navigate(`/product/${productId}`); // 토큰이 있으면 해당 상품 페이지로 이동
     } else {
