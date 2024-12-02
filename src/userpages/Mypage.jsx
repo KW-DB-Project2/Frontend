@@ -103,7 +103,8 @@ function Mypage() {
             },
           }
         );
-        setTransactionData(response.data);
+        const sortedData = response.data.sort((a, b) => a.month - b.month); // 월 기준 오름차순 정렬
+        setTransactionData(sortedData);
       } catch (error) {
         console.error('트랜잭션 데이터를 가져오는 중 오류 발생:', error);
         alert('트랜잭션 데이터를 불러오지 못했습니다.');
@@ -213,7 +214,7 @@ function Mypage() {
       <FooterLabel>판매 수익 조회</FooterLabel>
       <ChartSection>
         <BarChartWrapper>
-          <Bar data={countChartData} options={options} />
+          <Line data={countChartData} options={options} />
         </BarChartWrapper>
         <LineChartWrapper>
           <Line data={totalAmountChartData} options={options} />
