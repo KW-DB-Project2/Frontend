@@ -95,7 +95,7 @@ function WriteReview({ initialTitle = '', initialContent = '' }) {
       if (reviewid) {
         // 수정 요청
         await axios.put(
-          `${SURL}/reviews`,
+          `${SURL}/reviews/${reviewid}`,
           {
             ...payload,
             reviewId: reviewid,
