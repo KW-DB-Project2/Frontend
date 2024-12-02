@@ -5,14 +5,14 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { FiLoader } from 'react-icons/fi'; // 로딩 아이콘 import
 import LoginModal from '../modal/Login'; // 로그인 모달 import
-
+import { AuthContext } from '../context/AuthContext';
 function Search() {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
   const location = useLocation();
   const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅
-
+  const { token } = useContext(AuthContext);
   // 쿼리 파라미터에서 'query' 값을 가져옵니다.
   const queryParams = new URLSearchParams(location.search);
   const query = queryParams.get('query');
