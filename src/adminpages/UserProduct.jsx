@@ -47,7 +47,7 @@ function UserProduct() {
               Authorization: `Bearer ${token}`, // 인증 토큰
             },
           });
-          alret('유저가 정지되었습니다.');
+          alert('유저가 정지되었습니다.');
           break;
         case 'withdraw':
           response = await axios.delete(`${SURL}/admin/delete/${userid}`, {
@@ -77,7 +77,7 @@ function UserProduct() {
       }
     } catch (error) {
       console.error('API 요청 실패:', error);
-      alret('요청 처리에 실패했습니다.');
+      alert('요청 처리에 실패했습니다.');
     }
   };
 
