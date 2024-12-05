@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom'; // URL에서 파라미터를 받아옴
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
 
 const SURL = import.meta.env.VITE_APP_URI; // 환경 변수에서 백엔드 서버 URL 가져오기
 
@@ -10,13 +12,18 @@ function UserReview() {
   const { reviewid } = useParams();
   const navigate = useNavigate();
   // 리뷰에 대한 상태를 정의 (백엔드에서 받아올 데이터)
-  const [review, setReview] = React.useState(null);
+  const [review, setReview] = useState(null);
+  const { token } = useContext(AuthContext);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(`${SURL}/admin/reviews`);
-        console.log(reviewid);
+        const response = await axios.get(`${SURL}/admin/reviews`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
+        });
+
         // 중첩 배열 평탄화 후 리뷰 데이터 필터링
         const filteredReviews = response.data.filter(
           (item) => item.reviewId === Number(reviewid) // 조건에 맞는 데이터 필터링

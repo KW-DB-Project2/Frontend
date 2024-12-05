@@ -1,19 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
 
 function ReviewList() {
   const [reviews, setReviews] = useState([]); // 리뷰 목록 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
   const SURL = import.meta.env.VITE_APP_URI;
+  const { token } = useContext(AuthContext);
 
   // 리뷰 목록 조회
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(`${SURL}/admin/reviews`, {
-          withCredentials: false,
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
         });
         setReviews(response.data); // 리뷰 목록 상태 업데이트
       } catch (err) {
@@ -31,7 +36,9 @@ function ReviewList() {
   const handleDeleteReview = async (reviewId) => {
     try {
       const response = await axios.delete(`${SURL}/admin/reviews/${reviewId}`, {
-        withCredentials: false,
+        headers: {
+          Authorization: `Bearer ${token}`, // 인증 토큰
+        },
       });
       console.log('리뷰 삭제 성공:', response.data);
       setReviews((prevReviews) =>

@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
 
 function ProductReports() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true); // 로딩 상태
   const navigate = useNavigate();
   const SURL = import.meta.env.VITE_APP_URI;
+  const { token } = useContext(AuthContext);
+
   // Review 신고 목록으로 이동
   const navigateToUserReport = () => {
     navigate('/admin/review-reports');
@@ -17,7 +21,11 @@ function ProductReports() {
     // 제품 신고 목록을 API에서 가져오는 함수
     const fetchProductReports = async () => {
       try {
-        const response = await axios.get(`${SURL}/admin/reports`); // URL 수정
+        const response = await axios.get(`${SURL}/admin/reports`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
+        }); // URL 수정
         // API 호출이 성공하면 데이터를 설정
         const productReports = response.data
           .flat() // 중첩 배열을 1차원으로 펼침

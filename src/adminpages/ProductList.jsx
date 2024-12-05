@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import axios from 'axios'; // axios import
 import { FiLoader } from 'react-icons/fi'; // 로딩 아이콘 import
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
 
 function AdminProductList() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const SURL = import.meta.env.VITE_APP_URI;
-
+  const { token } = useContext(AuthContext);
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(`${SURL}/admin/products`, {
-          withCredentials: false, // 쿠키를 포함시키지 않음
           headers: {
-            // 불필요한 헤더를 포함시키지 않도록 주의
-            Authorization: '', // Authorization 헤더가 필요 없다면 삭제
+            Authorization: `Bearer ${token}`, // 인증 토큰
           },
         });
         setProducts(response.data); // 받아온 데이터를 상태에 저장

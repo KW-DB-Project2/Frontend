@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import styled from 'styled-components';
 import { Line } from 'react-chartjs-2';
 import axios from 'axios';
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -28,11 +31,16 @@ function SalesVolume() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const SURL = import.meta.env.VITE_APP_URI;
+  const { token } = useContext(AuthContext);
   useEffect(() => {
     // 실제 API 호출을 주석 처리하고, 더미 데이터로 대체
     const fetchMonthlyData = async () => {
       try {
-        const response = await axios.get(`${SURL}/admin/transactions/monthly`);
+        const response = await axios.get(`${SURL}/admin/transactions/monthly`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
+        });
         setMonthlyData(response.data); // API에서 데이터를 가져와 상태에 저장
       } catch (error) {
         console.error('월별 데이터 조회 실패:', error);

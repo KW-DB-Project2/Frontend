@@ -1,18 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { FaSearch, FaUserCircle } from 'react-icons/fa'; // Profile Icon으로 FaUserCircle 사용
 import axios from 'axios'; // axios import
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
 
 function UserList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState([]);
-
+  const { token } = useContext(AuthContext);
   const SURL = import.meta.env.VITE_APP_URI;
 
   // 백엔드에서 모든 유저 데이터 가져오기
   useEffect(() => {
     axios
-      .get(`${SURL}/admin/users`) // 백엔드 URL로 사용자 목록 요청
+      .get(`${SURL}/admin/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // 인증 토큰
+        },
+      }) // 백엔드 URL로 사용자 목록 요청
       .then((response) => {
         setUsers(response.data); // 응답받은 사용자 목록을 상태에 저장
       })
@@ -29,7 +35,11 @@ function UserList() {
   // 유저 정지 함수
   const suspendUser = (userId) => {
     axios
-      .put(`${SURL}/admin/users/${userId}/suspend`) // 유저 정지 API 요청
+      .put(`${SURL}/admin/users/${userId}/suspend`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // 인증 토큰
+        },
+      }) // 유저 정지 API 요청
       .then((response) => {
         alert('유저가 정지되었습니다.');
         // 정지 후 상태 업데이트 (예: 유저 목록에서 정지된 사용자 제거)
@@ -43,7 +53,11 @@ function UserList() {
   // 유저 탈퇴 함수
   const deleteUser = (userId) => {
     axios
-      .delete(`${SURL}/admin/delete/${userId}`) // 유저 탈퇴 API 요청
+      .delete(`${SURL}/admin/delete/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // 인증 토큰
+        },
+      }) // 유저 탈퇴 API 요청
       .then((response) => {
         alert('유저가 탈퇴 처리되었습니다.');
         // 탈퇴 후 유저 목록 상태 업데이트
@@ -56,9 +70,19 @@ function UserList() {
   };
 
   // 유저 등급 변경 함수
-  const changeUserRank = (userId) => {
+  const changeUserRank = (userId, rank) => {
+    const endpoint =
+      rank === 'ADMIN' // 등급 낮추기
+        ? `${SURL}/admin/users/${userId}/rank/change`
+        : rank === 'USER' // 관리자로 올리기
+        ? `${SURL}/admin/users/${userId}/rank/admin`
+        : null;
     axios
-      .put(`${SURL}/admin/users/${userId}/rank/change`) // 유저 등급 변경 API 요청
+      .put(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`, // 인증 토큰
+        },
+      }) // 유저 등급 변경 API 요청
       .then((response) => {
         alert('유저 등급이 변경되었습니다.');
       })
@@ -93,6 +117,9 @@ function UserList() {
                 <UserRole>
                   {user.role === 'USER' ? '사용자' : '관리자'}
                 </UserRole>
+                <UserRole style={{ color: 'red' }}>
+                  {user.role === 'BAN' ? ' 유저 정지 상태입니다.' : ' '}
+                </UserRole>
               </UserInfo>
             </UserProfile>
             <ActionButtons>
@@ -102,7 +129,7 @@ function UserList() {
               <ActionButton onClick={() => deleteUser(user.id)}>
                 유저 탈퇴
               </ActionButton>
-              <ActionButton onClick={() => changeUserRank(user.id)}>
+              <ActionButton onClick={() => changeUserRank(user.id, user.role)}>
                 등급 변경
               </ActionButton>
             </ActionButtons>

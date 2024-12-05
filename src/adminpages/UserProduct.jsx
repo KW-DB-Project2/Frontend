@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
-
-function UserProduct() {
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
+-function UserProduct() {
   const { productid, userid } = useParams(); // URL에서 productid, userid 파라미터 추출
   const [product, setProduct] = useState(null); // 상품 데이터 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
-
+  const { token } = useContext(AuthContext);
   const SURL = import.meta.env.VITE_APP_URI;
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(`${SURL}/admin/products`, {
-          withCredentials: false,
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
         });
         const filteredProducts = response.data.filter(
           (product) => product.productId === parseInt(productid)
@@ -39,23 +42,27 @@ function UserProduct() {
       switch (action) {
         case 'block':
           // 유저 계정 정지 API 호출
-          response = await axios.put(
-            `${SURL}/admin/users/${userid}/suspend`,
-            {},
-            { withCredentials: false }
-          );
+          response = await axios.put(`${SURL}/admin/users/${userid}/suspend`, {
+            headers: {
+              Authorization: `Bearer ${token}`, // 인증 토큰
+            },
+          });
           alret('유저가 정지되었습니다.');
           break;
         case 'withdraw':
           response = await axios.delete(`${SURL}/admin/delete/${userid}`, {
-            withCredentials: false,
+            headers: {
+              Authorization: `Bearer ${token}`, // 인증 토큰
+            },
           });
           alert('유저가 탈퇴 처리 되었습니다.');
           break;
         case 'delete':
           // 상품 삭제 API 호출
           response = await axios.delete(`${SURL}/admin/products/${productid}`, {
-            withCredentials: false,
+            headers: {
+              Authorization: `Bearer ${token}`, // 인증 토큰
+            },
           });
           alert('상품이 삭제되었습니다.');
           // 삭제 후 /admin/product-list 페이지로 이동
@@ -111,7 +118,7 @@ function UserProduct() {
       </Content>
     </Container>
   );
-}
+};
 
 const Container = styled.div`
   width: 1500px;

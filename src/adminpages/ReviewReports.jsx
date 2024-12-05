@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+// 컴포넌트 임포트
+import { AuthContext } from '../context/AuthContext';
 
 // 환경 변수에서 서버 URL 가져오기
 const SURL = import.meta.env.VITE_APP_URI; // 백엔드 URL
 
 function ReviewReports() {
   const navigate = useNavigate();
-
+  const { token } = useContext(AuthContext);
   // 리뷰 신고 목록 상태
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true); // 로딩 상태
@@ -16,7 +18,11 @@ function ReviewReports() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(`${SURL}/admin/reports`);
+        const response = await axios.get(`${SURL}/admin/reports`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
+        });
 
         // 중첩 배열 평탄화 후 reviewReportId가 있는 항목만 필터링
         const filteredReviews = response.data
@@ -64,8 +70,9 @@ function ReviewReports() {
                 key={review.reviewReportId}
                 onClick={() => navigateToReviewDetail(review.reviewId)}
               >
+                <ReviewTitle>📦 상품 이름: </ReviewTitle>
+                <ReviewContent>{review.productTitle} </ReviewContent>
                 <ReviewTitle>📢 신고 내용: </ReviewTitle>
-
                 <ReviewContent>{review.reviewReportContent}</ReviewContent>
               </ReviewCard>
             ))
