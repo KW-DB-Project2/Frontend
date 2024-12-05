@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 // 컴포넌트 임포트
 import { AuthContext } from '../context/AuthContext';
--function UserProduct() {
+function UserProduct() {
   const { productid, userid } = useParams(); // URL에서 productid, userid 파라미터 추출
   const [product, setProduct] = useState(null); // 상품 데이터 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
@@ -118,7 +118,7 @@ import { AuthContext } from '../context/AuthContext';
       </Content>
     </Container>
   );
-};
+}
 
 const Container = styled.div`
   width: 1500px;
