@@ -42,11 +42,15 @@ function UserProduct() {
       switch (action) {
         case 'block':
           // 유저 계정 정지 API 호출
-          response = await axios.put(`${SURL}/admin/users/${userid}/suspend`, {
-            headers: {
-              Authorization: `Bearer ${token}`, // 인증 토큰
-            },
-          });
+          response = await axios.put(
+            `${SURL}/admin/users/${userid}/suspend`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // 인증 토큰
+              },
+            }
+          );
           alert('유저가 정지되었습니다.');
           break;
         case 'withdraw':
