@@ -60,15 +60,11 @@ function UserList() {
   const deleteUser = (userId) => {
     if (window.confirm('유저를 탈퇴시키겠습니까?')) {
       axios
-        .delete(
-          `${SURL}/admin/delete/${userId}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // 인증 토큰
-            },
-          }
-        ) // 유저 탈퇴 API 요청
+        .delete(`${SURL}/admin/delete/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
+        }) // 유저 탈퇴 API 요청
         .then((response) => {
           alert('유저가 탈퇴 처리되었습니다.');
           // 탈퇴 후 유저 목록 상태 업데이트
@@ -137,9 +133,7 @@ function UserList() {
                   {user.role === 'USER' ? '사용자' : '관리자'}
                 </UserRole>
                 <UserRole style={{ color: 'red' }}>
-                  {user.role === 'BAN'
-                    ? ' 유저 정지 상태입니다.'
-                    : '정지 상태 아님'}
+                  {user.role === 'BAN' ? ' 정지 상태' : ''}
                 </UserRole>
               </UserInfo>
             </UserProfile>

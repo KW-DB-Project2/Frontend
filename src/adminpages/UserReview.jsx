@@ -41,13 +41,22 @@ function UserReview() {
   // 버튼 클릭 시 처리할 함수
   const handleActionClick = async () => {
     // 리뷰 삭제 처리
-    try {
-      const response = await axios.delete(`${SURL}/admin/reviews/${reviewid}`);
-      alert('리뷰가 성공적으로 삭제되었습니다.');
-      navigate('/admin/review-reports');
-    } catch (error) {
-      console.error('리뷰 삭제 처리 실패:', error);
-      alert('리뷰 삭제 처리에 실패했습니다.');
+    if (window.confirm('리뷰를 삭제시키겠습니까?')) {
+      try {
+        const response = await axios.delete(
+          `${SURL}/admin/reviews/${reviewid}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // 인증 토큰
+            },
+          }
+        );
+        alert('리뷰가 성공적으로 삭제되었습니다.');
+        navigate('/admin/review-reports');
+      } catch (error) {
+        console.error('리뷰 삭제 처리 실패:', error);
+        alert('리뷰 삭제 처리에 실패했습니다.');
+      }
     }
   };
 
