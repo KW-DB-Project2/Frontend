@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom'; // URL에서 파라미터를 받아옴

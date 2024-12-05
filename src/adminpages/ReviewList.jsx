@@ -34,19 +34,24 @@ function ReviewList() {
 
   // 리뷰 삭제
   const handleDeleteReview = async (reviewId) => {
-    try {
-      const response = await axios.delete(`${SURL}/admin/reviews/${reviewId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // 인증 토큰
-        },
-      });
-      console.log('리뷰 삭제 성공:', response.data);
-      setReviews((prevReviews) =>
-        prevReviews.filter((review) => review.reviewId !== reviewId)
-      ); // 삭제된 리뷰는 목록에서 제거
-    } catch (err) {
-      console.error('리뷰 삭제 실패:', err);
-      setError('리뷰를 삭제하는 데 실패했습니다.');
+    if (window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
+      try {
+        const response = await axios.delete(
+          `${SURL}/admin/reviews/${reviewId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // 인증 토큰
+            },
+          }
+        );
+        setReviews((prevReviews) =>
+          prevReviews.filter((review) => review.reviewId !== reviewId)
+        ); // 삭제된 리뷰는 목록에서 제거
+        alert('리뷰가 삭제되었습니다.');
+      } catch (err) {
+        console.error('리뷰 삭제 실패:', err);
+        setError('리뷰를 삭제하는 데 실패했습니다.');
+      }
     }
   };
 
@@ -56,7 +61,7 @@ function ReviewList() {
   return (
     <Container>
       <Header>
-        <Title>📋 Review 신고 목록</Title>
+        <Title>📋 Review 목록</Title>
       </Header>
       <ReviewTable>
         {reviews.map((review) => (

@@ -70,8 +70,8 @@ function ReviewReports() {
                 key={review.reviewReportId}
                 onClick={() => navigateToReviewDetail(review.reviewId)}
               >
-                <ReviewTitle>📦 상품 이름: </ReviewTitle>
-                <ReviewContent>{review.productTitle} </ReviewContent>
+                <ReviewTitle>📦 상품 이름: {review.productTitle} </ReviewTitle>
+
                 <ReviewTitle>📢 신고 내용: </ReviewTitle>
                 <ReviewContent>{review.reviewReportContent}</ReviewContent>
               </ReviewCard>

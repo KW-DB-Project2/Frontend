@@ -34,62 +34,69 @@ function UserList() {
 
   // 유저 정지 함수
   const suspendUser = (userId) => {
-    axios
-      .put(`${SURL}/admin/users/${userId}/suspend`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // 인증 토큰
-        },
-      }) // 유저 정지 API 요청
-      .then((response) => {
-        alert('유저가 정지되었습니다.');
-        // 정지 후 상태 업데이트 (예: 유저 목록에서 정지된 사용자 제거)
-      })
-      .catch((error) => {
-        console.error('유저 정지에 실패했습니다:', error);
-        alert('유저 정지에 실패했습니다.');
-      });
+    if (window.confirm('유저를 정지 하겠습니까?')) {
+      axios
+        .put(`${SURL}/admin/users/${userId}/suspend`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
+        }) // 유저 정지 API 요청
+        .then((response) => {
+          alert('유저가 정지되었습니다.');
+          // 정지 후 상태 업데이트 (예: 유저 목록에서 정지된 사용자 제거)
+        })
+        .catch((error) => {
+          console.error('유저 정지에 실패했습니다:', error);
+          alert('유저 정지에 실패했습니다.');
+        });
+    }
   };
 
   // 유저 탈퇴 함수
   const deleteUser = (userId) => {
-    axios
-      .delete(`${SURL}/admin/delete/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // 인증 토큰
-        },
-      }) // 유저 탈퇴 API 요청
-      .then((response) => {
-        alert('유저가 탈퇴 처리되었습니다.');
-        // 탈퇴 후 유저 목록 상태 업데이트
-        setUsers(users.filter((user) => user.id !== userId));
-      })
-      .catch((error) => {
-        console.error('유저 탈퇴에 실패했습니다:', error);
-        alert('유저 탈퇴에 실패했습니다.');
-      });
+    if (window.confirm('유저를 탈퇴시키겠습니까?')) {
+      axios
+        .delete(`${SURL}/admin/delete/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
+        }) // 유저 탈퇴 API 요청
+        .then((response) => {
+          alert('유저가 탈퇴 처리되었습니다.');
+          // 탈퇴 후 유저 목록 상태 업데이트
+          setUsers(users.filter((user) => user.id !== userId));
+        })
+        .catch((error) => {
+          console.error('유저 탈퇴에 실패했습니다:', error);
+          alert('유저 탈퇴에 실패했습니다.');
+        });
+    }
   };
 
   // 유저 등급 변경 함수
-  const changeUserRank = (userId, rank) => {
+  const changeUserRank = (userId, userrole) => {
+    console.log(userrole);
     const endpoint =
-      rank === 'ADMIN' // 등급 낮추기
+      userrole === 'ADMIN' // 등급 낮추기
         ? `${SURL}/admin/users/${userId}/rank/change`
-        : rank === 'USER' // 관리자로 올리기
+        : userrole === 'USER' // 관리자로 올리기
         ? `${SURL}/admin/users/${userId}/rank/admin`
         : null;
-    axios
-      .put(endpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`, // 인증 토큰
-        },
-      }) // 유저 등급 변경 API 요청
-      .then((response) => {
-        alert('유저 등급이 변경되었습니다.');
-      })
-      .catch((error) => {
-        console.error('유저 등급 변경에 실패했습니다:', error);
-        alert('유저 등급 변경에 실패했습니다.');
-      });
+    if (window.confirm('유저 등급 변경 하시겠습니까?')) {
+      axios
+        .put(endpoint, {
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
+        }) // 유저 등급 변경 API 요청
+        .then((response) => {
+          alert('유저 등급이 변경되었습니다.');
+        })
+        .catch((error) => {
+          console.error('유저 등급 변경에 실패했습니다:', error);
+          alert('유저 등급 변경에 실패했습니다.');
+        });
+    }
   };
 
   return (
