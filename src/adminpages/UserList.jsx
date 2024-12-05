@@ -36,11 +36,15 @@ function UserList() {
   const suspendUser = (userId) => {
     if (window.confirm('유저를 정지 하겠습니까?')) {
       axios
-        .put(`${SURL}/admin/users/${userId}/suspend`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // 인증 토큰
-          },
-        }) // 유저 정지 API 요청
+        .put(
+          `${SURL}/admin/users/${userId}/suspend`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // 인증 토큰
+            },
+          }
+        ) // 유저 정지 API 요청
         .then((response) => {
           alert('유저가 정지되었습니다.');
           // 정지 후 상태 업데이트 (예: 유저 목록에서 정지된 사용자 제거)
@@ -56,11 +60,15 @@ function UserList() {
   const deleteUser = (userId) => {
     if (window.confirm('유저를 탈퇴시키겠습니까?')) {
       axios
-        .delete(`${SURL}/admin/delete/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // 인증 토큰
-          },
-        }) // 유저 탈퇴 API 요청
+        .delete(
+          `${SURL}/admin/delete/${userId}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // 인증 토큰
+            },
+          }
+        ) // 유저 탈퇴 API 요청
         .then((response) => {
           alert('유저가 탈퇴 처리되었습니다.');
           // 탈퇴 후 유저 목록 상태 업데이트
@@ -84,11 +92,15 @@ function UserList() {
         : null;
     if (window.confirm('유저 등급 변경 하시겠습니까?')) {
       axios
-        .put(endpoint, {
-          headers: {
-            Authorization: `Bearer ${token}`, // 인증 토큰
-          },
-        }) // 유저 등급 변경 API 요청
+        .put(
+          endpoint,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // 인증 토큰
+            },
+          }
+        ) // 유저 등급 변경 API 요청
         .then((response) => {
           alert('유저 등급이 변경되었습니다.');
         })
@@ -125,7 +137,9 @@ function UserList() {
                   {user.role === 'USER' ? '사용자' : '관리자'}
                 </UserRole>
                 <UserRole style={{ color: 'red' }}>
-                  {user.role === 'BAN' ? ' 유저 정지 상태입니다.' : ' '}
+                  {user.role === 'BAN'
+                    ? ' 유저 정지 상태입니다.'
+                    : '정지 상태 아님'}
                 </UserRole>
               </UserInfo>
             </UserProfile>
