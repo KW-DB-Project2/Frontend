@@ -18,5 +18,3 @@ yarn add react-router-dom
 yarn add axios
 
 npm install chart.js react-chartjs-2
-
-# 영상 찍을 때 화면 80%으로,,
